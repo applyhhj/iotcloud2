@@ -4,7 +4,10 @@ import org.ho.yaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 public class Utils {
@@ -63,5 +66,31 @@ public class Utils {
         }
         ret.putAll(storm);
         return ret;
+    }
+
+    public <T> T load(URL jar, String className) {
+        ClassLoader loader = URLClassLoader.newInstance(
+                new URL[]{jar}, getClass().getClassLoader()
+        );
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(className, true, loader);
+            Class<? extends Runnable> runClass = clazz.asSubclass(Runnable.class);
+            // Avoid Class.newInstance, for it is evil.
+            Constructor<? extends Runnable> ctor = runClass.getConstructor();
+            Runnable doRun = ctor.newInstance();
+            doRun.run();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
