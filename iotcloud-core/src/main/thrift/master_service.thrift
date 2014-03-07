@@ -14,7 +14,7 @@ struct TChannel {
 struct TSensor {
     1:string name
     2:string group
-    3:string properties
+    3:binary properties
     4:list<TChannel> channels
 }
 
@@ -39,10 +39,6 @@ service TMasterService {
     TResponse registerSensor(1:TSensor sensor)
     TResponse unRegisterSensor(1:TSensorId sensor)
     TResponse updateSensor(1:TSensor sensor)
-    TChannelResponse registerChannel(1:TSensorId sensorId, 2:TChannel channel)
-    TChannelResponse unRegisterChannel(1:TSensorId sensorId, 2:TChannel channel)
-    list<TNodeId> getNodes()
-    TSensor getSensor(1:TNodeId id)
 }
 
 
