@@ -21,6 +21,7 @@
         <slf4j.version>1.7.6</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <curator.version>2.4.0</curator.version>
+        <libthrift.version>0.9.1</libthrift.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +73,11 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
                 <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>${libthrift.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

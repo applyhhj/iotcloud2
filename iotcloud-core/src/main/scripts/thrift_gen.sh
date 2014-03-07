@@ -26,10 +26,10 @@
 #   INCLUDED_MODULES should be an array that includes other Maven modules with src/main/thrift directories
 #   Use INCLUDED_MODULES=(-) in calling scripts that require no other modules
 # ========================================================================================================================
-[ -z $REQUIRED_THRIFT_VERSION ] && REQUIRED_THRIFT_VERSION='0.9'
-[ -z $INCLUDED_MODULES ]        && INCLUDED_MODULES=(../trace)
-[ -z $BASE_OUTPUT_PACKAGE ]     && BASE_OUTPUT_PACKAGE='org.apache.accumulo.core'
-[ -z $PACKAGES_TO_GENERATE ]    && PACKAGES_TO_GENERATE=(gc master tabletserver security client.impl data)
+[ -z $REQUIRED_THRIFT_VERSION ] && REQUIRED_THRIFT_VERSION='1.0.0-dev'
+[ -z $INCLUDED_MODULES ]        && INCLUDED_MODULES=(src/main/thrift)
+[ -z $BASE_OUTPUT_PACKAGE ]     && BASE_OUTPUT_PACKAGE='cgl.iotcloud'
+[ -z $PACKAGES_TO_GENERATE ]    && PACKAGES_TO_GENERATE=(core)
 [ -z $BUILD_DIR ]               && BUILD_DIR='target'
 [ -z $FINAL_DIR ]               && FINAL_DIR='src/main/java'
 # ========================================================================================================================

@@ -1,4 +1,4 @@
-namespace java cgl.iotcloud.thrift
+namespace java cgl.iotcloud.core.thrift
 
 struct TSensorId {
     1:string name
@@ -30,11 +30,16 @@ struct TRegisterSiteResponse {
 
 struct TRegisterSiteRequest {
     1:string siteId
-    2:int32 port
+    2:i32 port
+}
+
+struct TResponse {
+    1:ResponseState state
+    2:string statusMessage
 }
 
 service TMasterService {
-    TRegisterSiteResponse registerSite(1:TRegisterSiteRequest)
+    TRegisterSiteResponse registerSite(1:TRegisterSiteRequest request)
 
     TResponse registerSensor(1:TSensor sensor)
     TResponse unRegisterSensor(1:TSensorId sensor)
