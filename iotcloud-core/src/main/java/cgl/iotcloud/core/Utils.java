@@ -51,4 +51,17 @@ public class Utils {
     public static Map readDefaultConfig() {
         return findAndReadConfigFile("defaults.yaml", true);
     }
+
+    public static Map readConfig() {
+        Map ret = readDefaultConfig();
+        String confFile = System.getProperty("iot.conf.file");
+        Map storm;
+        if (confFile==null || confFile.equals("")) {
+            storm = findAndReadConfigFile("iot.yaml", false);
+        } else {
+            storm = findAndReadConfigFile(confFile);
+        }
+        ret.putAll(storm);
+        return ret;
+    }
 }
