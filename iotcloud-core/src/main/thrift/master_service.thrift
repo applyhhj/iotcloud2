@@ -1,31 +1,8 @@
 namespace java cgl.iotcloud.thrift
 
-struct TProperty {
-    1:string name
-    2:string value
-}
-
-struct TEndpointRequest {
-    1:string name
-    2:string type
-    3:string path
-}
-
-struct TEndpointResponse {
-    1:string name
-    2:string type
-    3:string address
-    4:list<TProperty> properties
-}
-
 struct TSensorId {
     1:string name
     2:string group
-}
-
-struct TResponse {
-    1:i32 status
-    2:string reason
 }
 
 struct TChannel {
@@ -41,11 +18,27 @@ struct TSensor {
     4:list<TChannel> channels
 }
 
+enum ResponseState {
+    SUCCESS,
+    FAILURE
+}
+
+struct TRegisterSiteResponse {
+    1:ResponseState state
+    2:string statusMessage
+}
+
+struct TRegisterSiteRequest {
+    1:string siteId
+    2:int32 port
+}
+
 service TMasterService {
-    TResponse registerSite(1:
+    TRegisterSiteResponse registerSite(1:TRegisterSiteRequest)
 
     TResponse registerSensor(1:TSensor sensor)
-    TResponse unRegisterSensor(1:TSensor sensor)
+    TResponse unRegisterSensor(1:TSensorId sensor)
+    TResponse updateSensor(1:TSensor sensor)
     TChannelResponse registerChannel(1:TSensorId sensorId, 2:TChannel channel)
     TChannelResponse unRegisterChannel(1:TSensorId sensorId, 2:TChannel channel)
     list<TNodeId> getNodes()
