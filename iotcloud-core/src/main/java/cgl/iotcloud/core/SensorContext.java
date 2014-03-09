@@ -1,5 +1,4 @@
 package cgl.iotcloud.core;
 
-public interface Channel {
-
+public class SensorContext {
 }

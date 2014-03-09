@@ -2,7 +2,9 @@ iot.master.server.host: "localhost"
 iot.master.server.port: 12903
 
 iot.sensorsite.port: 12905
-iot.sensorsite.java.naming.factory.initial: org.apache.activemq.jndi.ActiveMQInitialContextFactory
-iot.sensorsite.java.naming.provider.url: tcp://localhost:61616
-iot.sensorsite.jms.ConnectionFactoryJNDIName: TopicConnectionFactory
 
+iot.sensorsite.transports: {jms : {class: asd, properties: {
+            java.naming.factory.initial: "org.apache.activemq.jndi.ActiveMQInitialContextFactory",
+            java.naming.provider.url: "tcp://localhost:61616",
+            jms.ConnectionFactoryJNDIName: "TopicConnectionFactory"
+            }}}

@@ -1,4 +1,4 @@
-namespace java cgl.iotcloud.core.thrift
+namespace java cgl.iotcloud.core.master.thrift
 
 struct TSensorId {
     1:string name

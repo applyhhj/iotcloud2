@@ -1,4 +1,4 @@
-namespace java cgl.iotcloud.core.thrift
+namespace java cgl.iotcloud.core.sensorsite.thrift
 
 struct THeartBeatResponse {
     1:i32 totalSensors

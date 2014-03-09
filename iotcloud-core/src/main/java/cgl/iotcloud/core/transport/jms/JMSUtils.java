@@ -9,7 +9,7 @@ import javax.naming.Reference;
 public class JMSUtils {
     private static Logger log = LoggerFactory.getLogger(JMSUtils.class);
 
-    private static <T> T lookup(Context context, Class<T> clazz, String name) throws Exception {
+    public static <T> T lookup(Context context, Class<T> clazz, String name) throws Exception {
 
         Object object = context.lookup(name);
         try {
