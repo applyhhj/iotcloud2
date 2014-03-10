@@ -19,10 +19,11 @@ public class JMSListener {
 
     private MessageConsumer consumer;
 
-    public JMSListener(Connection connection, Session session, Destination destination) {
+    public JMSListener(Connection connection, Session session, Destination destination, BlockingQueue<Message> inQueue) {
         this.connection = connection;
         this.session = session;
         this.destination = destination;
+        this.inQueue = inQueue;
     }
 
     public void start(){

@@ -19,10 +19,11 @@ public class JMSSender {
 
     private MessageProducer producer;
 
-    public JMSSender(Connection connection, Session session, Destination destination) {
+    public JMSSender(Connection connection, Session session, Destination destination, BlockingQueue<Message> outQueue) {
         this.connection = connection;
         this.session = session;
         this.destination = destination;
+        this.outQueue = outQueue;
 
         try {
             producer = session.createProducer(destination);

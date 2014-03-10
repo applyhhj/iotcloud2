@@ -10,6 +10,7 @@
     <modules>
         <module>iotcloud-core</module>
         <module>iotcloud-storm</module>
+        <module>iotcloud-examples</module>
     </modules>
 
     <properties>

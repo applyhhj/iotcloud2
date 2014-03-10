@@ -28,7 +28,7 @@ public class Channel <I, O> {
                    BlockingQueue<I> inQueue, BlockingQueue<O> outQueue) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
-
+        this.properties = properties;
         this.direction = direction;
     }
 

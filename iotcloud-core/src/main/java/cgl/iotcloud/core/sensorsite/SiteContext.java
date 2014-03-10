@@ -22,4 +22,8 @@ public class SiteContext {
     public void addTransport(String tName, Transport t) {
         transports.put(tName, t);
     }
+
+    public Transport getTransport(String tName) {
+        return transports.get(tName);
+    }
 }

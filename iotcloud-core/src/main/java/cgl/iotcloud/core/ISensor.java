@@ -3,11 +3,7 @@ package cgl.iotcloud.core;
 import java.util.Map;
 
 public interface ISensor {
-    /**
-     * The id for this sensor
-     * @return sensor id
-     */
-    SensorId getId();
+    Configurator getConfigurator(Map conf);
 
     /**
      * Called when a task for this component is initialized within a worker on the cluster.
@@ -20,7 +16,7 @@ public interface ISensor {
      * @param context This object can be used to get information about this task's place within the topology,
      *                including the task id and component id of this task, input and output information, etc.
      */
-    void open(Map conf, SensorContext context);
+    void open(SensorContext context);
 
     /**
      * Called when an sensor is going to be shutdown. There is no guarentee that close

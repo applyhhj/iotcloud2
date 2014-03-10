@@ -10,6 +10,7 @@ import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.naming.Reference;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class JMSTransport implements Transport {
             params.putAll(properties);
 
             context = new InitialContext(params);
-            conFactory = JMSUtils.lookup(context, javax.jms.ConnectionFactory.class,
+            conFactory = lookup(context, javax.jms.ConnectionFactory.class,
                     (String) properties.get(Configuration.IOT_SENSOR_SITE_CONFAC_JNDI_NAME));
             LOG.debug("JMS ConnectionFactory initialized");
         } catch (NamingException e) {
@@ -63,7 +64,7 @@ public class JMSTransport implements Transport {
         try {
             Connection connection = conFactory.createConnection();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination dest = null;
+            Destination dest;
             if (topic) {
                 dest = session.createTopic(destination);
             } else {
@@ -71,10 +72,10 @@ public class JMSTransport implements Transport {
             }
 
             if (channel.getDirection() == Channel.Direction.OUT) {
-                JMSSender sender = new JMSSender(connection, session, dest);
+                JMSSender sender = new JMSSender(connection, session, dest, channel.getOutQueue());
                 senders.put(name, sender);
-            } else {
-                JMSListener listener = new JMSListener(connection, session, dest);
+            } else if (channel.getDirection() == Channel.Direction.IN) {
+                JMSListener listener = new JMSListener(connection, session, dest, channel.getInQueue());
                 listeners.put(name, listener);
             }
         } catch (JMSException e) {
@@ -103,6 +104,26 @@ public class JMSTransport implements Transport {
 
         for (Map.Entry<String, JMSListener> e : listeners.entrySet()) {
             e.getValue().stop();
+        }
+    }
+
+    public static <T> T lookup(Context context, Class<T> clazz, String name) throws Exception {
+
+        Object object = context.lookup(name);
+        try {
+            return clazz.cast(object);
+        } catch (ClassCastException ex) {
+            // Instead of a ClassCastException, throw an exception with some
+            // more information.
+            if (object instanceof Reference) {
+                Reference ref = (Reference)object;
+                throw new Exception("JNDI failed to de-reference Reference with name " +
+                        name + "; is the factory " + ref.getFactoryClassName() +
+                        " in your classpath?");
+            } else {
+                throw new IllegalArgumentException("JNDI lookup of name " + name + " returned a " +
+                        object.getClass().getName() + " while a " + clazz + " was expected");
+            }
         }
     }
 }

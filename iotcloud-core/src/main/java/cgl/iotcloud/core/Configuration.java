@@ -26,11 +26,11 @@ public class Configuration {
     }
 
     public static int getMasterServerPort(Map conf) {
-        return (int) conf.get(IOT_MASTER_SERVER_PORT);
+        return (Integer) conf.get(IOT_MASTER_SERVER_PORT);
     }
 
     public static int getSensorSitePort(Map conf) {
-        return (int) conf.get(IOT_SENSORSITE_PORT);
+        return (Integer) conf.get(IOT_SENSORSITE_PORT);
     }
 
     public static Map getTransports(Map conf) {
