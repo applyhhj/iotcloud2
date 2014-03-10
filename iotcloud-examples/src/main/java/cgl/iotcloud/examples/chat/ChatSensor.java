@@ -1,8 +1,5 @@
 package cgl.iotcloud.examples.chat;
 
-import cgl.iotcloud.core.ISensor;
-import cgl.iotcloud.core.SensorContext;
-
 import java.util.Map;
 
 public class ChatSensor implements ISensor {
