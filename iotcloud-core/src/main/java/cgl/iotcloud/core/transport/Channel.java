@@ -13,9 +13,9 @@ public class Channel <I, O> {
 
     private BlockingQueue<O> outQueue;
 
-    private MessageConverter<I, O> converter = null;
+    private MessageConverter<I, O> converter;
 
-    private Map transportProperties;
+    private Map properties;
 
     public enum Direction {
         OUT,
@@ -24,12 +24,16 @@ public class Channel <I, O> {
 
     private Direction direction;
 
-    public Channel(Direction direction, Map transportProperties,
+    public Channel(Direction direction, Map properties,
                    BlockingQueue<I> inQueue, BlockingQueue<O> outQueue) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
 
         this.direction = direction;
+    }
+
+    public void setConverter(MessageConverter<I, O> converter) {
+        this.converter = converter;
     }
 
     public BlockingQueue<I> getInQueue() {
@@ -42,6 +46,10 @@ public class Channel <I, O> {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public Map getProperties() {
+        return properties;
     }
 
     public void open() {

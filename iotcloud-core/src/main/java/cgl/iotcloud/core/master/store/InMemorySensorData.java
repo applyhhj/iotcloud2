@@ -9,8 +9,6 @@ import java.util.Map;
 public class InMemorySensorData {
     private static Logger LOG = LoggerFactory.getLogger(InMemorySensorData.class);
 
-    private List<>
-
     public void start(Map conf) {
 
     }
@@ -18,6 +16,4 @@ public class InMemorySensorData {
     public void stop() {
 
     }
-
-
 }

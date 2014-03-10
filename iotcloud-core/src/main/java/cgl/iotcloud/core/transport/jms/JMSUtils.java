@@ -3,7 +3,9 @@ package cgl.iotcloud.core.transport.jms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.Destination;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 
 public class JMSUtils {
