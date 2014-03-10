@@ -17,4 +17,23 @@ public class SensorId {
     public String getGroup() {
         return group;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SensorId sensorId = (SensorId) o;
+
+        if (!group.equals(sensorId.group)) return false;
+        if (!name.equals(sensorId.name)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + group.hashCode();
+        return result;
+    }
 }

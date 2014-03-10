@@ -1,16 +1,19 @@
 package cgl.iotcloud.core;
 
 import org.ho.yaml.Yaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 
 public class Utils {
+    private static Logger LOG = LoggerFactory.getLogger(Utils.class);
+
     public static Map findAndReadConfigFile(String name, boolean mustExist) {
         try {
             HashSet<URL> resources = new HashSet<URL>(findResources(name));
@@ -68,29 +71,24 @@ public class Utils {
         return ret;
     }
 
-    public <T> T load(URL jar, String className) {
-        ClassLoader loader = URLClassLoader.newInstance(
-                new URL[]{jar}, getClass().getClassLoader()
-        );
-        Class<?> clazz = null;
+    public static ISensor loadSensor(URL jar, String className, ClassLoader parent) {
+        ClassLoader loader = URLClassLoader.newInstance(new URL[]{jar}, parent);
+        Class<?> clazz;
         try {
             clazz = Class.forName(className, true, loader);
-            Class<? extends Runnable> runClass = clazz.asSubclass(Runnable.class);
+            Class<? extends ISensor> runClass = clazz.asSubclass(ISensor.class);
             // Avoid Class.newInstance, for it is evil.
-            Constructor<? extends Runnable> ctor = runClass.getConstructor();
-            Runnable doRun = ctor.newInstance();
-            doRun.run();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Constructor<? extends ISensor> ctor = runClass.getConstructor();
+            return ctor.newInstance();
+        } catch (ClassNotFoundException x) {
+            LOG.error("Transport class cannot be found {}", className, x);
+            throw new RuntimeException("Transport class cannot be found " + className, x);
+        } catch (InstantiationException x) {
+            LOG.error("Transport class cannot be instantiated {}", className, x);
+            throw new RuntimeException("Transport class cannot be instantiated " + className, x);
+        } catch (Exception e) {
+            LOG.error("Error loading the class {}", className, e);
+            throw new RuntimeException("Error loading the class " + className, e);
         }
-        return null;
     }
 }
