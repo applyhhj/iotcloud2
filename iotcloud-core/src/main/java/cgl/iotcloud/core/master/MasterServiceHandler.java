@@ -16,11 +16,22 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
     @Override
     public TRegisterSiteResponse registerSite(TRegisterSiteRequest request) throws TException {
-        return null;
+        String id = request.getSiteId();
+        String host = request.getHost();
+        int port = request.getPort();
+
+        SensorSiteDetails details = new SensorSiteDetails(id, port, host);
+        masterContext.addSensorSite(details);
+
+        TRegisterSiteResponse registerSiteResponse = new TRegisterSiteResponse();
+        registerSiteResponse.setState(ResponseState.SUCCESS);
+        return registerSiteResponse;
     }
 
     @Override
     public TResponse registerSensor(TSensor sensor) throws TException {
+
+
         return null;
     }
 

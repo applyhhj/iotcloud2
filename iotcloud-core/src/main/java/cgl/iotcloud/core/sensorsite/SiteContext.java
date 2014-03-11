@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public class SiteContext {
+    // a unique id for the site
+    private String siteId;
+
     private Map<String, Transport> transports = new HashMap<String, Transport>();
 
     private Map<SensorContext, ISensor> sensors = new HashMap<SensorContext, ISensor>();

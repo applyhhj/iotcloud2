@@ -1,5 +1,5 @@
 package cgl.iotcloud.core.master;
 
-public class HeartBeatTask {
+public class SensorDetails {
 
 }

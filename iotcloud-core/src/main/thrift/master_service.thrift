@@ -29,8 +29,9 @@ struct TRegisterSiteResponse {
 }
 
 struct TRegisterSiteRequest {
-    1:string siteId
-    2:i32 port
+    1:required string siteId
+    2:required i32 port
+    3:required string host
 }
 
 struct TResponse {
