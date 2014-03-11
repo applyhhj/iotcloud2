@@ -4,7 +4,9 @@ import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.transport.Transport;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SiteContext {
@@ -30,5 +32,9 @@ public class SiteContext {
 
     public Transport getTransport(String tName) {
         return transports.get(tName);
+    }
+
+    public List<SensorContext> getRegisteredSensors() {
+        return new ArrayList<SensorContext>(sensors.keySet());
     }
 }

@@ -24,9 +24,6 @@ public class SensorMaster {
         InMemorySensorData sensorStore = new InMemorySensorData();
 
         // now start the server to listen for the sites
-
-
-
         try {
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(1205);
             THsHaServer server = new THsHaServer(

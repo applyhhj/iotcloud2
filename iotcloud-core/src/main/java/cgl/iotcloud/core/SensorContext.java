@@ -12,6 +12,8 @@ public class SensorContext {
 
     private final SensorId id;
 
+    private Object metadata;
+
     public SensorContext(SensorId id) {
         if (id == null) {
             throw new IllegalArgumentException("A sensor should have an id");
