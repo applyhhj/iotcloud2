@@ -1,10 +1,19 @@
 package cgl.iotcloud.examples.chat;
 
+import cgl.iotcloud.core.Configurator;
+import cgl.iotcloud.core.ISensor;
+import cgl.iotcloud.core.SensorContext;
+
 import java.util.Map;
 
 public class ChatSensor implements ISensor {
     @Override
-    public void open(Map conf, SensorContext context) {
+    public Configurator getConfigurator(Map conf) {
+        return null;
+    }
+
+    @Override
+    public void open(SensorContext context) {
 
     }
 

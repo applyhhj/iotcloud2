@@ -1,20 +1,21 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.master.thrift.*;
-import cgl.iotcloud.core.sensorsite.SiteContext;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MasterServiceHandler implements TMasterService.Iface {
-    private SiteContext siteContext;
+    private static Logger LOG = LoggerFactory.getLogger(MasterServiceHandler.class);
 
-    public MasterServiceHandler(SiteContext siteContext) {
-        this.siteContext = siteContext;
+    private MasterContext masterContext;
+
+    public MasterServiceHandler(MasterContext masterContext) {
+        this.masterContext = masterContext;
     }
 
     @Override
     public TRegisterSiteResponse registerSite(TRegisterSiteRequest request) throws TException {
-
-
         return null;
     }
 

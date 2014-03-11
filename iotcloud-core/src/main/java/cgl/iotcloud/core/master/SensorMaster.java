@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.master.store.InMemorySensorData;
 import cgl.iotcloud.core.master.thrift.TMasterService;
@@ -20,15 +21,18 @@ public class SensorMaster {
         // read the configuration file
         Map conf = Utils.readConfig();
 
+        MasterContext masterContext = new MasterContext();
+
         // configures the sensor store
         InMemorySensorData sensorStore = new InMemorySensorData();
 
         // now start the server to listen for the sites
+        int port = Configuration.getMasterServerPort(conf);
         try {
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(1205);
+            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler())).executorService(Executors.newFixedThreadPool(10)));
+                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext))).executorService(Executors.newFixedThreadPool(10)));
             server.serve();
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
