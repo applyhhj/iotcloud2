@@ -29,7 +29,7 @@
 [ -z $REQUIRED_THRIFT_VERSION ] && REQUIRED_THRIFT_VERSION='1.0.0-dev'
 [ -z $INCLUDED_MODULES ]        && INCLUDED_MODULES=(src/main/thrift)
 [ -z $BASE_OUTPUT_PACKAGE ]     && BASE_OUTPUT_PACKAGE='cgl.iotcloud.core'
-[ -z $PACKAGES_TO_GENERATE ]    && PACKAGES_TO_GENERATE=(master sensorsite)
+[ -z $PACKAGES_TO_GENERATE ]    && PACKAGES_TO_GENERATE=(master sensorsite api)
 [ -z $BUILD_DIR ]               && BUILD_DIR='target'
 [ -z $FINAL_DIR ]               && FINAL_DIR='src/main/java'
 # ========================================================================================================================

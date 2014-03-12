@@ -20,20 +20,20 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package cgl.iotcloud.core.master.thrift;
+package cgl.iotcloud.core.api.thrift;
 
 
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-@SuppressWarnings("all") public enum TDirection implements org.apache.thrift.TEnum {
-  IN(0),
-  OUT(1);
+@SuppressWarnings("all") public enum TResponseState implements org.apache.thrift.TEnum {
+  SUCCESS(0),
+  FAILURE(1);
 
   private final int value;
 
-  private TDirection(int value) {
+  private TResponseState(int value) {
     this.value = value;
   }
 
@@ -48,12 +48,12 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static TDirection findByValue(int value) { 
+  public static TResponseState findByValue(int value) { 
     switch (value) {
       case 0:
-        return IN;
+        return SUCCESS;
       case 1:
-        return OUT;
+        return FAILURE;
       default:
         return null;
     }

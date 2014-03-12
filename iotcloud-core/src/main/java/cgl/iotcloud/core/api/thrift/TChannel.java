@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package cgl.iotcloud.core.master.thrift;
+package cgl.iotcloud.core.api.thrift;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -46,33 +46,33 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TRegisterSiteResponse implements org.apache.thrift.TBase<TRegisterSiteResponse, TRegisterSiteResponse._Fields>, java.io.Serializable, Cloneable, Comparable<TRegisterSiteResponse> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TRegisterSiteResponse");
+@SuppressWarnings("all") public class TChannel implements org.apache.thrift.TBase<TChannel, TChannel._Fields>, java.io.Serializable, Cloneable, Comparable<TChannel> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TChannel");
 
-  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField STATUS_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("statusMessage", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField TRANSPORT_FIELD_DESC = new org.apache.thrift.protocol.TField("transport", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField DIRECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("direction", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TRegisterSiteResponseStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TRegisterSiteResponseTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TChannelStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TChannelTupleSchemeFactory());
   }
 
+  public String transport; // required
   /**
    * 
-   * @see ResponseState
+   * @see TDirection
    */
-  public ResponseState state; // required
-  public String statusMessage; // required
+  public TDirection direction; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    TRANSPORT((short)1, "transport"),
     /**
      * 
-     * @see ResponseState
+     * @see TDirection
      */
-    STATE((short)1, "state"),
-    STATUS_MESSAGE((short)2, "statusMessage");
+    DIRECTION((short)2, "direction");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -87,10 +87,10 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // STATE
-          return STATE;
-        case 2: // STATUS_MESSAGE
-          return STATUS_MESSAGE;
+        case 1: // TRANSPORT
+          return TRANSPORT;
+        case 2: // DIRECTION
+          return DIRECTION;
         default:
           return null;
       }
@@ -134,119 +134,119 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResponseState.class)));
-    tmpMap.put(_Fields.STATUS_MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("statusMessage", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.TRANSPORT, new org.apache.thrift.meta_data.FieldMetaData("transport", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DIRECTION, new org.apache.thrift.meta_data.FieldMetaData("direction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, TDirection.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TRegisterSiteResponse.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TChannel.class, metaDataMap);
   }
 
-  public TRegisterSiteResponse() {
+  public TChannel() {
   }
 
-  public TRegisterSiteResponse(
-    ResponseState state,
-    String statusMessage)
+  public TChannel(
+    String transport,
+    TDirection direction)
   {
     this();
-    this.state = state;
-    this.statusMessage = statusMessage;
+    this.transport = transport;
+    this.direction = direction;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TRegisterSiteResponse(TRegisterSiteResponse other) {
-    if (other.isSetState()) {
-      this.state = other.state;
+  public TChannel(TChannel other) {
+    if (other.isSetTransport()) {
+      this.transport = other.transport;
     }
-    if (other.isSetStatusMessage()) {
-      this.statusMessage = other.statusMessage;
+    if (other.isSetDirection()) {
+      this.direction = other.direction;
     }
   }
 
-  public TRegisterSiteResponse deepCopy() {
-    return new TRegisterSiteResponse(this);
+  public TChannel deepCopy() {
+    return new TChannel(this);
   }
 
   @Override
   public void clear() {
-    this.state = null;
-    this.statusMessage = null;
+    this.transport = null;
+    this.direction = null;
   }
 
-  /**
-   * 
-   * @see ResponseState
-   */
-  public ResponseState getState() {
-    return this.state;
+  public String getTransport() {
+    return this.transport;
   }
 
-  /**
-   * 
-   * @see ResponseState
-   */
-  public TRegisterSiteResponse setState(ResponseState state) {
-    this.state = state;
+  public TChannel setTransport(String transport) {
+    this.transport = transport;
     return this;
   }
 
-  public void unsetState() {
-    this.state = null;
+  public void unsetTransport() {
+    this.transport = null;
   }
 
-  /** Returns true if field state is set (has been assigned a value) and false otherwise */
-  public boolean isSetState() {
-    return this.state != null;
+  /** Returns true if field transport is set (has been assigned a value) and false otherwise */
+  public boolean isSetTransport() {
+    return this.transport != null;
   }
 
-  public void setStateIsSet(boolean value) {
+  public void setTransportIsSet(boolean value) {
     if (!value) {
-      this.state = null;
+      this.transport = null;
     }
   }
 
-  public String getStatusMessage() {
-    return this.statusMessage;
+  /**
+   * 
+   * @see TDirection
+   */
+  public TDirection getDirection() {
+    return this.direction;
   }
 
-  public TRegisterSiteResponse setStatusMessage(String statusMessage) {
-    this.statusMessage = statusMessage;
+  /**
+   * 
+   * @see TDirection
+   */
+  public TChannel setDirection(TDirection direction) {
+    this.direction = direction;
     return this;
   }
 
-  public void unsetStatusMessage() {
-    this.statusMessage = null;
+  public void unsetDirection() {
+    this.direction = null;
   }
 
-  /** Returns true if field statusMessage is set (has been assigned a value) and false otherwise */
-  public boolean isSetStatusMessage() {
-    return this.statusMessage != null;
+  /** Returns true if field direction is set (has been assigned a value) and false otherwise */
+  public boolean isSetDirection() {
+    return this.direction != null;
   }
 
-  public void setStatusMessageIsSet(boolean value) {
+  public void setDirectionIsSet(boolean value) {
     if (!value) {
-      this.statusMessage = null;
+      this.direction = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case STATE:
+    case TRANSPORT:
       if (value == null) {
-        unsetState();
+        unsetTransport();
       } else {
-        setState((ResponseState)value);
+        setTransport((String)value);
       }
       break;
 
-    case STATUS_MESSAGE:
+    case DIRECTION:
       if (value == null) {
-        unsetStatusMessage();
+        unsetDirection();
       } else {
-        setStatusMessage((String)value);
+        setDirection((TDirection)value);
       }
       break;
 
@@ -255,11 +255,11 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case STATE:
-      return getState();
+    case TRANSPORT:
+      return getTransport();
 
-    case STATUS_MESSAGE:
-      return getStatusMessage();
+    case DIRECTION:
+      return getDirection();
 
     }
     throw new IllegalStateException();
@@ -272,10 +272,10 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case STATE:
-      return isSetState();
-    case STATUS_MESSAGE:
-      return isSetStatusMessage();
+    case TRANSPORT:
+      return isSetTransport();
+    case DIRECTION:
+      return isSetDirection();
     }
     throw new IllegalStateException();
   }
@@ -284,30 +284,30 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TRegisterSiteResponse)
-      return this.equals((TRegisterSiteResponse)that);
+    if (that instanceof TChannel)
+      return this.equals((TChannel)that);
     return false;
   }
 
-  public boolean equals(TRegisterSiteResponse that) {
+  public boolean equals(TChannel that) {
     if (that == null)
       return false;
 
-    boolean this_present_state = true && this.isSetState();
-    boolean that_present_state = true && that.isSetState();
-    if (this_present_state || that_present_state) {
-      if (!(this_present_state && that_present_state))
+    boolean this_present_transport = true && this.isSetTransport();
+    boolean that_present_transport = true && that.isSetTransport();
+    if (this_present_transport || that_present_transport) {
+      if (!(this_present_transport && that_present_transport))
         return false;
-      if (!this.state.equals(that.state))
+      if (!this.transport.equals(that.transport))
         return false;
     }
 
-    boolean this_present_statusMessage = true && this.isSetStatusMessage();
-    boolean that_present_statusMessage = true && that.isSetStatusMessage();
-    if (this_present_statusMessage || that_present_statusMessage) {
-      if (!(this_present_statusMessage && that_present_statusMessage))
+    boolean this_present_direction = true && this.isSetDirection();
+    boolean that_present_direction = true && that.isSetDirection();
+    if (this_present_direction || that_present_direction) {
+      if (!(this_present_direction && that_present_direction))
         return false;
-      if (!this.statusMessage.equals(that.statusMessage))
+      if (!this.direction.equals(that.direction))
         return false;
     }
 
@@ -320,29 +320,29 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TRegisterSiteResponse other) {
+  public int compareTo(TChannel other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetState()).compareTo(other.isSetState());
+    lastComparison = Boolean.valueOf(isSetTransport()).compareTo(other.isSetTransport());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetState()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.state, other.state);
+    if (isSetTransport()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.transport, other.transport);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetStatusMessage()).compareTo(other.isSetStatusMessage());
+    lastComparison = Boolean.valueOf(isSetDirection()).compareTo(other.isSetDirection());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetStatusMessage()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusMessage, other.statusMessage);
+    if (isSetDirection()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.direction, other.direction);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -364,22 +364,22 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TRegisterSiteResponse(");
+    StringBuilder sb = new StringBuilder("TChannel(");
     boolean first = true;
 
-    sb.append("state:");
-    if (this.state == null) {
+    sb.append("transport:");
+    if (this.transport == null) {
       sb.append("null");
     } else {
-      sb.append(this.state);
+      sb.append(this.transport);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("statusMessage:");
-    if (this.statusMessage == null) {
+    sb.append("direction:");
+    if (this.direction == null) {
       sb.append("null");
     } else {
-      sb.append(this.statusMessage);
+      sb.append(this.direction);
     }
     first = false;
     sb.append(")");
@@ -407,15 +407,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TRegisterSiteResponseStandardSchemeFactory implements SchemeFactory {
-    public TRegisterSiteResponseStandardScheme getScheme() {
-      return new TRegisterSiteResponseStandardScheme();
+  private static class TChannelStandardSchemeFactory implements SchemeFactory {
+    public TChannelStandardScheme getScheme() {
+      return new TChannelStandardScheme();
     }
   }
 
-  private static class TRegisterSiteResponseStandardScheme extends StandardScheme<TRegisterSiteResponse> {
+  private static class TChannelStandardScheme extends StandardScheme<TChannel> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TRegisterSiteResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TChannel struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -425,18 +425,18 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // STATE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.state = ResponseState.findByValue(iprot.readI32());
-              struct.setStateIsSet(true);
+          case 1: // TRANSPORT
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.transport = iprot.readString();
+              struct.setTransportIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // STATUS_MESSAGE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.statusMessage = iprot.readString();
-              struct.setStatusMessageIsSet(true);
+          case 2: // DIRECTION
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.direction = TDirection.findByValue(iprot.readI32());
+              struct.setDirectionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -452,18 +452,18 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TRegisterSiteResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TChannel struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.state != null) {
-        oprot.writeFieldBegin(STATE_FIELD_DESC);
-        oprot.writeI32(struct.state.getValue());
+      if (struct.transport != null) {
+        oprot.writeFieldBegin(TRANSPORT_FIELD_DESC);
+        oprot.writeString(struct.transport);
         oprot.writeFieldEnd();
       }
-      if (struct.statusMessage != null) {
-        oprot.writeFieldBegin(STATUS_MESSAGE_FIELD_DESC);
-        oprot.writeString(struct.statusMessage);
+      if (struct.direction != null) {
+        oprot.writeFieldBegin(DIRECTION_FIELD_DESC);
+        oprot.writeI32(struct.direction.getValue());
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -472,44 +472,44 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TRegisterSiteResponseTupleSchemeFactory implements SchemeFactory {
-    public TRegisterSiteResponseTupleScheme getScheme() {
-      return new TRegisterSiteResponseTupleScheme();
+  private static class TChannelTupleSchemeFactory implements SchemeFactory {
+    public TChannelTupleScheme getScheme() {
+      return new TChannelTupleScheme();
     }
   }
 
-  private static class TRegisterSiteResponseTupleScheme extends TupleScheme<TRegisterSiteResponse> {
+  private static class TChannelTupleScheme extends TupleScheme<TChannel> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TRegisterSiteResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetState()) {
+      if (struct.isSetTransport()) {
         optionals.set(0);
       }
-      if (struct.isSetStatusMessage()) {
+      if (struct.isSetDirection()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
-      if (struct.isSetState()) {
-        oprot.writeI32(struct.state.getValue());
+      if (struct.isSetTransport()) {
+        oprot.writeString(struct.transport);
       }
-      if (struct.isSetStatusMessage()) {
-        oprot.writeString(struct.statusMessage);
+      if (struct.isSetDirection()) {
+        oprot.writeI32(struct.direction.getValue());
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TRegisterSiteResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.state = ResponseState.findByValue(iprot.readI32());
-        struct.setStateIsSet(true);
+        struct.transport = iprot.readString();
+        struct.setTransportIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.statusMessage = iprot.readString();
-        struct.setStatusMessageIsSet(true);
+        struct.direction = TDirection.findByValue(iprot.readI32());
+        struct.setDirectionIsSet(true);
       }
     }
   }

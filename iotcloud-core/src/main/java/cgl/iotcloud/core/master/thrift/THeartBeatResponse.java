@@ -46,33 +46,25 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TChannel implements org.apache.thrift.TBase<TChannel, TChannel._Fields>, java.io.Serializable, Cloneable, Comparable<TChannel> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TChannel");
+@SuppressWarnings("all") public class THeartBeatResponse implements org.apache.thrift.TBase<THeartBeatResponse, THeartBeatResponse._Fields>, java.io.Serializable, Cloneable, Comparable<THeartBeatResponse> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("THeartBeatResponse");
 
-  private static final org.apache.thrift.protocol.TField TRANSPORT_FIELD_DESC = new org.apache.thrift.protocol.TField("transport", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField DIRECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("direction", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField TOTAL_SENSORS_FIELD_DESC = new org.apache.thrift.protocol.TField("totalSensors", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField RESPONSIVE_SONSOR_FIELD_DESC = new org.apache.thrift.protocol.TField("responsiveSonsor", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TChannelStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TChannelTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new THeartBeatResponseStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new THeartBeatResponseTupleSchemeFactory());
   }
 
-  public String transport; // required
-  /**
-   * 
-   * @see TDirection
-   */
-  public TDirection direction; // required
+  public int totalSensors; // required
+  public int responsiveSonsor; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    TRANSPORT((short)1, "transport"),
-    /**
-     * 
-     * @see TDirection
-     */
-    DIRECTION((short)2, "direction");
+    TOTAL_SENSORS((short)1, "totalSensors"),
+    RESPONSIVE_SONSOR((short)2, "responsiveSonsor");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -87,10 +79,10 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // TRANSPORT
-          return TRANSPORT;
-        case 2: // DIRECTION
-          return DIRECTION;
+        case 1: // TOTAL_SENSORS
+          return TOTAL_SENSORS;
+        case 2: // RESPONSIVE_SONSOR
+          return RESPONSIVE_SONSOR;
         default:
           return null;
       }
@@ -131,122 +123,116 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
+  private static final int __TOTALSENSORS_ISSET_ID = 0;
+  private static final int __RESPONSIVESONSOR_ISSET_ID = 1;
+  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.TRANSPORT, new org.apache.thrift.meta_data.FieldMetaData("transport", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.DIRECTION, new org.apache.thrift.meta_data.FieldMetaData("direction", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, TDirection.class)));
+    tmpMap.put(_Fields.TOTAL_SENSORS, new org.apache.thrift.meta_data.FieldMetaData("totalSensors", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.RESPONSIVE_SONSOR, new org.apache.thrift.meta_data.FieldMetaData("responsiveSonsor", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TChannel.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(THeartBeatResponse.class, metaDataMap);
   }
 
-  public TChannel() {
+  public THeartBeatResponse() {
   }
 
-  public TChannel(
-    String transport,
-    TDirection direction)
+  public THeartBeatResponse(
+    int totalSensors,
+    int responsiveSonsor)
   {
     this();
-    this.transport = transport;
-    this.direction = direction;
+    this.totalSensors = totalSensors;
+    setTotalSensorsIsSet(true);
+    this.responsiveSonsor = responsiveSonsor;
+    setResponsiveSonsorIsSet(true);
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TChannel(TChannel other) {
-    if (other.isSetTransport()) {
-      this.transport = other.transport;
-    }
-    if (other.isSetDirection()) {
-      this.direction = other.direction;
-    }
+  public THeartBeatResponse(THeartBeatResponse other) {
+    __isset_bitfield = other.__isset_bitfield;
+    this.totalSensors = other.totalSensors;
+    this.responsiveSonsor = other.responsiveSonsor;
   }
 
-  public TChannel deepCopy() {
-    return new TChannel(this);
+  public THeartBeatResponse deepCopy() {
+    return new THeartBeatResponse(this);
   }
 
   @Override
   public void clear() {
-    this.transport = null;
-    this.direction = null;
+    setTotalSensorsIsSet(false);
+    this.totalSensors = 0;
+    setResponsiveSonsorIsSet(false);
+    this.responsiveSonsor = 0;
   }
 
-  public String getTransport() {
-    return this.transport;
+  public int getTotalSensors() {
+    return this.totalSensors;
   }
 
-  public TChannel setTransport(String transport) {
-    this.transport = transport;
+  public THeartBeatResponse setTotalSensors(int totalSensors) {
+    this.totalSensors = totalSensors;
+    setTotalSensorsIsSet(true);
     return this;
   }
 
-  public void unsetTransport() {
-    this.transport = null;
+  public void unsetTotalSensors() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __TOTALSENSORS_ISSET_ID);
   }
 
-  /** Returns true if field transport is set (has been assigned a value) and false otherwise */
-  public boolean isSetTransport() {
-    return this.transport != null;
+  /** Returns true if field totalSensors is set (has been assigned a value) and false otherwise */
+  public boolean isSetTotalSensors() {
+    return EncodingUtils.testBit(__isset_bitfield, __TOTALSENSORS_ISSET_ID);
   }
 
-  public void setTransportIsSet(boolean value) {
-    if (!value) {
-      this.transport = null;
-    }
+  public void setTotalSensorsIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __TOTALSENSORS_ISSET_ID, value);
   }
 
-  /**
-   * 
-   * @see TDirection
-   */
-  public TDirection getDirection() {
-    return this.direction;
+  public int getResponsiveSonsor() {
+    return this.responsiveSonsor;
   }
 
-  /**
-   * 
-   * @see TDirection
-   */
-  public TChannel setDirection(TDirection direction) {
-    this.direction = direction;
+  public THeartBeatResponse setResponsiveSonsor(int responsiveSonsor) {
+    this.responsiveSonsor = responsiveSonsor;
+    setResponsiveSonsorIsSet(true);
     return this;
   }
 
-  public void unsetDirection() {
-    this.direction = null;
+  public void unsetResponsiveSonsor() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RESPONSIVESONSOR_ISSET_ID);
   }
 
-  /** Returns true if field direction is set (has been assigned a value) and false otherwise */
-  public boolean isSetDirection() {
-    return this.direction != null;
+  /** Returns true if field responsiveSonsor is set (has been assigned a value) and false otherwise */
+  public boolean isSetResponsiveSonsor() {
+    return EncodingUtils.testBit(__isset_bitfield, __RESPONSIVESONSOR_ISSET_ID);
   }
 
-  public void setDirectionIsSet(boolean value) {
-    if (!value) {
-      this.direction = null;
-    }
+  public void setResponsiveSonsorIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RESPONSIVESONSOR_ISSET_ID, value);
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case TRANSPORT:
+    case TOTAL_SENSORS:
       if (value == null) {
-        unsetTransport();
+        unsetTotalSensors();
       } else {
-        setTransport((String)value);
+        setTotalSensors((Integer)value);
       }
       break;
 
-    case DIRECTION:
+    case RESPONSIVE_SONSOR:
       if (value == null) {
-        unsetDirection();
+        unsetResponsiveSonsor();
       } else {
-        setDirection((TDirection)value);
+        setResponsiveSonsor((Integer)value);
       }
       break;
 
@@ -255,11 +241,11 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case TRANSPORT:
-      return getTransport();
+    case TOTAL_SENSORS:
+      return Integer.valueOf(getTotalSensors());
 
-    case DIRECTION:
-      return getDirection();
+    case RESPONSIVE_SONSOR:
+      return Integer.valueOf(getResponsiveSonsor());
 
     }
     throw new IllegalStateException();
@@ -272,10 +258,10 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case TRANSPORT:
-      return isSetTransport();
-    case DIRECTION:
-      return isSetDirection();
+    case TOTAL_SENSORS:
+      return isSetTotalSensors();
+    case RESPONSIVE_SONSOR:
+      return isSetResponsiveSonsor();
     }
     throw new IllegalStateException();
   }
@@ -284,30 +270,30 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TChannel)
-      return this.equals((TChannel)that);
+    if (that instanceof THeartBeatResponse)
+      return this.equals((THeartBeatResponse)that);
     return false;
   }
 
-  public boolean equals(TChannel that) {
+  public boolean equals(THeartBeatResponse that) {
     if (that == null)
       return false;
 
-    boolean this_present_transport = true && this.isSetTransport();
-    boolean that_present_transport = true && that.isSetTransport();
-    if (this_present_transport || that_present_transport) {
-      if (!(this_present_transport && that_present_transport))
+    boolean this_present_totalSensors = true;
+    boolean that_present_totalSensors = true;
+    if (this_present_totalSensors || that_present_totalSensors) {
+      if (!(this_present_totalSensors && that_present_totalSensors))
         return false;
-      if (!this.transport.equals(that.transport))
+      if (this.totalSensors != that.totalSensors)
         return false;
     }
 
-    boolean this_present_direction = true && this.isSetDirection();
-    boolean that_present_direction = true && that.isSetDirection();
-    if (this_present_direction || that_present_direction) {
-      if (!(this_present_direction && that_present_direction))
+    boolean this_present_responsiveSonsor = true;
+    boolean that_present_responsiveSonsor = true;
+    if (this_present_responsiveSonsor || that_present_responsiveSonsor) {
+      if (!(this_present_responsiveSonsor && that_present_responsiveSonsor))
         return false;
-      if (!this.direction.equals(that.direction))
+      if (this.responsiveSonsor != that.responsiveSonsor)
         return false;
     }
 
@@ -320,29 +306,29 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TChannel other) {
+  public int compareTo(THeartBeatResponse other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetTransport()).compareTo(other.isSetTransport());
+    lastComparison = Boolean.valueOf(isSetTotalSensors()).compareTo(other.isSetTotalSensors());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTransport()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.transport, other.transport);
+    if (isSetTotalSensors()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.totalSensors, other.totalSensors);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDirection()).compareTo(other.isSetDirection());
+    lastComparison = Boolean.valueOf(isSetResponsiveSonsor()).compareTo(other.isSetResponsiveSonsor());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDirection()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.direction, other.direction);
+    if (isSetResponsiveSonsor()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.responsiveSonsor, other.responsiveSonsor);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -364,23 +350,15 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TChannel(");
+    StringBuilder sb = new StringBuilder("THeartBeatResponse(");
     boolean first = true;
 
-    sb.append("transport:");
-    if (this.transport == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.transport);
-    }
+    sb.append("totalSensors:");
+    sb.append(this.totalSensors);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("direction:");
-    if (this.direction == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.direction);
-    }
+    sb.append("responsiveSonsor:");
+    sb.append(this.responsiveSonsor);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -401,21 +379,23 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
     }
   }
 
-  private static class TChannelStandardSchemeFactory implements SchemeFactory {
-    public TChannelStandardScheme getScheme() {
-      return new TChannelStandardScheme();
+  private static class THeartBeatResponseStandardSchemeFactory implements SchemeFactory {
+    public THeartBeatResponseStandardScheme getScheme() {
+      return new THeartBeatResponseStandardScheme();
     }
   }
 
-  private static class TChannelStandardScheme extends StandardScheme<TChannel> {
+  private static class THeartBeatResponseStandardScheme extends StandardScheme<THeartBeatResponse> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TChannel struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, THeartBeatResponse struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -425,18 +405,18 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // TRANSPORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.transport = iprot.readString();
-              struct.setTransportIsSet(true);
+          case 1: // TOTAL_SENSORS
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.totalSensors = iprot.readI32();
+              struct.setTotalSensorsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // DIRECTION
+          case 2: // RESPONSIVE_SONSOR
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.direction = TDirection.findByValue(iprot.readI32());
-              struct.setDirectionIsSet(true);
+              struct.responsiveSonsor = iprot.readI32();
+              struct.setResponsiveSonsorIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -452,64 +432,60 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TChannel struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, THeartBeatResponse struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.transport != null) {
-        oprot.writeFieldBegin(TRANSPORT_FIELD_DESC);
-        oprot.writeString(struct.transport);
-        oprot.writeFieldEnd();
-      }
-      if (struct.direction != null) {
-        oprot.writeFieldBegin(DIRECTION_FIELD_DESC);
-        oprot.writeI32(struct.direction.getValue());
-        oprot.writeFieldEnd();
-      }
+      oprot.writeFieldBegin(TOTAL_SENSORS_FIELD_DESC);
+      oprot.writeI32(struct.totalSensors);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(RESPONSIVE_SONSOR_FIELD_DESC);
+      oprot.writeI32(struct.responsiveSonsor);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
 
   }
 
-  private static class TChannelTupleSchemeFactory implements SchemeFactory {
-    public TChannelTupleScheme getScheme() {
-      return new TChannelTupleScheme();
+  private static class THeartBeatResponseTupleSchemeFactory implements SchemeFactory {
+    public THeartBeatResponseTupleScheme getScheme() {
+      return new THeartBeatResponseTupleScheme();
     }
   }
 
-  private static class TChannelTupleScheme extends TupleScheme<TChannel> {
+  private static class THeartBeatResponseTupleScheme extends TupleScheme<THeartBeatResponse> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, THeartBeatResponse struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetTransport()) {
+      if (struct.isSetTotalSensors()) {
         optionals.set(0);
       }
-      if (struct.isSetDirection()) {
+      if (struct.isSetResponsiveSonsor()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
-      if (struct.isSetTransport()) {
-        oprot.writeString(struct.transport);
+      if (struct.isSetTotalSensors()) {
+        oprot.writeI32(struct.totalSensors);
       }
-      if (struct.isSetDirection()) {
-        oprot.writeI32(struct.direction.getValue());
+      if (struct.isSetResponsiveSonsor()) {
+        oprot.writeI32(struct.responsiveSonsor);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, THeartBeatResponse struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.transport = iprot.readString();
-        struct.setTransportIsSet(true);
+        struct.totalSensors = iprot.readI32();
+        struct.setTotalSensorsIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.direction = TDirection.findByValue(iprot.readI32());
-        struct.setDirectionIsSet(true);
+        struct.responsiveSonsor = iprot.readI32();
+        struct.setResponsiveSonsorIsSet(true);
       }
     }
   }

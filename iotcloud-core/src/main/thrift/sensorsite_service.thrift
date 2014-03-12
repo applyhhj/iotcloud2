@@ -1,7 +1,7 @@
 namespace java cgl.iotcloud.core.sensorsite.thrift
 
-include sensor.thrift
+include "sensor.thrift"
 
 service TSensorSiteService {
-    THeartBeatResponse hearbeat(1:THeartBeatRequest heartBeat)
+    sensor.THeartBeatResponse hearbeat(1:sensor.THeartBeatRequest heartBeat)
 }

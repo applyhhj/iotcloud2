@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package cgl.iotcloud.core.master.thrift;
+package cgl.iotcloud.core.api.thrift;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -46,33 +46,33 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TResponse implements org.apache.thrift.TBase<TResponse, TResponse._Fields>, java.io.Serializable, Cloneable, Comparable<TResponse> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TResponse");
+@SuppressWarnings("all") public class TSiteDetailsResponse implements org.apache.thrift.TBase<TSiteDetailsResponse, TSiteDetailsResponse._Fields>, java.io.Serializable, Cloneable, Comparable<TSiteDetailsResponse> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSiteDetailsResponse");
 
-  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField STATUS_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("statusMessage", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField DETAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("details", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TResponseStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TResponseTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TSiteDetailsResponseStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TSiteDetailsResponseTupleSchemeFactory());
   }
 
+  public TSiteDetails details; // optional
   /**
    * 
-   * @see ResponseState
+   * @see TResponseState
    */
-  public ResponseState state; // required
-  public String statusMessage; // required
+  public TResponseState state; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    DETAILS((short)1, "details"),
     /**
      * 
-     * @see ResponseState
+     * @see TResponseState
      */
-    STATE((short)1, "state"),
-    STATUS_MESSAGE((short)2, "statusMessage");
+    STATE((short)2, "state");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -87,10 +87,10 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // STATE
+        case 1: // DETAILS
+          return DETAILS;
+        case 2: // STATE
           return STATE;
-        case 2: // STATUS_MESSAGE
-          return STATUS_MESSAGE;
         default:
           return null;
       }
@@ -131,64 +131,87 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
+  private _Fields optionals[] = {_Fields.DETAILS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResponseState.class)));
-    tmpMap.put(_Fields.STATUS_MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("statusMessage", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DETAILS, new org.apache.thrift.meta_data.FieldMetaData("details", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TSiteDetails.class)));
+    tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, TResponseState.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TResponse.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSiteDetailsResponse.class, metaDataMap);
   }
 
-  public TResponse() {
+  public TSiteDetailsResponse() {
   }
 
-  public TResponse(
-    ResponseState state,
-    String statusMessage)
+  public TSiteDetailsResponse(
+    TResponseState state)
   {
     this();
     this.state = state;
-    this.statusMessage = statusMessage;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TResponse(TResponse other) {
+  public TSiteDetailsResponse(TSiteDetailsResponse other) {
+    if (other.isSetDetails()) {
+      this.details = new TSiteDetails(other.details);
+    }
     if (other.isSetState()) {
       this.state = other.state;
     }
-    if (other.isSetStatusMessage()) {
-      this.statusMessage = other.statusMessage;
-    }
   }
 
-  public TResponse deepCopy() {
-    return new TResponse(this);
+  public TSiteDetailsResponse deepCopy() {
+    return new TSiteDetailsResponse(this);
   }
 
   @Override
   public void clear() {
+    this.details = null;
     this.state = null;
-    this.statusMessage = null;
+  }
+
+  public TSiteDetails getDetails() {
+    return this.details;
+  }
+
+  public TSiteDetailsResponse setDetails(TSiteDetails details) {
+    this.details = details;
+    return this;
+  }
+
+  public void unsetDetails() {
+    this.details = null;
+  }
+
+  /** Returns true if field details is set (has been assigned a value) and false otherwise */
+  public boolean isSetDetails() {
+    return this.details != null;
+  }
+
+  public void setDetailsIsSet(boolean value) {
+    if (!value) {
+      this.details = null;
+    }
   }
 
   /**
    * 
-   * @see ResponseState
+   * @see TResponseState
    */
-  public ResponseState getState() {
+  public TResponseState getState() {
     return this.state;
   }
 
   /**
    * 
-   * @see ResponseState
+   * @see TResponseState
    */
-  public TResponse setState(ResponseState state) {
+  public TSiteDetailsResponse setState(TResponseState state) {
     this.state = state;
     return this;
   }
@@ -208,45 +231,21 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getStatusMessage() {
-    return this.statusMessage;
-  }
-
-  public TResponse setStatusMessage(String statusMessage) {
-    this.statusMessage = statusMessage;
-    return this;
-  }
-
-  public void unsetStatusMessage() {
-    this.statusMessage = null;
-  }
-
-  /** Returns true if field statusMessage is set (has been assigned a value) and false otherwise */
-  public boolean isSetStatusMessage() {
-    return this.statusMessage != null;
-  }
-
-  public void setStatusMessageIsSet(boolean value) {
-    if (!value) {
-      this.statusMessage = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case DETAILS:
+      if (value == null) {
+        unsetDetails();
+      } else {
+        setDetails((TSiteDetails)value);
+      }
+      break;
+
     case STATE:
       if (value == null) {
         unsetState();
       } else {
-        setState((ResponseState)value);
-      }
-      break;
-
-    case STATUS_MESSAGE:
-      if (value == null) {
-        unsetStatusMessage();
-      } else {
-        setStatusMessage((String)value);
+        setState((TResponseState)value);
       }
       break;
 
@@ -255,11 +254,11 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case DETAILS:
+      return getDetails();
+
     case STATE:
       return getState();
-
-    case STATUS_MESSAGE:
-      return getStatusMessage();
 
     }
     throw new IllegalStateException();
@@ -272,10 +271,10 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
+    case DETAILS:
+      return isSetDetails();
     case STATE:
       return isSetState();
-    case STATUS_MESSAGE:
-      return isSetStatusMessage();
     }
     throw new IllegalStateException();
   }
@@ -284,14 +283,23 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TResponse)
-      return this.equals((TResponse)that);
+    if (that instanceof TSiteDetailsResponse)
+      return this.equals((TSiteDetailsResponse)that);
     return false;
   }
 
-  public boolean equals(TResponse that) {
+  public boolean equals(TSiteDetailsResponse that) {
     if (that == null)
       return false;
+
+    boolean this_present_details = true && this.isSetDetails();
+    boolean that_present_details = true && that.isSetDetails();
+    if (this_present_details || that_present_details) {
+      if (!(this_present_details && that_present_details))
+        return false;
+      if (!this.details.equals(that.details))
+        return false;
+    }
 
     boolean this_present_state = true && this.isSetState();
     boolean that_present_state = true && that.isSetState();
@@ -299,15 +307,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_state && that_present_state))
         return false;
       if (!this.state.equals(that.state))
-        return false;
-    }
-
-    boolean this_present_statusMessage = true && this.isSetStatusMessage();
-    boolean that_present_statusMessage = true && that.isSetStatusMessage();
-    if (this_present_statusMessage || that_present_statusMessage) {
-      if (!(this_present_statusMessage && that_present_statusMessage))
-        return false;
-      if (!this.statusMessage.equals(that.statusMessage))
         return false;
     }
 
@@ -320,29 +319,29 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TResponse other) {
+  public int compareTo(TSiteDetailsResponse other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetDetails()).compareTo(other.isSetDetails());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDetails()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.details, other.details);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetState()).compareTo(other.isSetState());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetState()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.state, other.state);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetStatusMessage()).compareTo(other.isSetStatusMessage());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetStatusMessage()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusMessage, other.statusMessage);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -364,22 +363,24 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TResponse(");
+    StringBuilder sb = new StringBuilder("TSiteDetailsResponse(");
     boolean first = true;
 
+    if (isSetDetails()) {
+      sb.append("details:");
+      if (this.details == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.details);
+      }
+      first = false;
+    }
+    if (!first) sb.append(", ");
     sb.append("state:");
     if (this.state == null) {
       sb.append("null");
     } else {
       sb.append(this.state);
-    }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("statusMessage:");
-    if (this.statusMessage == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.statusMessage);
     }
     first = false;
     sb.append(")");
@@ -388,7 +389,13 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (state == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'state' was not present! Struct: " + toString());
+    }
     // check for sub-struct validity
+    if (details != null) {
+      details.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -407,15 +414,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TResponseStandardSchemeFactory implements SchemeFactory {
-    public TResponseStandardScheme getScheme() {
-      return new TResponseStandardScheme();
+  private static class TSiteDetailsResponseStandardSchemeFactory implements SchemeFactory {
+    public TSiteDetailsResponseStandardScheme getScheme() {
+      return new TSiteDetailsResponseStandardScheme();
     }
   }
 
-  private static class TResponseStandardScheme extends StandardScheme<TResponse> {
+  private static class TSiteDetailsResponseStandardScheme extends StandardScheme<TSiteDetailsResponse> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TSiteDetailsResponse struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -425,18 +432,19 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // STATE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.state = ResponseState.findByValue(iprot.readI32());
-              struct.setStateIsSet(true);
+          case 1: // DETAILS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.details = new TSiteDetails();
+              struct.details.read(iprot);
+              struct.setDetailsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // STATUS_MESSAGE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.statusMessage = iprot.readString();
-              struct.setStatusMessageIsSet(true);
+          case 2: // STATE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.state = TResponseState.findByValue(iprot.readI32());
+              struct.setStateIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -452,18 +460,20 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TSiteDetailsResponse struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.details != null) {
+        if (struct.isSetDetails()) {
+          oprot.writeFieldBegin(DETAILS_FIELD_DESC);
+          struct.details.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.state != null) {
         oprot.writeFieldBegin(STATE_FIELD_DESC);
         oprot.writeI32(struct.state.getValue());
-        oprot.writeFieldEnd();
-      }
-      if (struct.statusMessage != null) {
-        oprot.writeFieldBegin(STATUS_MESSAGE_FIELD_DESC);
-        oprot.writeString(struct.statusMessage);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -472,44 +482,38 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TResponseTupleSchemeFactory implements SchemeFactory {
-    public TResponseTupleScheme getScheme() {
-      return new TResponseTupleScheme();
+  private static class TSiteDetailsResponseTupleSchemeFactory implements SchemeFactory {
+    public TSiteDetailsResponseTupleScheme getScheme() {
+      return new TSiteDetailsResponseTupleScheme();
     }
   }
 
-  private static class TResponseTupleScheme extends TupleScheme<TResponse> {
+  private static class TSiteDetailsResponseTupleScheme extends TupleScheme<TSiteDetailsResponse> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TResponse struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TSiteDetailsResponse struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeI32(struct.state.getValue());
       BitSet optionals = new BitSet();
-      if (struct.isSetState()) {
+      if (struct.isSetDetails()) {
         optionals.set(0);
       }
-      if (struct.isSetStatusMessage()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetState()) {
-        oprot.writeI32(struct.state.getValue());
-      }
-      if (struct.isSetStatusMessage()) {
-        oprot.writeString(struct.statusMessage);
+      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetDetails()) {
+        struct.details.write(oprot);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TResponse struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TSiteDetailsResponse struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      struct.state = TResponseState.findByValue(iprot.readI32());
+      struct.setStateIsSet(true);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.state = ResponseState.findByValue(iprot.readI32());
-        struct.setStateIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.statusMessage = iprot.readString();
-        struct.setStatusMessageIsSet(true);
+        struct.details = new TSiteDetails();
+        struct.details.read(iprot);
+        struct.setDetailsIsSet(true);
       }
     }
   }

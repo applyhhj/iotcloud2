@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package cgl.iotcloud.core.master.thrift;
+package cgl.iotcloud.core.api.thrift;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -46,25 +46,25 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TSensorId implements org.apache.thrift.TBase<TSensorId, TSensorId._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorId> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorId");
+@SuppressWarnings("all") public class TSensorDetails implements org.apache.thrift.TBase<TSensorDetails, TSensorDetails._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorDetails> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorDetails");
 
-  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField GROUP_FIELD_DESC = new org.apache.thrift.protocol.TField("group", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField FILENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("filename", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField CLASS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("className", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TSensorIdStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TSensorIdTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TSensorDetailsStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TSensorDetailsTupleSchemeFactory());
   }
 
-  public String name; // required
-  public String group; // required
+  public String filename; // required
+  public String className; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    NAME((short)1, "name"),
-    GROUP((short)2, "group");
+    FILENAME((short)1, "filename"),
+    CLASS_NAME((short)2, "className");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,10 +79,10 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // NAME
-          return NAME;
-        case 2: // GROUP
-          return GROUP;
+        case 1: // FILENAME
+          return FILENAME;
+        case 2: // CLASS_NAME
+          return CLASS_NAME;
         default:
           return null;
       }
@@ -126,111 +126,111 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.FILENAME, new org.apache.thrift.meta_data.FieldMetaData("filename", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GROUP, new org.apache.thrift.meta_data.FieldMetaData("group", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.CLASS_NAME, new org.apache.thrift.meta_data.FieldMetaData("className", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorId.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorDetails.class, metaDataMap);
   }
 
-  public TSensorId() {
+  public TSensorDetails() {
   }
 
-  public TSensorId(
-    String name,
-    String group)
+  public TSensorDetails(
+    String filename,
+    String className)
   {
     this();
-    this.name = name;
-    this.group = group;
+    this.filename = filename;
+    this.className = className;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TSensorId(TSensorId other) {
-    if (other.isSetName()) {
-      this.name = other.name;
+  public TSensorDetails(TSensorDetails other) {
+    if (other.isSetFilename()) {
+      this.filename = other.filename;
     }
-    if (other.isSetGroup()) {
-      this.group = other.group;
+    if (other.isSetClassName()) {
+      this.className = other.className;
     }
   }
 
-  public TSensorId deepCopy() {
-    return new TSensorId(this);
+  public TSensorDetails deepCopy() {
+    return new TSensorDetails(this);
   }
 
   @Override
   public void clear() {
-    this.name = null;
-    this.group = null;
+    this.filename = null;
+    this.className = null;
   }
 
-  public String getName() {
-    return this.name;
+  public String getFilename() {
+    return this.filename;
   }
 
-  public TSensorId setName(String name) {
-    this.name = name;
+  public TSensorDetails setFilename(String filename) {
+    this.filename = filename;
     return this;
   }
 
-  public void unsetName() {
-    this.name = null;
+  public void unsetFilename() {
+    this.filename = null;
   }
 
-  /** Returns true if field name is set (has been assigned a value) and false otherwise */
-  public boolean isSetName() {
-    return this.name != null;
+  /** Returns true if field filename is set (has been assigned a value) and false otherwise */
+  public boolean isSetFilename() {
+    return this.filename != null;
   }
 
-  public void setNameIsSet(boolean value) {
+  public void setFilenameIsSet(boolean value) {
     if (!value) {
-      this.name = null;
+      this.filename = null;
     }
   }
 
-  public String getGroup() {
-    return this.group;
+  public String getClassName() {
+    return this.className;
   }
 
-  public TSensorId setGroup(String group) {
-    this.group = group;
+  public TSensorDetails setClassName(String className) {
+    this.className = className;
     return this;
   }
 
-  public void unsetGroup() {
-    this.group = null;
+  public void unsetClassName() {
+    this.className = null;
   }
 
-  /** Returns true if field group is set (has been assigned a value) and false otherwise */
-  public boolean isSetGroup() {
-    return this.group != null;
+  /** Returns true if field className is set (has been assigned a value) and false otherwise */
+  public boolean isSetClassName() {
+    return this.className != null;
   }
 
-  public void setGroupIsSet(boolean value) {
+  public void setClassNameIsSet(boolean value) {
     if (!value) {
-      this.group = null;
+      this.className = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case NAME:
+    case FILENAME:
       if (value == null) {
-        unsetName();
+        unsetFilename();
       } else {
-        setName((String)value);
+        setFilename((String)value);
       }
       break;
 
-    case GROUP:
+    case CLASS_NAME:
       if (value == null) {
-        unsetGroup();
+        unsetClassName();
       } else {
-        setGroup((String)value);
+        setClassName((String)value);
       }
       break;
 
@@ -239,11 +239,11 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case NAME:
-      return getName();
+    case FILENAME:
+      return getFilename();
 
-    case GROUP:
-      return getGroup();
+    case CLASS_NAME:
+      return getClassName();
 
     }
     throw new IllegalStateException();
@@ -256,10 +256,10 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case NAME:
-      return isSetName();
-    case GROUP:
-      return isSetGroup();
+    case FILENAME:
+      return isSetFilename();
+    case CLASS_NAME:
+      return isSetClassName();
     }
     throw new IllegalStateException();
   }
@@ -268,30 +268,30 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TSensorId)
-      return this.equals((TSensorId)that);
+    if (that instanceof TSensorDetails)
+      return this.equals((TSensorDetails)that);
     return false;
   }
 
-  public boolean equals(TSensorId that) {
+  public boolean equals(TSensorDetails that) {
     if (that == null)
       return false;
 
-    boolean this_present_name = true && this.isSetName();
-    boolean that_present_name = true && that.isSetName();
-    if (this_present_name || that_present_name) {
-      if (!(this_present_name && that_present_name))
+    boolean this_present_filename = true && this.isSetFilename();
+    boolean that_present_filename = true && that.isSetFilename();
+    if (this_present_filename || that_present_filename) {
+      if (!(this_present_filename && that_present_filename))
         return false;
-      if (!this.name.equals(that.name))
+      if (!this.filename.equals(that.filename))
         return false;
     }
 
-    boolean this_present_group = true && this.isSetGroup();
-    boolean that_present_group = true && that.isSetGroup();
-    if (this_present_group || that_present_group) {
-      if (!(this_present_group && that_present_group))
+    boolean this_present_className = true && this.isSetClassName();
+    boolean that_present_className = true && that.isSetClassName();
+    if (this_present_className || that_present_className) {
+      if (!(this_present_className && that_present_className))
         return false;
-      if (!this.group.equals(that.group))
+      if (!this.className.equals(that.className))
         return false;
     }
 
@@ -304,29 +304,29 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TSensorId other) {
+  public int compareTo(TSensorDetails other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
+    lastComparison = Boolean.valueOf(isSetFilename()).compareTo(other.isSetFilename());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
+    if (isSetFilename()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.filename, other.filename);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetGroup()).compareTo(other.isSetGroup());
+    lastComparison = Boolean.valueOf(isSetClassName()).compareTo(other.isSetClassName());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetGroup()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.group, other.group);
+    if (isSetClassName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.className, other.className);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -348,22 +348,22 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TSensorId(");
+    StringBuilder sb = new StringBuilder("TSensorDetails(");
     boolean first = true;
 
-    sb.append("name:");
-    if (this.name == null) {
+    sb.append("filename:");
+    if (this.filename == null) {
       sb.append("null");
     } else {
-      sb.append(this.name);
+      sb.append(this.filename);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("group:");
-    if (this.group == null) {
+    sb.append("className:");
+    if (this.className == null) {
       sb.append("null");
     } else {
-      sb.append(this.group);
+      sb.append(this.className);
     }
     first = false;
     sb.append(")");
@@ -372,6 +372,12 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (filename == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'filename' was not present! Struct: " + toString());
+    }
+    if (className == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'className' was not present! Struct: " + toString());
+    }
     // check for sub-struct validity
   }
 
@@ -391,15 +397,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TSensorIdStandardSchemeFactory implements SchemeFactory {
-    public TSensorIdStandardScheme getScheme() {
-      return new TSensorIdStandardScheme();
+  private static class TSensorDetailsStandardSchemeFactory implements SchemeFactory {
+    public TSensorDetailsStandardScheme getScheme() {
+      return new TSensorDetailsStandardScheme();
     }
   }
 
-  private static class TSensorIdStandardScheme extends StandardScheme<TSensorId> {
+  private static class TSensorDetailsStandardScheme extends StandardScheme<TSensorDetails> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorId struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorDetails struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -409,18 +415,18 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // NAME
+          case 1: // FILENAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.name = iprot.readString();
-              struct.setNameIsSet(true);
+              struct.filename = iprot.readString();
+              struct.setFilenameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // GROUP
+          case 2: // CLASS_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.group = iprot.readString();
-              struct.setGroupIsSet(true);
+              struct.className = iprot.readString();
+              struct.setClassNameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -436,18 +442,18 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorId struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorDetails struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.name != null) {
-        oprot.writeFieldBegin(NAME_FIELD_DESC);
-        oprot.writeString(struct.name);
+      if (struct.filename != null) {
+        oprot.writeFieldBegin(FILENAME_FIELD_DESC);
+        oprot.writeString(struct.filename);
         oprot.writeFieldEnd();
       }
-      if (struct.group != null) {
-        oprot.writeFieldBegin(GROUP_FIELD_DESC);
-        oprot.writeString(struct.group);
+      if (struct.className != null) {
+        oprot.writeFieldBegin(CLASS_NAME_FIELD_DESC);
+        oprot.writeString(struct.className);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -456,45 +462,28 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TSensorIdTupleSchemeFactory implements SchemeFactory {
-    public TSensorIdTupleScheme getScheme() {
-      return new TSensorIdTupleScheme();
+  private static class TSensorDetailsTupleSchemeFactory implements SchemeFactory {
+    public TSensorDetailsTupleScheme getScheme() {
+      return new TSensorDetailsTupleScheme();
     }
   }
 
-  private static class TSensorIdTupleScheme extends TupleScheme<TSensorId> {
+  private static class TSensorDetailsTupleScheme extends TupleScheme<TSensorDetails> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorId struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      BitSet optionals = new BitSet();
-      if (struct.isSetName()) {
-        optionals.set(0);
-      }
-      if (struct.isSetGroup()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetName()) {
-        oprot.writeString(struct.name);
-      }
-      if (struct.isSetGroup()) {
-        oprot.writeString(struct.group);
-      }
+      oprot.writeString(struct.filename);
+      oprot.writeString(struct.className);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorId struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
-      if (incoming.get(0)) {
-        struct.name = iprot.readString();
-        struct.setNameIsSet(true);
-      }
-      if (incoming.get(1)) {
-        struct.group = iprot.readString();
-        struct.setGroupIsSet(true);
-      }
+      struct.filename = iprot.readString();
+      struct.setFilenameIsSet(true);
+      struct.className = iprot.readString();
+      struct.setClassNameIsSet(true);
     }
   }
 

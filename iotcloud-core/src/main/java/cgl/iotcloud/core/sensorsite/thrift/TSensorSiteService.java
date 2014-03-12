@@ -50,13 +50,13 @@ import org.slf4j.LoggerFactory;
 
   public interface Iface {
 
-    public THeartBeatResponse hearbeat(THeartBeatRequest heartBeat) throws org.apache.thrift.TException;
+    public cgl.iotcloud.core.master.thrift.THeartBeatResponse hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat) throws org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void hearbeat(THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.hearbeat_call> resultHandler) throws org.apache.thrift.TException;
+    public void hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.hearbeat_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -80,20 +80,20 @@ import org.slf4j.LoggerFactory;
       super(iprot, oprot);
     }
 
-    public THeartBeatResponse hearbeat(THeartBeatRequest heartBeat) throws org.apache.thrift.TException
+    public cgl.iotcloud.core.master.thrift.THeartBeatResponse hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat) throws org.apache.thrift.TException
     {
       send_hearbeat(heartBeat);
       return recv_hearbeat();
     }
 
-    public void send_hearbeat(THeartBeatRequest heartBeat) throws org.apache.thrift.TException
+    public void send_hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat) throws org.apache.thrift.TException
     {
       hearbeat_args args = new hearbeat_args();
       args.setHeartBeat(heartBeat);
       sendBase("hearbeat", args);
     }
 
-    public THeartBeatResponse recv_hearbeat() throws org.apache.thrift.TException
+    public cgl.iotcloud.core.master.thrift.THeartBeatResponse recv_hearbeat() throws org.apache.thrift.TException
     {
       hearbeat_result result = new hearbeat_result();
       receiveBase(result, "hearbeat");
@@ -121,7 +121,7 @@ import org.slf4j.LoggerFactory;
       super(protocolFactory, clientManager, transport);
     }
 
-    public void hearbeat(THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<hearbeat_call> resultHandler) throws org.apache.thrift.TException {
+    public void hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<hearbeat_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       hearbeat_call method_call = new hearbeat_call(heartBeat, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -129,8 +129,8 @@ import org.slf4j.LoggerFactory;
     }
 
     public static class hearbeat_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private THeartBeatRequest heartBeat;
-      public hearbeat_call(THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<hearbeat_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat;
+      public hearbeat_call(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat, org.apache.thrift.async.AsyncMethodCallback<hearbeat_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.heartBeat = heartBeat;
       }
@@ -143,7 +143,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public THeartBeatResponse getResult() throws org.apache.thrift.TException {
+      public cgl.iotcloud.core.master.thrift.THeartBeatResponse getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -203,7 +203,7 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new hearbeat_argsTupleSchemeFactory());
     }
 
-    public THeartBeatRequest heartBeat; // required
+    public cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -268,7 +268,7 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.HEART_BEAT, new org.apache.thrift.meta_data.FieldMetaData("heartBeat", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, THeartBeatRequest.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.master.thrift.THeartBeatRequest.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(hearbeat_args.class, metaDataMap);
     }
@@ -277,7 +277,7 @@ import org.slf4j.LoggerFactory;
     }
 
     public hearbeat_args(
-      THeartBeatRequest heartBeat)
+      cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat)
     {
       this();
       this.heartBeat = heartBeat;
@@ -288,7 +288,7 @@ import org.slf4j.LoggerFactory;
      */
     public hearbeat_args(hearbeat_args other) {
       if (other.isSetHeartBeat()) {
-        this.heartBeat = new THeartBeatRequest(other.heartBeat);
+        this.heartBeat = new cgl.iotcloud.core.master.thrift.THeartBeatRequest(other.heartBeat);
       }
     }
 
@@ -301,11 +301,11 @@ import org.slf4j.LoggerFactory;
       this.heartBeat = null;
     }
 
-    public THeartBeatRequest getHeartBeat() {
+    public cgl.iotcloud.core.master.thrift.THeartBeatRequest getHeartBeat() {
       return this.heartBeat;
     }
 
-    public hearbeat_args setHeartBeat(THeartBeatRequest heartBeat) {
+    public hearbeat_args setHeartBeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat) {
       this.heartBeat = heartBeat;
       return this;
     }
@@ -331,7 +331,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetHeartBeat();
         } else {
-          setHeartBeat((THeartBeatRequest)value);
+          setHeartBeat((cgl.iotcloud.core.master.thrift.THeartBeatRequest)value);
         }
         break;
 
@@ -483,7 +483,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 1: // HEART_BEAT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.heartBeat = new THeartBeatRequest();
+                struct.heartBeat = new cgl.iotcloud.core.master.thrift.THeartBeatRequest();
                 struct.heartBeat.read(iprot);
                 struct.setHeartBeatIsSet(true);
               } else { 
@@ -542,7 +542,7 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.heartBeat = new THeartBeatRequest();
+          struct.heartBeat = new cgl.iotcloud.core.master.thrift.THeartBeatRequest();
           struct.heartBeat.read(iprot);
           struct.setHeartBeatIsSet(true);
         }
@@ -562,7 +562,7 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new hearbeat_resultTupleSchemeFactory());
     }
 
-    public THeartBeatResponse success; // required
+    public cgl.iotcloud.core.master.thrift.THeartBeatResponse success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -627,7 +627,7 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, THeartBeatResponse.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.master.thrift.THeartBeatResponse.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(hearbeat_result.class, metaDataMap);
     }
@@ -636,7 +636,7 @@ import org.slf4j.LoggerFactory;
     }
 
     public hearbeat_result(
-      THeartBeatResponse success)
+      cgl.iotcloud.core.master.thrift.THeartBeatResponse success)
     {
       this();
       this.success = success;
@@ -647,7 +647,7 @@ import org.slf4j.LoggerFactory;
      */
     public hearbeat_result(hearbeat_result other) {
       if (other.isSetSuccess()) {
-        this.success = new THeartBeatResponse(other.success);
+        this.success = new cgl.iotcloud.core.master.thrift.THeartBeatResponse(other.success);
       }
     }
 
@@ -660,11 +660,11 @@ import org.slf4j.LoggerFactory;
       this.success = null;
     }
 
-    public THeartBeatResponse getSuccess() {
+    public cgl.iotcloud.core.master.thrift.THeartBeatResponse getSuccess() {
       return this.success;
     }
 
-    public hearbeat_result setSuccess(THeartBeatResponse success) {
+    public hearbeat_result setSuccess(cgl.iotcloud.core.master.thrift.THeartBeatResponse success) {
       this.success = success;
       return this;
     }
@@ -690,7 +690,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((THeartBeatResponse)value);
+          setSuccess((cgl.iotcloud.core.master.thrift.THeartBeatResponse)value);
         }
         break;
 
@@ -842,7 +842,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new THeartBeatResponse();
+                struct.success = new cgl.iotcloud.core.master.thrift.THeartBeatResponse();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -901,7 +901,7 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new THeartBeatResponse();
+          struct.success = new cgl.iotcloud.core.master.thrift.THeartBeatResponse();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
