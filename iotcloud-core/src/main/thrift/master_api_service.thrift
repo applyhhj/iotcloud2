@@ -1,4 +1,4 @@
-namespace java cgl.iotcloud.core.master.thrift
+namespace java cgl.iotcloud.core.api.thrift
 
 include "sensor.thrift"
 include "api.thrift"

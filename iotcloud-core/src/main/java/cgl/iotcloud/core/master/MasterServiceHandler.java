@@ -1,7 +1,9 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.master.thrift.*;
+import cgl.iotcloud.core.api.thrift.*;
+import cgl.iotcloud.core.master.thrift.TMasterService;
+import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
 import cgl.iotcloud.core.transport.Direction;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TRegisterSiteResponse registerSite(TRegisterSiteRequest request) throws TException {
+    public TResponse registerSite(TRegisterSiteRequest request) throws TException {
         String id = request.getSiteId();
         String host = request.getHost();
         int port = request.getPort();
@@ -27,8 +29,8 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         masterContext.addSensorSite(details);
 
-        TRegisterSiteResponse registerSiteResponse = new TRegisterSiteResponse();
-        registerSiteResponse.setState(ResponseState.SUCCESS);
+        TResponse registerSiteResponse = new TResponse();
+        registerSiteResponse.setState(TResponseState.SUCCESS);
         return registerSiteResponse;
     }
 
@@ -52,9 +54,9 @@ public class MasterServiceHandler implements TMasterService.Iface {
         sensorDetails.setMetadata(sensor.getMetadata());
 
         if (masterContext.addSensor(siteId, sensorDetails)) {
-            return new TResponse(ResponseState.SUCCESS, "successfully added");
+            return new TResponse(TResponseState.SUCCESS, "successfully added");
         } else {
-            return new TResponse(ResponseState.FAILURE, "Failed to add the sensor");
+            return new TResponse(TResponseState.FAILURE, "Failed to add the sensor");
         }
     }
 
@@ -62,9 +64,9 @@ public class MasterServiceHandler implements TMasterService.Iface {
     public TResponse unRegisterSensor(String siteId, TSensorId id) throws TException {
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
         if (masterContext.removeSensor(siteId, sensorID)) {
-            return new TResponse(ResponseState.SUCCESS, "successfully added");
+            return new TResponse(TResponseState.SUCCESS, "successfully added");
         } else {
-            return new TResponse(ResponseState.FAILURE, "Failed to remove the sensor");
+            return new TResponse(TResponseState.FAILURE, "Failed to remove the sensor");
         }
     }
 
