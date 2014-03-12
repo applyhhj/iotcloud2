@@ -2,6 +2,7 @@ package cgl.iotcloud.core.transport.jms;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,10 +72,10 @@ public class JMSTransport implements Transport {
                 dest = session.createQueue(destination);
             }
 
-            if (channel.getDirection() == Channel.Direction.OUT) {
+            if (channel.getDirection() == Direction.OUT) {
                 JMSSender sender = new JMSSender(connection, session, dest, channel.getOutQueue());
                 senders.put(name, sender);
-            } else if (channel.getDirection() == Channel.Direction.IN) {
+            } else if (channel.getDirection() == Direction.IN) {
                 JMSListener listener = new JMSListener(connection, session, dest, channel.getInQueue());
                 listeners.put(name, listener);
             }

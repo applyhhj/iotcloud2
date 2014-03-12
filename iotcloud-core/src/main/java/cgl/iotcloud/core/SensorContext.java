@@ -1,6 +1,5 @@
 package cgl.iotcloud.core;
 
-import cgl.iotcloud.core.master.SensorMaster;
 import cgl.iotcloud.core.transport.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

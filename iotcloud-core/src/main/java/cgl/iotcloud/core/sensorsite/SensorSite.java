@@ -5,6 +5,7 @@ import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.master.MasterServiceHandler;
 import cgl.iotcloud.core.master.store.InMemorySensorData;
 import cgl.iotcloud.core.master.thrift.TMasterService;
+import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
@@ -67,7 +68,7 @@ public class SensorSite {
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(siteContext))).executorService(Executors.newFixedThreadPool(10)));
+                            new TSensorSiteService.Processor <SensorSiteService>(new SensorSiteService(siteContext))).executorService(Executors.newFixedThreadPool(10)));
             server.serve();
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";

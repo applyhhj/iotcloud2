@@ -6,6 +6,7 @@ import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.IdentityConverter;
 
 import javax.jms.Message;
@@ -49,7 +50,7 @@ public class JMSSensorConfigurator implements Configurator {
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, listener);
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "true");
 
-            Channel listeningChannel = new Channel<Message, Message>(Channel.Direction.IN, properties,
+            Channel listeningChannel = new Channel<Message, Message>(Direction.IN, properties,
                     new ArrayBlockingQueue<Message>(1000), new ArrayBlockingQueue<Message>(1000));
             listeningChannel.setConverter(new IdentityConverter());
 
@@ -63,7 +64,7 @@ public class JMSSensorConfigurator implements Configurator {
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, sender);
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "true");
 
-            Channel sendingChannel = new Channel<Message, Message>(Channel.Direction.IN, properties,
+            Channel sendingChannel = new Channel<Message, Message>(Direction.IN, properties,
                     new ArrayBlockingQueue<Message>(1000), new ArrayBlockingQueue<Message>(1000));
             sendingChannel.setConverter(new IdentityConverter());
 

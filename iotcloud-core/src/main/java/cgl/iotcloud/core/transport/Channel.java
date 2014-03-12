@@ -17,11 +17,6 @@ public class Channel <I, O> {
 
     private Map properties;
 
-    public enum Direction {
-        OUT,
-        IN
-    }
-
     private Direction direction;
 
     public Channel(Direction direction, Map properties,

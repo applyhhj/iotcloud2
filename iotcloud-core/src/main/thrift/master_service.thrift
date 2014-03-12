@@ -5,16 +5,19 @@ struct TSensorId {
     2:string group
 }
 
+enum TDirection {
+    IN,
+    OUT
+}
+
 struct TChannel {
-    1:string name
-    2:string type
-    3:string properties
+    1:string transport
+    2:TDirection direction
 }
 
 struct TSensor {
-    1:string name
-    2:string group
-    3:binary properties
+    1:TSensorId id
+    3:binary metadata
     4:list<TChannel> channels
 }
 
@@ -42,9 +45,9 @@ struct TResponse {
 service TMasterService {
     TRegisterSiteResponse registerSite(1:TRegisterSiteRequest request)
 
-    TResponse registerSensor(1:TSensor sensor)
-    TResponse unRegisterSensor(1:TSensorId sensor)
-    TResponse updateSensor(1:TSensor sensor)
+    TResponse registerSensor(1:string siteId, 2:TSensor sensor)
+    TResponse unRegisterSensor(1:string siteId, 2:TSensorId sensor)
+    TResponse updateSensor(1:string siteId, 2:TSensor sensor)
 }
 
 

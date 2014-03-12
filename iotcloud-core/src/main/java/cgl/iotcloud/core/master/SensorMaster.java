@@ -39,5 +39,15 @@ public class SensorMaster {
             LOG.error(msg);
             throw new RuntimeException(msg);
         }
+
+        // we wait sometime for the sensor sites to come online
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // start the thread to monitor the sites
+        // for each of the sites registered we need to start a separate task
     }
 }
