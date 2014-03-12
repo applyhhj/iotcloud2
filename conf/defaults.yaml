@@ -1,7 +1,13 @@
-iot.master.server.host: "localhost"
+iot.master.host: "localhost"
 iot.master.server.port: 12903
+iot.master.server.threads: 4
 
+iot.master.api.port: 12904
+iot.master.api.threads: 4
+
+iot.sensorsite.host: "localhost"
 iot.sensorsite.port: 12905
+iot.sensorsite.threads: 4
 
 iot.sensorsite.transports: {"jms" : {class: cgl.iotcloud.core.transport.jms.JMSTransport, properties: {
             java.naming.factory.initial: "org.apache.activemq.jndi.ActiveMQInitialContextFactory",

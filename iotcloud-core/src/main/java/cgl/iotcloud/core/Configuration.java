@@ -3,10 +3,15 @@ package cgl.iotcloud.core;
 import java.util.Map;
 
 public class Configuration {
-    public static final String IOT_MASTER_SERVER_HOST = "iot.master.server.host";
+    public static final String IOT_MASTER_SERVER_HOST = "iot.master.host";
     public static final String IOT_MASTER_SERVER_PORT = "iot.master.server.port";
-    public static final String IOT_SENSORSITE_PORT = "iot.sensorsite.port";
+    public static final String IOT_MASTER_API_PORT = "iot.master.api.port";
+    public static final String IOT_MASTER_API_THREADS = "iot.master.api.threads";
+    public static final String IOT_MASTER_SERVER_THREADS = "iot.master.server.threads";
 
+    public static final String IOT_SENSORSITE_PORT = "iot.sensorsite.port";
+    public static final String IOT_SENSORSITE_THREADS = "iot.sensorsite.threads";
+    public static final String IOT_SENSORSITE_HOST = "iot.sensorsite.host";
     // transport specific configurations
 
     // this map holds the available transports
@@ -21,7 +26,7 @@ public class Configuration {
 
     public static final String CHANNEL_JMS_IS_QUEUE = "isQueue";
 
-    public static String getMasterServerHost(Map conf) {
+    public static String getMasterHost(Map conf) {
         return (String) conf.get(IOT_MASTER_SERVER_HOST);
     }
 
@@ -29,8 +34,28 @@ public class Configuration {
         return (Integer) conf.get(IOT_MASTER_SERVER_PORT);
     }
 
+    public static int getMasterServerThreads(Map conf) {
+        return (Integer) conf.get(IOT_MASTER_SERVER_THREADS);
+    }
+
+    public static int getMasterAPIPort(Map conf) {
+        return (Integer)conf.get(IOT_MASTER_API_PORT);
+    }
+
+    public static int getMasterAPIThreads(Map conf) {
+        return (Integer)conf.get(IOT_MASTER_API_THREADS);
+    }
+
     public static int getSensorSitePort(Map conf) {
         return (Integer) conf.get(IOT_SENSORSITE_PORT);
+    }
+
+    public static String getSensorSiteHost(Map conf) {
+        return (String) conf.get(IOT_SENSORSITE_HOST);
+    }
+
+    public static int getSensorSiteThreads(Map conf) {
+        return (Integer) conf.get(IOT_SENSORSITE_THREADS);
     }
 
     public static Map getTransports(Map conf) {

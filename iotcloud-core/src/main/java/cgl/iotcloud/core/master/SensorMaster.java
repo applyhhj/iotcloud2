@@ -11,6 +11,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -26,16 +27,18 @@ public class SensorMaster {
         // configures the sensor store
         InMemorySensorData sensorStore = new InMemorySensorData();
 
-        SiteMonitor monitor = new SiteMonitor(masterContext);
-        monitor.start();
-
         // now start the server to listen for the sites
-        int port = Configuration.getMasterServerPort(conf);
+
         try {
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
+            String host = Configuration.getMasterHost(conf);
+            int port = Configuration.getMasterServerPort(conf);
+            InetSocketAddress addres = new InetSocketAddress(host, port);
+
+            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext))).executorService(Executors.newFixedThreadPool(10)));
+                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext))).executorService(
+                            Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
             server.serve();
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
@@ -43,14 +46,9 @@ public class SensorMaster {
             throw new RuntimeException(msg);
         }
 
-        // we wait sometime for the sensor sites to come online
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // start the thread to monitor the sites
         // for each of the sites registered we need to start a separate task
+        SiteMonitor monitor = new SiteMonitor(masterContext);
+        monitor.start();
     }
 }

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -62,13 +63,18 @@ public class SensorSite {
             }
         }
 
-        int port = Configuration.getSensorSitePort(conf);
         // now start the server to listen for the sites
         try {
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
+            String host = Configuration.getSensorSiteHost(conf);
+            int port = Configuration.getSensorSitePort(conf);
+            InetSocketAddress addres = new InetSocketAddress(host, port);
+
+            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TSensorSiteService.Processor <SensorSiteService>(new SensorSiteService(siteContext))).executorService(Executors.newFixedThreadPool(10)));
+                            new TSensorSiteService.Processor <SensorSiteService>(
+                                    new SensorSiteService(siteContext))).executorService(
+                            Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
             server.serve();
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
