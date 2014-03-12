@@ -26,6 +26,9 @@ public class SensorMaster {
         // configures the sensor store
         InMemorySensorData sensorStore = new InMemorySensorData();
 
+        SiteMonitor monitor = new SiteMonitor(masterContext);
+        monitor.start();
+
         // now start the server to listen for the sites
         int port = Configuration.getMasterServerPort(conf);
         try {

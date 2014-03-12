@@ -12,6 +12,10 @@ public class MasterContext {
 
     private Map<String, List<SensorDetails>> sensorDetails = new HashMap<String, List<SensorDetails>>();
 
+    private Map<String, List<SensorDetails>> offlineSites = new HashMap<String, List<SensorDetails>>();
+
+    private Map<String, SensorDetails> deactivatedSensorSiteDetails = new HashMap<String, SensorDetails>();
+
     public void addSensorSite(SensorSiteDetails sensorSite) {
         sensorSiteDetails.put(sensorSite.getId(), sensorSite);
     }
@@ -34,6 +38,12 @@ public class MasterContext {
         detailsList.add(details);
 
         return true;
+    }
+
+    public void makeSiteOffline(String site) {
+        if (!sensorDetails.containsKey(site)) {
+
+        }
     }
 
     public boolean removeSensor(String site, SensorId id) {

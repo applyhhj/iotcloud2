@@ -16,6 +16,9 @@ public class SensorSiteDetails {
     // metadata about the sensor site
     private Object metadata;
 
+    // the deactivated time
+    private long deactivatedTime;
+
     public SensorSiteDetails(String id, int port, String host) {
         this.id = id;
         this.port = port;
@@ -24,6 +27,14 @@ public class SensorSiteDetails {
 
     public void setMetadata(Object metadata) {
         this.metadata = metadata;
+    }
+
+    public void setDeactivatedTime(long deactivatedTime) {
+        this.deactivatedTime = deactivatedTime;
+    }
+
+    public long getDeactivatedTime() {
+        return deactivatedTime;
     }
 
     public String getId() {

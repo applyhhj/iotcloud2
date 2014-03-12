@@ -35,6 +35,7 @@ struct TRegisterSiteRequest {
     1:required string siteId
     2:required i32 port
     3:required string host
+    4:optional binary metadata
 }
 
 struct TResponse {
