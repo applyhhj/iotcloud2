@@ -63,7 +63,7 @@ public class SensorSite {
             }
         }
 
-        // now start the server to listen for the sites
+        // now start the server to listen for the master commands
         try {
             String host = Configuration.getSensorSiteHost(conf);
             int port = Configuration.getSensorSitePort(conf);
