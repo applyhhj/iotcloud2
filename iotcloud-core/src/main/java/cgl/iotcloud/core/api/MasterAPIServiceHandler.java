@@ -2,21 +2,28 @@ package cgl.iotcloud.core.api;
 
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
+import cgl.iotcloud.core.master.MasterSensorEvent;
 import cgl.iotcloud.core.master.SensorSiteDescriptor;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
+import cgl.iotcloud.core.sensorsite.SensorEventState;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterAPIServiceHandler.class);
 
     private MasterContext masterContext;
 
-    public MasterAPIServiceHandler(MasterContext masterContext) {
+    private BlockingQueue<MasterSensorEvent> sensorEvents;
+
+    public MasterAPIServiceHandler(MasterContext masterContext, BlockingQueue<MasterSensorEvent> sensorEvents) {
         this.masterContext = masterContext;
+        this.sensorEvents = sensorEvents;
     }
 
     @Override
@@ -46,9 +53,20 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
-    public TSensorDeployResponse deploySensor(List<String> sites, TSensorDetails sensor) throws TException {
+    public TResponse deploySensor(List<String> sites, TSensorDetails sensor) throws TException {
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(sensor.getFilename(), sensor.getClassName());
+        deployDescriptor.addDeploySites(sites);
+        masterContext.addSensorToDeploy(deployDescriptor);
 
-        return null;
+        MasterSensorEvent event = new MasterSensorEvent(SensorEventState.DEPLOY, sites);
+        try {
+            sensorEvents.put(event);
+        } catch (InterruptedException e) {
+            masterContext.removeSensorDeploy(deployDescriptor);
+            LOG.error("Failed to add the new site..");
+        }
+
+        return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override

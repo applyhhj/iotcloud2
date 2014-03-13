@@ -1,26 +1,38 @@
 package cgl.iotcloud.core.master;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
 public class HeartBeats {
-    private Timer timer;
-
     int retries = 1;
 
     private BlockingQueue<SiteEvent> eventsQueue;
 
-    public HeartBeats() {
-        timer = new Timer();
+    private Map<String, Timer> hearBeatTasks = new HashMap<String, Timer>();
+
+    public HeartBeats(BlockingQueue<SiteEvent> eventsQueue) {
+        this.eventsQueue = eventsQueue;
     }
 
     public void setRetries(int retries) {
         this.retries = retries;
     }
 
-    private void scheduleForSite(String id, String host, int port) {
-        timer.schedule(new HearBeatTask(id, host, port), 0, 500);
+    public void scheduleForSite(String id, String host, int port) {
+        HearBeatTask task = new HearBeatTask(id, host, port);
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(task, 0, 500);
+        hearBeatTasks.put(id, timer);
+    }
+
+    public void stopForSite(String id) {
+        Timer timer = hearBeatTasks.get(id);
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 
     private class HearBeatTask extends TimerTask {
@@ -49,6 +61,10 @@ public class HeartBeats {
                 status = SiteEvent.State.ACTIVE;
                 eventsQueue.add(event);
             }
+        }
+
+        public void setStatus(SiteEvent.State status) {
+            this.status = status;
         }
     }
 }

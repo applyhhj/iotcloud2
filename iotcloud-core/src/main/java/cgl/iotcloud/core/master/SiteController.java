@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.api.thrift.TMasterAPIService;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-public class SiteManager {
-    private static Logger LOG = LoggerFactory.getLogger(SiteManager.class);
+public class SiteController {
+    private static Logger LOG = LoggerFactory.getLogger(SiteController.class);
 
     private MasterContext context;
 
@@ -23,8 +24,8 @@ public class SiteManager {
 
     private Map<String, SensorSiteClient> siteClients = new HashMap<String, SensorSiteClient>();
 
-    public SiteManager(MasterContext context, BlockingQueue<SiteEvent> siteEventsQueue,
-                       BlockingQueue<MasterSensorEvent> sensorEvents) {
+    public SiteController(MasterContext context, BlockingQueue<SiteEvent> siteEventsQueue,
+                          BlockingQueue<MasterSensorEvent> sensorEvents) {
         this.context = context;
         this.siteEventsQueue = siteEventsQueue;
         this.sensorEvents = sensorEvents;
@@ -33,6 +34,8 @@ public class SiteManager {
     public void start() {
         LOG.info("Starting the site monitor on master.");
         active = true;
+
+        heartBeats = new HeartBeats(siteEventsQueue);
 
         SiteEventListener listener = new SiteEventListener();
         Thread t = new Thread(listener);
@@ -60,10 +63,13 @@ public class SiteManager {
                         if (event.getStatus() == SiteEvent.State.DEACTIVATED) {
                             // TODO we need to call a load balancer or something like that here
                             context.makeSiteOffline(event.getSiteId());
+                            // stop the timers
+                            heartBeats.stopForSite(event.getSiteId());
                         } else if (event.getStatus() == SiteEvent.State.ACTIVE) {
 
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
-                            siteAdded(event.getSiteId());
+                            SensorSiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for site changes", e);

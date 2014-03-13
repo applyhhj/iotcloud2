@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ public class MasterContext {
     private Map<String, List<SensorDetails>> deactivatedSiteSensors = new HashMap<String, List<SensorDetails>>();
 
     private Map<String, SensorSiteDescriptor> deactivatedSites = new HashMap<String, SensorSiteDescriptor>();
+
+    private List<SensorDeployDescriptor> sensorsTobeDeployed = new ArrayList<SensorDeployDescriptor>();
 
     public void addSensorSite(SensorSiteDescriptor sensorSite) {
         sites.put(sensorSite.getId(), sensorSite);
@@ -66,5 +69,13 @@ public class MasterContext {
     public void removeSite(String site) {
         siteSensors.remove(site);
         sites.remove(site);
+    }
+
+    public void addSensorToDeploy(SensorDeployDescriptor deployDescriptor) {
+        sensorsTobeDeployed.add(deployDescriptor);
+    }
+
+    public void removeSensorDeploy(SensorDeployDescriptor deployDescriptor) {
+        sensorsTobeDeployed.remove(deployDescriptor);
     }
 }

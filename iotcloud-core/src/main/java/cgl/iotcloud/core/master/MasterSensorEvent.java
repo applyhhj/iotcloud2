@@ -19,9 +19,8 @@ public class MasterSensorEvent {
         this.sensorId = sensorId;
     }
 
-    public MasterSensorEvent(SensorEventState state, SensorId sensorId, List<String> sites) {
+    public MasterSensorEvent(SensorEventState state, List<String> sites) {
         this.state = state;
-        this.sensorId = sensorId;
         this.sites = sites;
     }
 

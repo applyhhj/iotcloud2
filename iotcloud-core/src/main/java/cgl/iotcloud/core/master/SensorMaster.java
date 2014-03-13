@@ -30,7 +30,7 @@ public class SensorMaster {
         InMemorySensorData sensorStore = new InMemorySensorData();
 
         // start the thread to manager the sites
-        SiteManager manager = new SiteManager(masterContext);
+        SiteController manager = new SiteController(masterContext);
         manager.start();
 
         // now start the server to listen for the sites

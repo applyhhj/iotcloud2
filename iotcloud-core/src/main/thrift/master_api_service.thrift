@@ -8,7 +8,7 @@ service TMasterAPIService {
 
     api.TSiteDetailsResponse getSite(1:string siteId)
 
-    api.TSensorDeployResponse deploySensor(1:list<string> sites, 2:api.TSensorDetails sensor)
+    api.TResponse deploySensor(1:list<string> sites, 2:api.TSensorDetails sensor)
     api.TResponse startSensor(1:list<string> sites, 2:api.TSensorId id)
     api.TResponse stopSensor(1:list<string> sites, 2:api.TSensorId id)
 
