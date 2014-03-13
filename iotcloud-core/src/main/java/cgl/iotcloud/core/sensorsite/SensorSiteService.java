@@ -32,7 +32,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         String jarName = sensor.getFilename();
 
         SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(jarName, className);
-        SensorEvent event = new SensorEvent(deployDescriptor, SensorEvent.State.DEPLOY);
+        SensorEvent event = new SensorEvent(deployDescriptor, SensorEventState.DEPLOY);
 
         try {
             sensorEvents.put(event);
@@ -45,7 +45,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
     @Override
     public TResponse startSensor(TSensorId id) throws TException {
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorEvent.State.ACTIVATE);
+                SensorEventState.ACTIVATE);
         try {
             sensorEvents.put(event);
         } catch (InterruptedException e) {
@@ -57,7 +57,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
     @Override
     public TResponse stopSensor(TSensorId id) throws TException {
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorEvent.State.DEACTIVATE);
+                SensorEventState.DEACTIVATE);
         try {
             sensorEvents.put(event);
         } catch (InterruptedException e) {

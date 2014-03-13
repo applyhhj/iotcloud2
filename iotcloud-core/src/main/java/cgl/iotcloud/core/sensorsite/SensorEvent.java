@@ -3,29 +3,24 @@ package cgl.iotcloud.core.sensorsite;
 import cgl.iotcloud.core.SensorId;
 
 public class SensorEvent {
-    public enum State {
-        DEPLOY,
-        DEACTIVATE,
-        ACTIVATE
-    }
 
-    private State state;
+    private SensorEventState state;
 
     private SensorId sensorId;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SensorEvent(SensorId sensorId, State state) {
+    public SensorEvent(SensorId sensorId, SensorEventState state) {
         this.state = state;
         this.sensorId = sensorId;
     }
 
-    public SensorEvent(SensorDeployDescriptor deployDescriptor, State state) {
+    public SensorEvent(SensorDeployDescriptor deployDescriptor, SensorEventState state) {
         this.deployDescriptor = deployDescriptor;
         this.state = state;
     }
 
-    public State getState() {
+    public SensorEventState getState() {
         return state;
     }
 

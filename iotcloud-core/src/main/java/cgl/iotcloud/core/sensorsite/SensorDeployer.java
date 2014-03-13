@@ -41,16 +41,16 @@ public class SensorDeployer {
                 try {
                     try {
                         SensorEvent event = events.take();
-                        if (event.getState() == SensorEvent.State.DEPLOY) {
+                        if (event.getState() == SensorEventState.DEPLOY) {
                             SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
                             deploySensor(conf, siteContext, deployDescriptor);
-                        } else if (event.getState() == SensorEvent.State.ACTIVATE) {
+                        } else if (event.getState() == SensorEventState.ACTIVATE) {
                             SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
                             if (descriptor != null) {
                                 ISensor sensor = descriptor.getSensor();
                                 sensor.activate();
                             }
-                        } else if (event.getState() == SensorEvent.State.DEACTIVATE) {
+                        } else if (event.getState() == SensorEventState.DEACTIVATE) {
                             SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
                             if (descriptor != null) {
                                 ISensor sensor = descriptor.getSensor();

@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.sensorsite.SensorEvent;
+import cgl.iotcloud.core.sensorsite.SensorEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ public class SiteManager {
 
     private BlockingQueue<SiteEvent> siteEventsQueue;
 
-    private BlockingQueue<SensorEvent> sensorEvents;
+    private BlockingQueue<MasterSensorEvent> sensorEvents;
 
     private HeartBeats heartBeats;
 
@@ -33,6 +34,10 @@ public class SiteManager {
 
         SiteEventListener listener = new SiteEventListener();
         Thread t = new Thread(listener);
+        t.start();
+
+        SiteSensorEventListener sensorEventListener = new SiteSensorEventListener();
+        Thread t2 = new Thread(sensorEventListener);
         t.start();
     }
 
@@ -85,13 +90,12 @@ public class SiteManager {
             while (run && active) {
                 try {
                     try {
-                        SensorEvent event = sensorEvents.take();
+                        MasterSensorEvent event = sensorEvents.take();
+                        if (event.getState() == SensorEventState.DEACTIVATE) {
 
-                        if (event.getState() == SensorEvent.State.DEACTIVATE) {
+                        } else if (event.getState() == SensorEventState.ACTIVATE) {
 
-                        } else if (event.getState() == SensorEvent.State.ACTIVATE) {
-
-                        } else if (event.getState() == SensorEvent.State.DEPLOY) {
+                        } else if (event.getState() == SensorEventState.DEPLOY) {
 
                         }
                     } catch (InterruptedException e) {
@@ -117,7 +121,15 @@ public class SiteManager {
         }
     }
 
-    private void deploySensor() {
+    private void deploySensors(MasterSensorEvent event) {
+
+    }
+
+    private void startSensors(MasterSensorEvent event) {
+
+    }
+
+    private void stopSensors(MasterSensorEvent event) {
 
     }
 }
