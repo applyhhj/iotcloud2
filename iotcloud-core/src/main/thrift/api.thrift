@@ -40,7 +40,7 @@ struct TSiteDetails {
 
 struct TSiteDetailsResponse {
     1:optional TSiteDetails details
-    2:required TResponseState state
+    2:required TResponse state
 }
 
 struct TSensorDetails {

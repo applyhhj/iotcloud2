@@ -4,6 +4,8 @@ include "sensor.thrift"
 include "api.thrift"
 
 service TMasterAPIService {
+    list<string> getSites();
+
     api.TSiteDetailsResponse getSite(1:string siteId)
 
     api.TSensorDeployResponse deploySensor(1:list<string> sites, 2:api.TSensorDetails sensor)

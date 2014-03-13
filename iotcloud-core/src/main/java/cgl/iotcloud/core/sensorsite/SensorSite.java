@@ -17,12 +17,14 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 
 public class SensorSite {
     private static Logger LOG = LoggerFactory.getLogger(SensorSite.class);
 
-    public static void main(String[] args) {
+    public void start() {
         // read the configuration file
         Map conf = Utils.readConfig();
 
@@ -60,6 +62,11 @@ public class SensorSite {
             }
         }
 
+        BlockingQueue<SensorEvent> sensorEvents = new ArrayBlockingQueue<SensorEvent>(1024);
+
+        SensorDeployer sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
+        sensorDeployer.start();
+
         // now start the server to listen for the master commands
         try {
             String host = Configuration.getSensorSiteHost(conf);
@@ -70,7 +77,7 @@ public class SensorSite {
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
                             new TSensorSiteService.Processor <SensorSiteService>(
-                                    new SensorSiteService(siteContext))).executorService(
+                                    new SensorSiteService(siteContext, sensorEvents))).executorService(
                             Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
             server.serve();
         } catch (TTransportException e) {
@@ -78,6 +85,15 @@ public class SensorSite {
             LOG.error(msg);
             throw new RuntimeException(msg);
         }
+    }
+
+    public void stop() {
+
+    }
+
+    public static void main(String[] args) {
+        SensorSite site = new SensorSite();
+        site.start();
     }
 
     private static Transport loadTransport(Map transportConf) {

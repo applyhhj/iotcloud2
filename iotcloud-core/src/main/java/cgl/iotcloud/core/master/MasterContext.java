@@ -20,6 +20,10 @@ public class MasterContext {
         sensorSiteDetails.put(sensorSite.getId(), sensorSite);
     }
 
+    public SensorSiteDetails getSensorSite(String siteId) {
+        return sensorSiteDetails.get(siteId);
+    }
+
     public Map<String, SensorSiteDetails> getSensorSites() {
         return sensorSiteDetails;
     }

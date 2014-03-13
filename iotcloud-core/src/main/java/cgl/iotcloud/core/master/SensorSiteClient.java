@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.sensorsite.thrift.THeartBeatRequest;
+import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;

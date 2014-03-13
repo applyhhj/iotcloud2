@@ -85,6 +85,9 @@ public class SensorDeployer {
             SensorContext sensorContext = configurator.configure(siteContext);
 
             siteContext.addSensor(sensorContext, sensor);
+
+            // open the sensor
+            sensor.open(sensorContext);
         } catch (MalformedURLException e) {
             throw new RuntimeException("The jar name is not a correct url");
         }
