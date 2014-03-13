@@ -9,7 +9,7 @@ public class HeartBeats {
 
     int retries = 1;
 
-    private BlockingQueue<SiteChangeEvent> eventsQueue;
+    private BlockingQueue<SiteEvent> eventsQueue;
 
     public HeartBeats() {
         timer = new Timer();
@@ -27,7 +27,7 @@ public class HeartBeats {
         String host;
         int port;
         String id;
-        SiteStatus status = SiteStatus.ACTIVE;
+        SiteEvent.State status = SiteEvent.State.ACTIVE;
 
         private HearBeatTask(String id, String host, int port) {
             this.host = host;
@@ -39,14 +39,14 @@ public class HeartBeats {
             SensorSiteClient client = new SensorSiteClient(host, port);
 
             boolean result = client.sendHearBeat();
-            if (!result && status != SiteStatus.DEACTIVATED) {
+            if (!result && status != SiteEvent.State.DEACTIVATED) {
                 // remove the site and its sensors from the master context
-                SiteChangeEvent event = new SiteChangeEvent(id, SiteStatus.DEACTIVATED);
-                status = SiteStatus.DEACTIVATED;
+                SiteEvent event = new SiteEvent(id, SiteEvent.State.DEACTIVATED);
+                status = SiteEvent.State.DEACTIVATED;
                 eventsQueue.add(event);
-            } else if (result && status == SiteStatus.DEACTIVATED) {
-                SiteChangeEvent event = new SiteChangeEvent(id, SiteStatus.ACTIVE);
-                status = SiteStatus.ACTIVE;
+            } else if (result && status == SiteEvent.State.DEACTIVATED) {
+                SiteEvent event = new SiteEvent(id, SiteEvent.State.ACTIVE);
+                status = SiteEvent.State.ACTIVE;
                 eventsQueue.add(event);
             }
         }

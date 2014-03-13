@@ -27,8 +27,11 @@ public class SensorMaster {
         // configures the sensor store
         InMemorySensorData sensorStore = new InMemorySensorData();
 
-        // now start the server to listen for the sites
+        // start the thread to monitor the sites
+        SiteMonitor monitor = new SiteMonitor(masterContext);
+        monitor.start();
 
+        // now start the server to listen for the sites
         try {
             String host = Configuration.getMasterHost(conf);
             int port = Configuration.getMasterServerPort(conf);
@@ -40,15 +43,13 @@ public class SensorMaster {
                             new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext))).executorService(
                             Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
             server.serve();
+            LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
             LOG.error(msg);
             throw new RuntimeException(msg);
         }
 
-        // start the thread to monitor the sites
-        // for each of the sites registered we need to start a separate task
-        SiteMonitor monitor = new SiteMonitor(masterContext);
-        monitor.start();
+
     }
 }

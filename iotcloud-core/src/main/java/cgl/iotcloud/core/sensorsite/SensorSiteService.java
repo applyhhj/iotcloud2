@@ -27,6 +27,9 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
     @Override
     public TSensorDeployResponse deploySensor(TSensorDetails sensor) throws TException {
+        String className = sensor.getClassName();
+        String jarName = sensor.getFilename();
+
         return null;
     }
 

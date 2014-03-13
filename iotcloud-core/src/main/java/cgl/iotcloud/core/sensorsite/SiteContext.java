@@ -2,6 +2,7 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
+import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.transport.Transport;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class SiteContext {
 
     private Map<String, Transport> transports = new HashMap<String, Transport>();
 
-    private Map<SensorContext, ISensor> sensors = new HashMap<SensorContext, ISensor>();
+    private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
 
     public void init() {
         // at the end we are going to start the transports
@@ -26,7 +27,8 @@ public class SiteContext {
     }
 
     public void addSensor(SensorContext context, ISensor sensor) {
-        sensors.put(context, sensor);
+        SensorDescriptor details = new SensorDescriptor(context, sensor);
+        sensors.put(context.getId(), details);
     }
 
     public void addTransport(String tName, Transport t) {
@@ -37,7 +39,11 @@ public class SiteContext {
         return transports.get(tName);
     }
 
-    public List<SensorContext> getRegisteredSensors() {
-        return new ArrayList<SensorContext>(sensors.keySet());
+    public List<SensorDescriptor> getRegisteredSensors() {
+        return new ArrayList<SensorDescriptor>(sensors.values());
+    }
+
+    public SensorDescriptor getSensor(SensorId id) {
+        return sensors.get(id);
     }
 }

@@ -1,20 +1,25 @@
 package cgl.iotcloud.core.master;
 
-public class SiteChangeEvent {
-    private SiteStatus status;
+public class SiteEvent {
+    private State status;
 
     private String id;
 
-    public SiteChangeEvent(String id, SiteStatus status) {
+    public SiteEvent(String id, State status) {
         this.status = status;
         this.id = id;
     }
 
-    public SiteStatus getStatus() {
+    public State getStatus() {
         return status;
     }
 
     public String getId() {
         return id;
+    }
+
+    public static enum State {
+        ACTIVE,
+        DEACTIVATED
     }
 }

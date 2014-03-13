@@ -12,8 +12,11 @@ public class Configuration {
     public static final String IOT_SENSORSITE_PORT = "iot.sensorsite.port";
     public static final String IOT_SENSORSITE_THREADS = "iot.sensorsite.threads";
     public static final String IOT_SENSORSITE_HOST = "iot.sensorsite.host";
-    // transport specific configurations
 
+    // the maximum number of sensor sites possible
+    public static final String IOT_SENSOR_SITES_MAX = "iot.sensorsites.max";
+
+    // transport specific configurations
     // this map holds the available transports
     public static final String IOT_SENSORSITE_TRANSPORTS = "iot.sensorsite.transports";
     public static final String IOT_SENSORSITE_TRANSPORT_CLASS = "class";
@@ -72,5 +75,9 @@ public class Configuration {
 
     public static String getChannelIsQueue(Map channelConf) {
         return (String) channelConf.get(CHANNEL_JMS_IS_QUEUE);
+    }
+
+    public static int getIotSensorSitesMax(Map conf) {
+        return (Integer) conf.get(IOT_SENSOR_SITES_MAX);
     }
 }

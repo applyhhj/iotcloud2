@@ -11,7 +11,7 @@ public class SiteMonitor {
 
     private MasterContext context;
 
-    private BlockingQueue<SiteChangeEvent> siteEventsQueue;
+    private BlockingQueue<SiteEvent> siteEventsQueue;
 
     private HeartBeats heartBeats;
 
@@ -21,10 +21,11 @@ public class SiteMonitor {
         this.context = context;
 
         // maximum number of sites
-        siteEventsQueue = new ArrayBlockingQueue<SiteChangeEvent>(1024);
+        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
     }
 
     public void start() {
+        LOG.info("Starting the site monitor on master.");
         active = true;
 
         SiteEventListener listener = new SiteEventListener();
@@ -44,9 +45,9 @@ public class SiteMonitor {
             while (run && active) {
                 try {
                     try {
-                        SiteChangeEvent event = siteEventsQueue.take();
+                        SiteEvent event = siteEventsQueue.take();
 
-                        if (event.getStatus() == SiteStatus.DEACTIVATED) {
+                        if (event.getStatus() == SiteEvent.State.DEACTIVATED) {
                             // TODO we need to call a load balancer or something like that here
                             context.makeSiteOffline(event.getId());
                         }

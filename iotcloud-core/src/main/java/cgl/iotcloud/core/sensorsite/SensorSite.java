@@ -29,9 +29,6 @@ public class SensorSite {
         // create the site context
         SiteContext siteContext = new SiteContext();
 
-        // configures the sensor store
-        InMemorySensorData sensorStore = new InMemorySensorData();
-
         // read the available transports and register them
         Map transports = Configuration.getTransports(conf);
         if (transports == null) {
