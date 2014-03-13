@@ -74,6 +74,4 @@ public class MasterServiceHandler implements TMasterService.Iface {
     public TResponse updateSensor(String siteId, TSensor sensor) throws TException {
         return null;
     }
-
-
 }

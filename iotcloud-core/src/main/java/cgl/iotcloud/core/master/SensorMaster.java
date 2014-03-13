@@ -29,9 +29,9 @@ public class SensorMaster {
         // configures the sensor store
         InMemorySensorData sensorStore = new InMemorySensorData();
 
-        // start the thread to monitor the sites
-        SiteMonitor monitor = new SiteMonitor(masterContext);
-        monitor.start();
+        // start the thread to manager the sites
+        SiteManager manager = new SiteManager(masterContext);
+        manager.start();
 
         // now start the server to listen for the sites
         try {
