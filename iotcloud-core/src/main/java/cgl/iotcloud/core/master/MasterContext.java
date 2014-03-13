@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MasterContext {
-    private Map<String, SensorSiteDetails> sensorSiteDetails = new HashMap<String, SensorSiteDetails>();
+    private Map<String, SensorSiteDescriptor> sensorSiteDetails = new HashMap<String, SensorSiteDescriptor>();
 
     private Map<String, List<SensorDetails>> sensorDetails = new HashMap<String, List<SensorDetails>>();
 
@@ -16,15 +16,15 @@ public class MasterContext {
 
     private Map<String, SensorDetails> deactivatedSensorSiteDetails = new HashMap<String, SensorDetails>();
 
-    public void addSensorSite(SensorSiteDetails sensorSite) {
+    public void addSensorSite(SensorSiteDescriptor sensorSite) {
         sensorSiteDetails.put(sensorSite.getId(), sensorSite);
     }
 
-    public SensorSiteDetails getSensorSite(String siteId) {
+    public SensorSiteDescriptor getSensorSite(String siteId) {
         return sensorSiteDetails.get(siteId);
     }
 
-    public Map<String, SensorSiteDetails> getSensorSites() {
+    public Map<String, SensorSiteDescriptor> getSensorSites() {
         return sensorSiteDetails;
     }
 

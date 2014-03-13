@@ -8,7 +8,7 @@ public class SensorDescriptor {
 
     private ISensor sensor;
 
-    private SensorDeployDetails deployDetails;
+    private SensorDeployDescriptor deployDescriptor;
 
     public SensorDescriptor(SensorContext sensorContext, ISensor sensor) {
         this.sensorContext = sensorContext;
@@ -23,8 +23,8 @@ public class SensorDescriptor {
         this.sensor = sensor;
     }
 
-    public void setDeployDetails(SensorDeployDetails deployDetails) {
-        this.deployDetails = deployDetails;
+    public void setDeployDescriptor(SensorDeployDescriptor deployDescriptor) {
+        this.deployDescriptor = deployDescriptor;
     }
 
     public SensorContext getSensorContext() {
@@ -35,7 +35,7 @@ public class SensorDescriptor {
         return sensor;
     }
 
-    public SensorDeployDetails getDeployDetails() {
-        return deployDetails;
+    public SensorDeployDescriptor getDeployDescriptor() {
+        return deployDescriptor;
     }
 }

@@ -2,7 +2,7 @@ package cgl.iotcloud.core.api;
 
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
-import cgl.iotcloud.core.master.SensorSiteDetails;
+import cgl.iotcloud.core.master.SensorSiteDescriptor;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +26,10 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     @Override
     public TSiteDetailsResponse getSite(String siteId) throws TException {
-        SensorSiteDetails details = masterContext.getSensorSite(siteId);
+        SensorSiteDescriptor descriptor = masterContext.getSensorSite(siteId);
 
-        if (details != null) {
-            TSiteDetails siteDetails = new TSiteDetails(siteId, details.getPort(), details.getHost());
+        if (descriptor != null) {
+            TSiteDetails siteDetails = new TSiteDetails(siteId, descriptor.getPort(), descriptor.getHost());
             // siteDetails.setMetadata(details.getMetadata());
             TSiteDetailsResponse response = new TSiteDetailsResponse();
             response.setDetails(siteDetails);

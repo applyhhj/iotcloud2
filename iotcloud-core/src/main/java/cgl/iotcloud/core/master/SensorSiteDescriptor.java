@@ -3,7 +3,7 @@ package cgl.iotcloud.core.master;
 /**
  * Captures the details about a registered sensor site
  */
-public class SensorSiteDetails {
+public class SensorSiteDescriptor {
     // a unique string identifying the sensor site
     private String id;
 
@@ -19,7 +19,7 @@ public class SensorSiteDetails {
     // the deactivated time
     private long deactivatedTime;
 
-    public SensorSiteDetails(String id, int port, String host) {
+    public SensorSiteDescriptor(String id, int port, String host) {
         this.id = id;
         this.port = port;
         this.host = host;

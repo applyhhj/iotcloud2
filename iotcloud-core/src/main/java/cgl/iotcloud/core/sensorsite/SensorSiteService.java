@@ -31,8 +31,8 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         String className = sensor.getClassName();
         String jarName = sensor.getFilename();
 
-        SensorDeployDetails deployDetails = new SensorDeployDetails(jarName, className);
-        SensorEvent event = new SensorEvent(deployDetails, SensorEvent.State.DEPLOY);
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(jarName, className);
+        SensorEvent event = new SensorEvent(deployDescriptor, SensorEvent.State.DEPLOY);
 
         try {
             sensorEvents.put(event);

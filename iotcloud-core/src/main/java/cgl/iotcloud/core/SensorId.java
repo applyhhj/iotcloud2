@@ -36,4 +36,12 @@ public class SensorId {
         result = 31 * result + group.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "SensorId{" +
+                "name='" + name + '\'' +
+                ", group='" + group + '\'' +
+                '}';
+    }
 }

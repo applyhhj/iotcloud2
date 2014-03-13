@@ -13,15 +13,15 @@ public class SensorEvent {
 
     private SensorId sensorId;
 
-    private SensorDeployDetails deployDetails;
+    private SensorDeployDescriptor deployDescriptor;
 
     public SensorEvent(SensorId sensorId, State state) {
         this.state = state;
         this.sensorId = sensorId;
     }
 
-    public SensorEvent(SensorDeployDetails deployDetails, State state) {
-        this.deployDetails = deployDetails;
+    public SensorEvent(SensorDeployDescriptor deployDescriptor, State state) {
+        this.deployDescriptor = deployDescriptor;
         this.state = state;
     }
 
@@ -33,7 +33,7 @@ public class SensorEvent {
         return sensorId;
     }
 
-    public SensorDeployDetails getDeployDetails() {
-        return deployDetails;
+    public SensorDeployDescriptor getDeployDescriptor() {
+        return deployDescriptor;
     }
 }

@@ -24,10 +24,10 @@ public class MasterServiceHandler implements TMasterService.Iface {
         String host = request.getHost();
         int port = request.getPort();
 
-        SensorSiteDetails details = new SensorSiteDetails(id, port, host);
-        details.setMetadata(request.getMetadata());
+        SensorSiteDescriptor descriptor = new SensorSiteDescriptor(id, port, host);
+        descriptor.setMetadata(request.getMetadata());
 
-        masterContext.addSensorSite(details);
+        masterContext.addSensorSite(descriptor);
 
         TResponse registerSiteResponse = new TResponse();
         registerSiteResponse.setState(TResponseState.SUCCESS);

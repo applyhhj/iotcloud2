@@ -42,8 +42,8 @@ public class SensorDeployer {
                     try {
                         SensorEvent event = events.take();
                         if (event.getState() == SensorEvent.State.DEPLOY) {
-                            SensorDeployDetails deployDetails = event.getDeployDetails();
-                            deploySensor(conf, siteContext, deployDetails);
+                            SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
+                            deploySensor(conf, siteContext, deployDescriptor);
                         } else if (event.getState() == SensorEvent.State.ACTIVATE) {
                             SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
                             if (descriptor != null) {
@@ -76,10 +76,10 @@ public class SensorDeployer {
         }
     }
 
-    public void deploySensor(Map conf, SiteContext siteContext, SensorDeployDetails deployDetails) {
+    public void deploySensor(Map conf, SiteContext siteContext, SensorDeployDescriptor deployDescriptor) {
         try {
-            ISensor sensor = Utils.loadSensor(new URL(deployDetails.getJarName()),
-                    deployDetails.getClassName(), this.getClass().getClassLoader());
+            ISensor sensor = Utils.loadSensor(new URL(deployDescriptor.getJarName()),
+                    deployDescriptor.getClassName(), this.getClass().getClassLoader());
 
             Configurator configurator = sensor.getConfigurator(conf);
             SensorContext sensorContext = configurator.configure(siteContext);
