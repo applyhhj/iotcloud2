@@ -3,23 +3,24 @@ package cgl.iotcloud.core.master;
 public class SiteEvent {
     private State status;
 
-    private String id;
+    private String siteId;
 
-    public SiteEvent(String id, State status) {
+    public SiteEvent(String siteId, State status) {
         this.status = status;
-        this.id = id;
+        this.siteId = siteId;
     }
 
     public State getStatus() {
         return status;
     }
 
-    public String getId() {
-        return id;
+    public String getSiteId() {
+        return siteId;
     }
 
     public static enum State {
         ACTIVE,
-        DEACTIVATED
+        DEACTIVATED,
+        ADDED
     }
 }

@@ -1,11 +1,11 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.sensorsite.SensorEvent;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class SiteManager {
@@ -21,11 +21,13 @@ public class SiteManager {
 
     private boolean active = false;
 
-    public SiteManager(MasterContext context) {
-        this.context = context;
+    private Map<String, SensorSiteClient> siteClients = new HashMap<String, SensorSiteClient>();
 
-        // maximum number of sites
-        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
+    public SiteManager(MasterContext context, BlockingQueue<SiteEvent> siteEventsQueue,
+                       BlockingQueue<MasterSensorEvent> sensorEvents) {
+        this.context = context;
+        this.siteEventsQueue = siteEventsQueue;
+        this.sensorEvents = sensorEvents;
     }
 
     public void start() {
@@ -38,7 +40,7 @@ public class SiteManager {
 
         SiteSensorEventListener sensorEventListener = new SiteSensorEventListener();
         Thread t2 = new Thread(sensorEventListener);
-        t.start();
+        t2.start();
     }
 
     public void stop() {
@@ -57,7 +59,11 @@ public class SiteManager {
 
                         if (event.getStatus() == SiteEvent.State.DEACTIVATED) {
                             // TODO we need to call a load balancer or something like that here
-                            context.makeSiteOffline(event.getId());
+                            context.makeSiteOffline(event.getSiteId());
+                        } else if (event.getStatus() == SiteEvent.State.ACTIVE) {
+
+                        } else if (event.getStatus() == SiteEvent.State.ADDED) {
+                            siteAdded(event.getSiteId());
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for site changes", e);
@@ -82,6 +88,13 @@ public class SiteManager {
         }
     }
 
+    private void siteAdded(String siteId) {
+        SensorSiteDescriptor descriptor = context.getSensorSite(siteId);
+
+        SensorSiteClient client = new SensorSiteClient(descriptor.getHost(), descriptor.getPort());
+        siteClients.put(siteId, client);
+    }
+
     private class SiteSensorEventListener implements Runnable {
         @Override
         public void run() {
@@ -92,11 +105,15 @@ public class SiteManager {
                     try {
                         MasterSensorEvent event = sensorEvents.take();
                         if (event.getState() == SensorEventState.DEACTIVATE) {
-
+                            stopSensors(event);
                         } else if (event.getState() == SensorEventState.ACTIVATE) {
-
+                            startSensors(event);
                         } else if (event.getState() == SensorEventState.DEPLOY) {
-
+                            deploySensors(event);
+                        } else if (event.getState() == SensorEventState.ADD) {
+                            addSensors(event);
+                        } else if (event.getState() == SensorEventState.REMOVE) {
+                            addSensors(event);
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for site changes", e);
@@ -119,6 +136,10 @@ public class SiteManager {
                 LOG.info("Stopping the site monitor...");
             }
         }
+    }
+
+    private void addSensors(MasterSensorEvent event) {
+
     }
 
     private void deploySensors(MasterSensorEvent event) {

@@ -16,7 +16,7 @@ public class SiteContext {
 
     private Map<String, Transport> transports = new HashMap<String, Transport>();
 
-    private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
+    private Map<SensorId, SiteSensorDescriptor> sensors = new HashMap<SensorId, SiteSensorDescriptor>();
 
     public void init() {
         // at the end we are going to start the transports
@@ -27,7 +27,7 @@ public class SiteContext {
     }
 
     public void addSensor(SensorContext context, ISensor sensor) {
-        SensorDescriptor details = new SensorDescriptor(context, sensor);
+        SiteSensorDescriptor details = new SiteSensorDescriptor(context, sensor);
         sensors.put(context.getId(), details);
     }
 
@@ -39,11 +39,11 @@ public class SiteContext {
         return transports.get(tName);
     }
 
-    public List<SensorDescriptor> getRegisteredSensors() {
-        return new ArrayList<SensorDescriptor>(sensors.values());
+    public List<SiteSensorDescriptor> getRegisteredSensors() {
+        return new ArrayList<SiteSensorDescriptor>(sensors.values());
     }
 
-    public SensorDescriptor getSensor(SensorId id) {
+    public SiteSensorDescriptor getSensor(SensorId id) {
         return sensors.get(id);
     }
 }

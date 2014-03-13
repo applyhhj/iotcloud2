@@ -8,35 +8,35 @@ import java.util.List;
 import java.util.Map;
 
 public class MasterContext {
-    private Map<String, SensorSiteDescriptor> sensorSiteDetails = new HashMap<String, SensorSiteDescriptor>();
+    private Map<String, SensorSiteDescriptor> sites = new HashMap<String, SensorSiteDescriptor>();
 
-    private Map<String, List<SensorDetails>> sensorDetails = new HashMap<String, List<SensorDetails>>();
+    private Map<String, List<SensorDetails>> siteSensors = new HashMap<String, List<SensorDetails>>();
 
-    private Map<String, List<SensorDetails>> offlineSites = new HashMap<String, List<SensorDetails>>();
+    private Map<String, List<SensorDetails>> deactivatedSiteSensors = new HashMap<String, List<SensorDetails>>();
 
-    private Map<String, SensorDetails> deactivatedSensorSiteDetails = new HashMap<String, SensorDetails>();
+    private Map<String, SensorSiteDescriptor> deactivatedSites = new HashMap<String, SensorSiteDescriptor>();
 
     public void addSensorSite(SensorSiteDescriptor sensorSite) {
-        sensorSiteDetails.put(sensorSite.getId(), sensorSite);
+        sites.put(sensorSite.getId(), sensorSite);
     }
 
     public SensorSiteDescriptor getSensorSite(String siteId) {
-        return sensorSiteDetails.get(siteId);
+        return sites.get(siteId);
     }
 
     public Map<String, SensorSiteDescriptor> getSensorSites() {
-        return sensorSiteDetails;
+        return sites;
     }
 
     public boolean addSensor(String site, SensorDetails details) {
-        if (!sensorSiteDetails.containsKey(site)) {
+        if (!sites.containsKey(site)) {
             return false;
         }
 
-        List<SensorDetails> detailsList = sensorDetails.get(site);
+        List<SensorDetails> detailsList = siteSensors.get(site);
         if (detailsList == null) {
             detailsList = new ArrayList<SensorDetails>();
-            sensorDetails.put(site, detailsList);
+            siteSensors.put(site, detailsList);
         }
 
         detailsList.add(details);
@@ -45,16 +45,26 @@ public class MasterContext {
     }
 
     public void makeSiteOffline(String site) {
-        if (!sensorDetails.containsKey(site)) {
+        if (!siteSensors.containsKey(site)) {
+            SensorSiteDescriptor sensorSiteDescriptor = sites.get(site);
+            deactivatedSites.put(site, sensorSiteDescriptor);
+            deactivatedSiteSensors.put(site, siteSensors.get(site));
 
+            sites.remove(site);
+            siteSensors.remove(site);
         }
     }
 
     public boolean removeSensor(String site, SensorId id) {
-        if (!sensorSiteDetails.containsKey(site)) {
+        if (!sites.containsKey(site)) {
             return false;
         }
-        List<SensorDetails> detailsList = sensorDetails.get(site);
+        List<SensorDetails> detailsList = siteSensors.get(site);
         return detailsList != null && detailsList.remove(new SensorDetails(id));
+    }
+
+    public void removeSite(String site) {
+        siteSensors.remove(site);
+        sites.remove(site);
     }
 }

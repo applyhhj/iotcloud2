@@ -1,7 +1,6 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
 
 import java.util.ArrayList;
@@ -10,22 +9,20 @@ import java.util.List;
 public class MasterSensorEvent {
     private SensorEventState state;
 
-    private List<String> sensorSites = new ArrayList<String>();
-
     private SensorId sensorId;
 
-    private SensorDeployDescriptor deployDescriptor;
+    // the sites this event should affect
+    private List<String> sites = new ArrayList<String>();
 
-    public MasterSensorEvent(SensorId sensorId, SensorEventState state, List<String> sites) {
+    public MasterSensorEvent(SensorId sensorId, SensorEventState state) {
         this.state = state;
         this.sensorId = sensorId;
-        this.sensorSites.addAll(sites);
     }
 
-    public MasterSensorEvent(SensorDeployDescriptor deployDescriptor, SensorEventState state, List<String> sites) {
-        this.deployDescriptor = deployDescriptor;
+    public MasterSensorEvent(SensorEventState state, SensorId sensorId, List<String> sites) {
         this.state = state;
-        this.sensorSites.addAll(sites);
+        this.sensorId = sensorId;
+        this.sites = sites;
     }
 
     public SensorEventState getState() {
@@ -36,15 +33,7 @@ public class MasterSensorEvent {
         return sensorId;
     }
 
-    public SensorDeployDescriptor getDeployDescriptor() {
-        return deployDescriptor;
-    }
-
-    public MasterSensorEvent(SensorEventState state) {
-        this.state = state;
-    }
-
-    public List<String> getSensorSites() {
-        return sensorSites;
+    public List<String> getSites() {
+        return sites;
     }
 }
