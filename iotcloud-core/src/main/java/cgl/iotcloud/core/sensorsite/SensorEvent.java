@@ -15,7 +15,7 @@ public class SensorEvent {
 
     private SensorDeployDetails deployDetails;
 
-    public SensorEvent(State state, SensorId sensorId) {
+    public SensorEvent(SensorId sensorId, State state) {
         this.state = state;
         this.sensorId = sensorId;
     }

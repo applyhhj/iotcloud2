@@ -5,6 +5,11 @@ public class SensorDeployDetails {
 
     private String className;
 
+    public SensorDeployDetails(String jarName, String className) {
+        this.jarName = jarName;
+        this.className = className;
+    }
+
     public String getJarName() {
         return jarName;
     }

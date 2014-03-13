@@ -1,21 +1,22 @@
 package cgl.iotcloud.core.sensorsite;
 
-import cgl.iotcloud.core.api.thrift.TResponse;
-import cgl.iotcloud.core.api.thrift.TSensorDeployResponse;
-import cgl.iotcloud.core.api.thrift.TSensorDetails;
-import cgl.iotcloud.core.api.thrift.TSensorId;
+import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.apache.thrift.TException;
 
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class SensorSiteService implements TSensorSiteService.Iface {
     private SiteContext siteContext;
 
-    public SensorSiteService(SiteContext siteContext) {
+    private BlockingQueue<SensorEvent> sensorEvents;
+
+    public SensorSiteService(SiteContext siteContext, BlockingQueue<SensorEvent> sensorEvents) {
         this.siteContext = siteContext;
+        this.sensorEvents = sensorEvents;
     }
 
     @Override
@@ -26,20 +27,42 @@ public class SensorSiteService implements TSensorSiteService.Iface {
     }
 
     @Override
-    public TSensorDeployResponse deploySensor(TSensorDetails sensor) throws TException {
+    public TResponse deploySensor(TSensorDetails sensor) throws TException {
         String className = sensor.getClassName();
         String jarName = sensor.getFilename();
 
-        return null;
+        SensorDeployDetails deployDetails = new SensorDeployDetails(jarName, className);
+        SensorEvent event = new SensorEvent(deployDetails, SensorEvent.State.DEPLOY);
+
+        try {
+            sensorEvents.put(event);
+        } catch (InterruptedException e) {
+            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for deployment");
+        }
+        return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to be deployed");
     }
 
     @Override
-    public TResponse startSensor(List<String> sites, TSensorId id) throws TException {
-        return null;
+    public TResponse startSensor(TSensorId id) throws TException {
+        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
+                SensorEvent.State.ACTIVATE);
+        try {
+            sensorEvents.put(event);
+        } catch (InterruptedException e) {
+            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for activation");
+        }
+        return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for activation");
     }
 
     @Override
-    public TResponse stopSensor(List<String> sites, TSensorId id) throws TException {
-        return null;
+    public TResponse stopSensor(TSensorId id) throws TException {
+        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
+                SensorEvent.State.DEACTIVATE);
+        try {
+            sensorEvents.put(event);
+        } catch (InterruptedException e) {
+            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for de-activation");
+        }
+        return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for de-activation");
     }
 }

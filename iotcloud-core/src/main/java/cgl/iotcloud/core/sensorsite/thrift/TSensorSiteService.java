@@ -54,11 +54,11 @@ import org.slf4j.LoggerFactory;
 
     public cgl.iotcloud.core.master.thrift.THeartBeatResponse hearbeat(cgl.iotcloud.core.master.thrift.THeartBeatRequest heartBeat) throws org.apache.thrift.TException;
 
-    public cgl.iotcloud.core.api.thrift.TSensorDeployResponse deploySensor(cgl.iotcloud.core.api.thrift.TSensorDetails sensor) throws org.apache.thrift.TException;
+    public cgl.iotcloud.core.api.thrift.TResponse deploySensor(cgl.iotcloud.core.api.thrift.TSensorDetails sensor) throws org.apache.thrift.TException;
 
-    public cgl.iotcloud.core.api.thrift.TResponse startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
+    public cgl.iotcloud.core.api.thrift.TResponse startSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
 
-    public cgl.iotcloud.core.api.thrift.TResponse stopSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
+    public cgl.iotcloud.core.api.thrift.TResponse stopSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
 
   }
 
@@ -68,9 +68,9 @@ import org.slf4j.LoggerFactory;
 
     public void deploySensor(cgl.iotcloud.core.api.thrift.TSensorDetails sensor, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void startSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void stopSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void stopSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -117,7 +117,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "hearbeat failed: unknown result");
     }
 
-    public cgl.iotcloud.core.api.thrift.TSensorDeployResponse deploySensor(cgl.iotcloud.core.api.thrift.TSensorDetails sensor) throws org.apache.thrift.TException
+    public cgl.iotcloud.core.api.thrift.TResponse deploySensor(cgl.iotcloud.core.api.thrift.TSensorDetails sensor) throws org.apache.thrift.TException
     {
       send_deploySensor(sensor);
       return recv_deploySensor();
@@ -130,7 +130,7 @@ import org.slf4j.LoggerFactory;
       sendBase("deploySensor", args);
     }
 
-    public cgl.iotcloud.core.api.thrift.TSensorDeployResponse recv_deploySensor() throws org.apache.thrift.TException
+    public cgl.iotcloud.core.api.thrift.TResponse recv_deploySensor() throws org.apache.thrift.TException
     {
       deploySensor_result result = new deploySensor_result();
       receiveBase(result, "deploySensor");
@@ -140,16 +140,15 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deploySensor failed: unknown result");
     }
 
-    public cgl.iotcloud.core.api.thrift.TResponse startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    public cgl.iotcloud.core.api.thrift.TResponse startSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
     {
-      send_startSensor(sites, id);
+      send_startSensor(id);
       return recv_startSensor();
     }
 
-    public void send_startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    public void send_startSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
     {
       startSensor_args args = new startSensor_args();
-      args.setSites(sites);
       args.setId(id);
       sendBase("startSensor", args);
     }
@@ -164,16 +163,15 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "startSensor failed: unknown result");
     }
 
-    public cgl.iotcloud.core.api.thrift.TResponse stopSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    public cgl.iotcloud.core.api.thrift.TResponse stopSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
     {
-      send_stopSensor(sites, id);
+      send_stopSensor(id);
       return recv_stopSensor();
     }
 
-    public void send_stopSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    public void send_stopSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
     {
       stopSensor_args args = new stopSensor_args();
-      args.setSites(sites);
       args.setId(id);
       sendBase("stopSensor", args);
     }
@@ -260,7 +258,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public cgl.iotcloud.core.api.thrift.TSensorDeployResponse getResult() throws org.apache.thrift.TException {
+      public cgl.iotcloud.core.api.thrift.TResponse getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -270,26 +268,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void startSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      startSensor_call method_call = new startSensor_call(sites, id, resultHandler, this, ___protocolFactory, ___transport);
+      startSensor_call method_call = new startSensor_call(id, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class startSensor_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private List<String> sites;
       private cgl.iotcloud.core.api.thrift.TSensorId id;
-      public startSensor_call(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public startSensor_call(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.sites = sites;
         this.id = id;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("startSensor", org.apache.thrift.protocol.TMessageType.CALL, 0));
         startSensor_args args = new startSensor_args();
-        args.setSites(sites);
         args.setId(id);
         args.write(prot);
         prot.writeMessageEnd();
@@ -305,26 +300,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void stopSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void stopSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      stopSensor_call method_call = new stopSensor_call(sites, id, resultHandler, this, ___protocolFactory, ___transport);
+      stopSensor_call method_call = new stopSensor_call(id, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class stopSensor_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private List<String> sites;
       private cgl.iotcloud.core.api.thrift.TSensorId id;
-      public stopSensor_call(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public stopSensor_call(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.sites = sites;
         this.id = id;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("stopSensor", org.apache.thrift.protocol.TMessageType.CALL, 0));
         stopSensor_args args = new stopSensor_args();
-        args.setSites(sites);
         args.setId(id);
         args.write(prot);
         prot.writeMessageEnd();
@@ -415,7 +407,7 @@ import org.slf4j.LoggerFactory;
 
       public startSensor_result getResult(I iface, startSensor_args args) throws org.apache.thrift.TException {
         startSensor_result result = new startSensor_result();
-        result.success = iface.startSensor(args.sites, args.id);
+        result.success = iface.startSensor(args.id);
         return result;
       }
     }
@@ -435,7 +427,7 @@ import org.slf4j.LoggerFactory;
 
       public stopSensor_result getResult(I iface, stopSensor_args args) throws org.apache.thrift.TException {
         stopSensor_result result = new stopSensor_result();
-        result.success = iface.stopSensor(args.sites, args.id);
+        result.success = iface.stopSensor(args.id);
         return result;
       }
     }
@@ -511,7 +503,7 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class deploySensor<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deploySensor_args, cgl.iotcloud.core.api.thrift.TSensorDeployResponse> {
+    public static class deploySensor<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deploySensor_args, cgl.iotcloud.core.api.thrift.TResponse> {
       public deploySensor() {
         super("deploySensor");
       }
@@ -520,10 +512,10 @@ import org.slf4j.LoggerFactory;
         return new deploySensor_args();
       }
 
-      public AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TSensorDeployResponse> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TResponse> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TSensorDeployResponse>() { 
-          public void onComplete(cgl.iotcloud.core.api.thrift.TSensorDeployResponse o) {
+        return new AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TResponse>() { 
+          public void onComplete(cgl.iotcloud.core.api.thrift.TResponse o) {
             deploySensor_result result = new deploySensor_result();
             result.success = o;
             try {
@@ -557,7 +549,7 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, deploySensor_args args, org.apache.thrift.async.AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TSensorDeployResponse> resultHandler) throws TException {
+      public void start(I iface, deploySensor_args args, org.apache.thrift.async.AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TResponse> resultHandler) throws TException {
         iface.deploySensor(args.sensor,resultHandler);
       }
     }
@@ -609,7 +601,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, startSensor_args args, org.apache.thrift.async.AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TResponse> resultHandler) throws TException {
-        iface.startSensor(args.sites, args.id,resultHandler);
+        iface.startSensor(args.id,resultHandler);
       }
     }
 
@@ -660,7 +652,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, stopSensor_args args, org.apache.thrift.async.AsyncMethodCallback<cgl.iotcloud.core.api.thrift.TResponse> resultHandler) throws TException {
-        iface.stopSensor(args.sites, args.id,resultHandler);
+        iface.stopSensor(args.id,resultHandler);
       }
     }
 
@@ -1754,7 +1746,7 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new deploySensor_resultTupleSchemeFactory());
     }
 
-    public cgl.iotcloud.core.api.thrift.TSensorDeployResponse success; // required
+    public cgl.iotcloud.core.api.thrift.TResponse success; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -1819,7 +1811,7 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TSensorDeployResponse.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TResponse.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deploySensor_result.class, metaDataMap);
     }
@@ -1828,7 +1820,7 @@ import org.slf4j.LoggerFactory;
     }
 
     public deploySensor_result(
-      cgl.iotcloud.core.api.thrift.TSensorDeployResponse success)
+      cgl.iotcloud.core.api.thrift.TResponse success)
     {
       this();
       this.success = success;
@@ -1839,7 +1831,7 @@ import org.slf4j.LoggerFactory;
      */
     public deploySensor_result(deploySensor_result other) {
       if (other.isSetSuccess()) {
-        this.success = new cgl.iotcloud.core.api.thrift.TSensorDeployResponse(other.success);
+        this.success = new cgl.iotcloud.core.api.thrift.TResponse(other.success);
       }
     }
 
@@ -1852,11 +1844,11 @@ import org.slf4j.LoggerFactory;
       this.success = null;
     }
 
-    public cgl.iotcloud.core.api.thrift.TSensorDeployResponse getSuccess() {
+    public cgl.iotcloud.core.api.thrift.TResponse getSuccess() {
       return this.success;
     }
 
-    public deploySensor_result setSuccess(cgl.iotcloud.core.api.thrift.TSensorDeployResponse success) {
+    public deploySensor_result setSuccess(cgl.iotcloud.core.api.thrift.TResponse success) {
       this.success = success;
       return this;
     }
@@ -1882,7 +1874,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((cgl.iotcloud.core.api.thrift.TSensorDeployResponse)value);
+          setSuccess((cgl.iotcloud.core.api.thrift.TResponse)value);
         }
         break;
 
@@ -2034,7 +2026,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new cgl.iotcloud.core.api.thrift.TSensorDeployResponse();
+                struct.success = new cgl.iotcloud.core.api.thrift.TResponse();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -2093,7 +2085,7 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.success = new cgl.iotcloud.core.api.thrift.TSensorDeployResponse();
+          struct.success = new cgl.iotcloud.core.api.thrift.TResponse();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -2105,8 +2097,7 @@ import org.slf4j.LoggerFactory;
   public static class startSensor_args implements org.apache.thrift.TBase<startSensor_args, startSensor_args._Fields>, java.io.Serializable, Cloneable, Comparable<startSensor_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startSensor_args");
 
-    private static final org.apache.thrift.protocol.TField SITES_FIELD_DESC = new org.apache.thrift.protocol.TField("sites", org.apache.thrift.protocol.TType.LIST, (short)1);
-    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2114,13 +2105,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new startSensor_argsTupleSchemeFactory());
     }
 
-    public List<String> sites; // required
     public cgl.iotcloud.core.api.thrift.TSensorId id; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SITES((short)1, "sites"),
-      ID((short)2, "id");
+      ID((short)1, "id");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2135,9 +2124,7 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // SITES
-            return SITES;
-          case 2: // ID
+          case 1: // ID
             return ID;
           default:
             return null;
@@ -2182,9 +2169,6 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SITES, new org.apache.thrift.meta_data.FieldMetaData("sites", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TSensorId.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -2195,11 +2179,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public startSensor_args(
-      List<String> sites,
       cgl.iotcloud.core.api.thrift.TSensorId id)
     {
       this();
-      this.sites = sites;
       this.id = id;
     }
 
@@ -2207,10 +2189,6 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public startSensor_args(startSensor_args other) {
-      if (other.isSetSites()) {
-        List<String> __this__sites = new ArrayList<String>(other.sites);
-        this.sites = __this__sites;
-      }
       if (other.isSetId()) {
         this.id = new cgl.iotcloud.core.api.thrift.TSensorId(other.id);
       }
@@ -2222,47 +2200,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.sites = null;
       this.id = null;
-    }
-
-    public int getSitesSize() {
-      return (this.sites == null) ? 0 : this.sites.size();
-    }
-
-    public java.util.Iterator<String> getSitesIterator() {
-      return (this.sites == null) ? null : this.sites.iterator();
-    }
-
-    public void addToSites(String elem) {
-      if (this.sites == null) {
-        this.sites = new ArrayList<String>();
-      }
-      this.sites.add(elem);
-    }
-
-    public List<String> getSites() {
-      return this.sites;
-    }
-
-    public startSensor_args setSites(List<String> sites) {
-      this.sites = sites;
-      return this;
-    }
-
-    public void unsetSites() {
-      this.sites = null;
-    }
-
-    /** Returns true if field sites is set (has been assigned a value) and false otherwise */
-    public boolean isSetSites() {
-      return this.sites != null;
-    }
-
-    public void setSitesIsSet(boolean value) {
-      if (!value) {
-        this.sites = null;
-      }
     }
 
     public cgl.iotcloud.core.api.thrift.TSensorId getId() {
@@ -2291,14 +2229,6 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case SITES:
-        if (value == null) {
-          unsetSites();
-        } else {
-          setSites((List<String>)value);
-        }
-        break;
-
       case ID:
         if (value == null) {
           unsetId();
@@ -2312,9 +2242,6 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case SITES:
-        return getSites();
-
       case ID:
         return getId();
 
@@ -2329,8 +2256,6 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case SITES:
-        return isSetSites();
       case ID:
         return isSetId();
       }
@@ -2349,15 +2274,6 @@ import org.slf4j.LoggerFactory;
     public boolean equals(startSensor_args that) {
       if (that == null)
         return false;
-
-      boolean this_present_sites = true && this.isSetSites();
-      boolean that_present_sites = true && that.isSetSites();
-      if (this_present_sites || that_present_sites) {
-        if (!(this_present_sites && that_present_sites))
-          return false;
-        if (!this.sites.equals(that.sites))
-          return false;
-      }
 
       boolean this_present_id = true && this.isSetId();
       boolean that_present_id = true && that.isSetId();
@@ -2384,16 +2300,6 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetSites()).compareTo(other.isSetSites());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetSites()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sites, other.sites);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = Boolean.valueOf(isSetId()).compareTo(other.isSetId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -2424,14 +2330,6 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("startSensor_args(");
       boolean first = true;
 
-      sb.append("sites:");
-      if (this.sites == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.sites);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("id:");
       if (this.id == null) {
         sb.append("null");
@@ -2485,25 +2383,7 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // SITES
-              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-                {
-                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                  struct.sites = new ArrayList<String>(_list0.size);
-                  for (int _i1 = 0; _i1 < _list0.size; ++_i1)
-                  {
-                    String _elem2;
-                    _elem2 = iprot.readString();
-                    struct.sites.add(_elem2);
-                  }
-                  iprot.readListEnd();
-                }
-                struct.setSitesIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // ID
+            case 1: // ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
                 struct.id.read(iprot);
@@ -2527,18 +2407,6 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.sites != null) {
-          oprot.writeFieldBegin(SITES_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.sites.size()));
-            for (String _iter3 : struct.sites)
-            {
-              oprot.writeString(_iter3);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
         if (struct.id != null) {
           oprot.writeFieldBegin(ID_FIELD_DESC);
           struct.id.write(oprot);
@@ -2562,22 +2430,10 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, startSensor_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetSites()) {
+        if (struct.isSetId()) {
           optionals.set(0);
         }
-        if (struct.isSetId()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
-        if (struct.isSetSites()) {
-          {
-            oprot.writeI32(struct.sites.size());
-            for (String _iter4 : struct.sites)
-            {
-              oprot.writeString(_iter4);
-            }
-          }
-        }
+        oprot.writeBitSet(optionals, 1);
         if (struct.isSetId()) {
           struct.id.write(oprot);
         }
@@ -2586,21 +2442,8 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, startSensor_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          {
-            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.sites = new ArrayList<String>(_list5.size);
-            for (int _i6 = 0; _i6 < _list5.size; ++_i6)
-            {
-              String _elem7;
-              _elem7 = iprot.readString();
-              struct.sites.add(_elem7);
-            }
-          }
-          struct.setSitesIsSet(true);
-        }
-        if (incoming.get(1)) {
           struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
           struct.id.read(iprot);
           struct.setIdIsSet(true);
@@ -2972,8 +2815,7 @@ import org.slf4j.LoggerFactory;
   public static class stopSensor_args implements org.apache.thrift.TBase<stopSensor_args, stopSensor_args._Fields>, java.io.Serializable, Cloneable, Comparable<stopSensor_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("stopSensor_args");
 
-    private static final org.apache.thrift.protocol.TField SITES_FIELD_DESC = new org.apache.thrift.protocol.TField("sites", org.apache.thrift.protocol.TType.LIST, (short)1);
-    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2981,13 +2823,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new stopSensor_argsTupleSchemeFactory());
     }
 
-    public List<String> sites; // required
     public cgl.iotcloud.core.api.thrift.TSensorId id; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SITES((short)1, "sites"),
-      ID((short)2, "id");
+      ID((short)1, "id");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3002,9 +2842,7 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // SITES
-            return SITES;
-          case 2: // ID
+          case 1: // ID
             return ID;
           default:
             return null;
@@ -3049,9 +2887,6 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SITES, new org.apache.thrift.meta_data.FieldMetaData("sites", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TSensorId.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -3062,11 +2897,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public stopSensor_args(
-      List<String> sites,
       cgl.iotcloud.core.api.thrift.TSensorId id)
     {
       this();
-      this.sites = sites;
       this.id = id;
     }
 
@@ -3074,10 +2907,6 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public stopSensor_args(stopSensor_args other) {
-      if (other.isSetSites()) {
-        List<String> __this__sites = new ArrayList<String>(other.sites);
-        this.sites = __this__sites;
-      }
       if (other.isSetId()) {
         this.id = new cgl.iotcloud.core.api.thrift.TSensorId(other.id);
       }
@@ -3089,47 +2918,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.sites = null;
       this.id = null;
-    }
-
-    public int getSitesSize() {
-      return (this.sites == null) ? 0 : this.sites.size();
-    }
-
-    public java.util.Iterator<String> getSitesIterator() {
-      return (this.sites == null) ? null : this.sites.iterator();
-    }
-
-    public void addToSites(String elem) {
-      if (this.sites == null) {
-        this.sites = new ArrayList<String>();
-      }
-      this.sites.add(elem);
-    }
-
-    public List<String> getSites() {
-      return this.sites;
-    }
-
-    public stopSensor_args setSites(List<String> sites) {
-      this.sites = sites;
-      return this;
-    }
-
-    public void unsetSites() {
-      this.sites = null;
-    }
-
-    /** Returns true if field sites is set (has been assigned a value) and false otherwise */
-    public boolean isSetSites() {
-      return this.sites != null;
-    }
-
-    public void setSitesIsSet(boolean value) {
-      if (!value) {
-        this.sites = null;
-      }
     }
 
     public cgl.iotcloud.core.api.thrift.TSensorId getId() {
@@ -3158,14 +2947,6 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case SITES:
-        if (value == null) {
-          unsetSites();
-        } else {
-          setSites((List<String>)value);
-        }
-        break;
-
       case ID:
         if (value == null) {
           unsetId();
@@ -3179,9 +2960,6 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case SITES:
-        return getSites();
-
       case ID:
         return getId();
 
@@ -3196,8 +2974,6 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case SITES:
-        return isSetSites();
       case ID:
         return isSetId();
       }
@@ -3216,15 +2992,6 @@ import org.slf4j.LoggerFactory;
     public boolean equals(stopSensor_args that) {
       if (that == null)
         return false;
-
-      boolean this_present_sites = true && this.isSetSites();
-      boolean that_present_sites = true && that.isSetSites();
-      if (this_present_sites || that_present_sites) {
-        if (!(this_present_sites && that_present_sites))
-          return false;
-        if (!this.sites.equals(that.sites))
-          return false;
-      }
 
       boolean this_present_id = true && this.isSetId();
       boolean that_present_id = true && that.isSetId();
@@ -3251,16 +3018,6 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetSites()).compareTo(other.isSetSites());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetSites()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sites, other.sites);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = Boolean.valueOf(isSetId()).compareTo(other.isSetId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -3291,14 +3048,6 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("stopSensor_args(");
       boolean first = true;
 
-      sb.append("sites:");
-      if (this.sites == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.sites);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("id:");
       if (this.id == null) {
         sb.append("null");
@@ -3352,25 +3101,7 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // SITES
-              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-                {
-                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                  struct.sites = new ArrayList<String>(_list8.size);
-                  for (int _i9 = 0; _i9 < _list8.size; ++_i9)
-                  {
-                    String _elem10;
-                    _elem10 = iprot.readString();
-                    struct.sites.add(_elem10);
-                  }
-                  iprot.readListEnd();
-                }
-                struct.setSitesIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // ID
+            case 1: // ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
                 struct.id.read(iprot);
@@ -3394,18 +3125,6 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.sites != null) {
-          oprot.writeFieldBegin(SITES_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.sites.size()));
-            for (String _iter11 : struct.sites)
-            {
-              oprot.writeString(_iter11);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
         if (struct.id != null) {
           oprot.writeFieldBegin(ID_FIELD_DESC);
           struct.id.write(oprot);
@@ -3429,22 +3148,10 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, stopSensor_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetSites()) {
+        if (struct.isSetId()) {
           optionals.set(0);
         }
-        if (struct.isSetId()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
-        if (struct.isSetSites()) {
-          {
-            oprot.writeI32(struct.sites.size());
-            for (String _iter12 : struct.sites)
-            {
-              oprot.writeString(_iter12);
-            }
-          }
-        }
+        oprot.writeBitSet(optionals, 1);
         if (struct.isSetId()) {
           struct.id.write(oprot);
         }
@@ -3453,21 +3160,8 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, stopSensor_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          {
-            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.sites = new ArrayList<String>(_list13.size);
-            for (int _i14 = 0; _i14 < _list13.size; ++_i14)
-            {
-              String _elem15;
-              _elem15 = iprot.readString();
-              struct.sites.add(_elem15);
-            }
-          }
-          struct.setSitesIsSet(true);
-        }
-        if (incoming.get(1)) {
           struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
           struct.id.read(iprot);
           struct.setIdIsSet(true);
