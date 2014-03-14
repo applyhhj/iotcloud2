@@ -99,10 +99,6 @@ public class SiteController {
         }
     }
 
-    private void siteAdded(String siteId) {
-
-    }
-
     private class SiteSensorEventListener implements Runnable {
         @Override
         public void run() {

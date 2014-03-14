@@ -118,7 +118,7 @@ public class SensorSite {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                site.start();
+                site.stop();
             }
         });
     }

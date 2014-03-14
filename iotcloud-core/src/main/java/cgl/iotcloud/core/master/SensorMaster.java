@@ -21,18 +21,31 @@ import java.util.concurrent.Executors;
 public class SensorMaster {
     private static Logger LOG = LoggerFactory.getLogger(SensorMaster.class);
 
-    public static void main(String[] args) {
+    private MasterContext masterContext;
+
+    private BlockingQueue<SiteEvent> siteEventsQueue;
+
+    private BlockingQueue<MasterSensorEvent> sensorEvents;
+
+    private SiteController manager;
+
+    private THsHaServer apiServer;
+
+    private THsHaServer siteServer;
+
+    public void start() {
         // read the configuration file
         Map conf = Utils.readConfig();
 
-        MasterContext masterContext = new MasterContext();
+        // create the context
+        masterContext = new MasterContext();
 
-        BlockingQueue<SiteEvent> siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
-
-        BlockingQueue<MasterSensorEvent> sensorEvents = new ArrayBlockingQueue<MasterSensorEvent>(1024);;
+        // the queues for handing the incoming requests
+        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
+        sensorEvents = new ArrayBlockingQueue<MasterSensorEvent>(1024);
 
         // start the thread to manager the sites
-        SiteController manager = new SiteController(masterContext, siteEventsQueue, sensorEvents);
+        manager = new SiteController(masterContext, siteEventsQueue, sensorEvents);
         manager.start();
 
         // now start the server to listen for the sites
@@ -42,11 +55,11 @@ public class SensorMaster {
             InetSocketAddress addres = new InetSocketAddress(host, port);
 
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            THsHaServer server = new THsHaServer(
+            siteServer = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
                             new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext, siteEventsQueue, sensorEvents))).executorService(
                             Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
-            server.serve();
+            siteServer.serve();
             LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
@@ -55,23 +68,45 @@ public class SensorMaster {
         }
 
 
-        // now start the server to listen for the clients
+        // start the server to listen for the API clients
         try {
             String host = Configuration.getMasterHost(conf);
             int port = Configuration.getMasterAPIPort(conf);
             InetSocketAddress addres = new InetSocketAddress(host, port);
 
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            THsHaServer server = new THsHaServer(
+            apiServer = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
                             new TMasterAPIService.Processor <MasterAPIServiceHandler>(new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
                             Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
-            server.serve();
+            apiServer.serve();
             LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
         } catch (TTransportException e) {
             String msg = "Error starting the Thrift server";
             LOG.error(msg);
             throw new RuntimeException(msg);
         }
+    }
+
+    public void stop() {
+        // stop receiving requests from clients
+        apiServer.stop();
+        // stop handling the controller requests
+        manager.stop();
+        // stop receiving requests from sites
+        siteServer.stop();
+    }
+
+    public static void main(String[] args) {
+        final SensorMaster master = new SensorMaster();
+
+        master.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                master.stop();
+            }
+        });
     }
 }

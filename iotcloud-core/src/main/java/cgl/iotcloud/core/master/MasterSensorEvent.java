@@ -3,7 +3,6 @@ package cgl.iotcloud.core.master;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
 
-
 public class MasterSensorEvent {
     private SensorEventState state;
 
