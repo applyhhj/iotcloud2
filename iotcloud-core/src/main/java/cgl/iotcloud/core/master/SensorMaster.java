@@ -30,12 +30,16 @@ public class SensorMaster {
     // the thrift server listening for sites
     private THsHaServer siteServer;
 
+    // the configuration
     private Map conf;
 
+    // master keeps all the moving parts here
     private MasterContext masterContext;
 
+    // the events from sites
     private BlockingQueue<SiteEvent> siteEventsQueue;
 
+    // the events from APIs
     private BlockingQueue<MasterSensorEvent> sensorEvents;
 
     public void start() {
