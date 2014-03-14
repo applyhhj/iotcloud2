@@ -4,7 +4,6 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.api.MasterAPIServiceHandler;
 import cgl.iotcloud.core.api.thrift.TMasterAPIService;
-import cgl.iotcloud.core.master.store.InMemorySensorData;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
@@ -15,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 
 public class SensorMaster {
@@ -26,11 +27,12 @@ public class SensorMaster {
 
         MasterContext masterContext = new MasterContext();
 
-        // configures the sensor store
-        InMemorySensorData sensorStore = new InMemorySensorData();
+        BlockingQueue<SiteEvent> siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
+
+        BlockingQueue<MasterSensorEvent> sensorEvents = new ArrayBlockingQueue<MasterSensorEvent>(1024);;
 
         // start the thread to manager the sites
-        SiteController manager = new SiteController(masterContext);
+        SiteController manager = new SiteController(masterContext, siteEventsQueue, sensorEvents);
         manager.start();
 
         // now start the server to listen for the sites
@@ -42,7 +44,7 @@ public class SensorMaster {
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext))).executorService(
+                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext, siteEventsQueue, sensorEvents))).executorService(
                             Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
             server.serve();
             LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
@@ -62,7 +64,7 @@ public class SensorMaster {
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
             THsHaServer server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
-                            new TMasterAPIService.Processor <MasterAPIServiceHandler>(new MasterAPIServiceHandler(masterContext))).executorService(
+                            new TMasterAPIService.Processor <MasterAPIServiceHandler>(new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
                             Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
             server.serve();
             LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
@@ -71,7 +73,5 @@ public class SensorMaster {
             LOG.error(msg);
             throw new RuntimeException(msg);
         }
-
-
     }
 }

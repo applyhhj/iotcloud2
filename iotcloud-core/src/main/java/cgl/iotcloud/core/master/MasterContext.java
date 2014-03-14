@@ -78,4 +78,8 @@ public class MasterContext {
     public void removeSensorDeploy(SensorDeployDescriptor deployDescriptor) {
         sensorsTobeDeployed.remove(deployDescriptor);
     }
+
+    public List<SensorDeployDescriptor> getSensorsTobeDeployed() {
+        return sensorsTobeDeployed;
+    }
 }

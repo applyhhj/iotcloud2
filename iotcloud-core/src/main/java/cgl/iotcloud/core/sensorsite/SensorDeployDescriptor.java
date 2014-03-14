@@ -27,6 +27,10 @@ public class SensorDeployDescriptor {
         deploySites.addAll(sites);
     }
 
+    public List<String> getDeploySites() {
+        return deploySites;
+    }
+
     @Override
     public String toString() {
         return "SensorDeployDescriptor{" +

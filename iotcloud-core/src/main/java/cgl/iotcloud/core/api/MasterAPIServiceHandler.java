@@ -58,7 +58,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
         deployDescriptor.addDeploySites(sites);
         masterContext.addSensorToDeploy(deployDescriptor);
 
-        MasterSensorEvent event = new MasterSensorEvent(SensorEventState.DEPLOY, sites);
+        MasterSensorEvent event = new MasterSensorEvent(null, SensorEventState.DEPLOY);
         try {
             sensorEvents.put(event);
         } catch (InterruptedException e) {

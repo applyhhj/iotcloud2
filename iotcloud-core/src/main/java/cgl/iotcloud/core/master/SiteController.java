@@ -1,11 +1,15 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.api.thrift.TMasterAPIService;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
+import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -33,7 +37,6 @@ public class SiteController {
 
     public void start() {
         LOG.info("Starting the site monitor on master.");
-        active = true;
 
         heartBeats = new HeartBeats(siteEventsQueue);
 
@@ -44,6 +47,8 @@ public class SiteController {
         SiteSensorEventListener sensorEventListener = new SiteSensorEventListener();
         Thread t2 = new Thread(sensorEventListener);
         t2.start();
+
+        active = true;
     }
 
     public void stop() {
@@ -59,16 +64,18 @@ public class SiteController {
                 try {
                     try {
                         SiteEvent event = siteEventsQueue.take();
-
                         if (event.getStatus() == SiteEvent.State.DEACTIVATED) {
                             // TODO we need to call a load balancer or something like that here
                             context.makeSiteOffline(event.getSiteId());
                             // stop the timers
                             heartBeats.stopForSite(event.getSiteId());
                         } else if (event.getStatus() == SiteEvent.State.ACTIVE) {
-
+                            SensorSiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
                             SensorSiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            SensorSiteClient client = new SensorSiteClient(descriptor.getHost(), descriptor.getPort());
+                            siteClients.put(event.getSiteId(), client);
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         }
                     } catch (InterruptedException e) {
@@ -95,10 +102,7 @@ public class SiteController {
     }
 
     private void siteAdded(String siteId) {
-        SensorSiteDescriptor descriptor = context.getSensorSite(siteId);
 
-        SensorSiteClient client = new SensorSiteClient(descriptor.getHost(), descriptor.getPort());
-        siteClients.put(siteId, client);
     }
 
     private class SiteSensorEventListener implements Runnable {
@@ -145,11 +149,24 @@ public class SiteController {
     }
 
     private void addSensors(MasterSensorEvent event) {
-
+        // nothing to do
     }
 
     private void deploySensors(MasterSensorEvent event) {
+        List<SensorDeployDescriptor> sensorDeployDescriptors = context.getSensorsTobeDeployed();
 
+        Iterator<SensorDeployDescriptor> itr = sensorDeployDescriptors.iterator();
+        while (itr.hasNext()) {
+            SensorDeployDescriptor deployDescriptor = itr.next();
+            List<String> sites = deployDescriptor.getDeploySites();
+            for (String site : sites) {
+                SensorSiteClient client = siteClients.get(site);
+                if (client != null) {
+                    client.deploySensor(deployDescriptor);
+                }
+            }
+            itr.remove();
+        }
     }
 
     private void startSensors(MasterSensorEvent event) {
