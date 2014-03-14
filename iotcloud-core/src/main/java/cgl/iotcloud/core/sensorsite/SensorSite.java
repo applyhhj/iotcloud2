@@ -112,8 +112,15 @@ public class SensorSite {
     }
 
     public static void main(String[] args) {
-        SensorSite site = new SensorSite();
+        final SensorSite site = new SensorSite();
         site.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                site.start();
+            }
+        });
     }
 
     private static Transport loadTransport(Map transportConf) {
