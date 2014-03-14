@@ -27,9 +27,13 @@ public class SensorSite {
 
     private THsHaServer server;
 
+    private Map conf;
+
+    private BlockingQueue<SensorEvent> sensorEvents;
+
     public void start() {
         // read the configuration file
-        Map conf = Utils.readConfig();
+        conf = Utils.readConfig();
 
         // create the site context
         siteContext = new SiteContext();
@@ -70,29 +74,35 @@ public class SensorSite {
             t.start();
         }
 
-        BlockingQueue<SensorEvent> sensorEvents = new ArrayBlockingQueue<SensorEvent>(1024);
+        sensorEvents = new ArrayBlockingQueue<SensorEvent>(1024);
 
         sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
         sensorDeployer.start();
 
-        // now start the server to listen for the master commands
-        try {
-            String host = Configuration.getSensorSiteHost(conf);
-            int port = Configuration.getSensorSitePort(conf);
-            InetSocketAddress addres = new InetSocketAddress(host, port);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // now start the server to listen for the master commands
+                try {
+                    String host = Configuration.getSensorSiteHost(conf);
+                    int port = Configuration.getSensorSitePort(conf);
+                    InetSocketAddress addres = new InetSocketAddress(host, port);
 
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            server = new THsHaServer(
-                    new THsHaServer.Args(serverTransport).processor(
-                            new TSensorSiteService.Processor <SensorSiteService>(
-                                    new SensorSiteService(siteContext, sensorEvents))).executorService(
-                            Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
-            server.serve();
-        } catch (TTransportException e) {
-            String msg = "Error starting the Thrift server";
-            LOG.error(msg);
-            throw new RuntimeException(msg);
-        }
+                    TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
+                    server = new THsHaServer(
+                            new THsHaServer.Args(serverTransport).processor(
+                                    new TSensorSiteService.Processor <SensorSiteService>(
+                                            new SensorSiteService(siteContext, sensorEvents))).executorService(
+                                    Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
+                    server.serve();
+                } catch (TTransportException e) {
+                    String msg = "Error starting the Thrift server";
+                    LOG.error(msg);
+                    throw new RuntimeException(msg);
+                }
+            }
+        });
+        t.run();
     }
 
     public void stop() {
