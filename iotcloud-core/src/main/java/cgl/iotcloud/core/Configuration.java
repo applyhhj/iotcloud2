@@ -26,6 +26,7 @@ public class Configuration {
 
     // the name of the channel destination
     public static final String CHANNEL_JMS_DESTINATION = "destination";
+    public static final String JMS_PROPERTIES = "properties";
 
     public static final String CHANNEL_JMS_IS_QUEUE = "isQueue";
 

@@ -30,11 +30,11 @@ public class JMSTransport implements Transport {
     public void configure(Map properties) {
         try {
             Hashtable<String, String> params = new Hashtable<String, String>();
-            params.putAll(properties);
+            params.putAll((Map)properties.get(Configuration.JMS_PROPERTIES));
 
             context = new InitialContext(params);
             conFactory = lookup(context, javax.jms.ConnectionFactory.class,
-                    (String) properties.get(Configuration.IOT_SENSOR_SITE_CONFAC_JNDI_NAME));
+                    params.get(Configuration.IOT_SENSOR_SITE_CONFAC_JNDI_NAME));
             LOG.debug("JMS ConnectionFactory initialized");
         } catch (NamingException e) {
             String msg = "Cannot acquire JNDI context, JMS Connection factory : " +

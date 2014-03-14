@@ -24,12 +24,18 @@ import java.util.concurrent.Executors;
 public class SensorSite {
     private static Logger LOG = LoggerFactory.getLogger(SensorSite.class);
 
+    private SiteContext siteContext;
+
+    private SensorDeployer sensorDeployer;
+
+    private THsHaServer server;
+
     public void start() {
         // read the configuration file
         Map conf = Utils.readConfig();
 
         // create the site context
-        SiteContext siteContext = new SiteContext();
+        siteContext = new SiteContext();
 
         // read the available transports and register them
         Map transports = Configuration.getTransports(conf);
@@ -62,9 +68,14 @@ public class SensorSite {
             }
         }
 
+        // start the transports for sensor messages
+        for (Transport t : siteContext.getTransports().values()) {
+            t.start();
+        }
+
         BlockingQueue<SensorEvent> sensorEvents = new ArrayBlockingQueue<SensorEvent>(1024);
 
-        SensorDeployer sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
+        sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
         sensorDeployer.start();
 
         // now start the server to listen for the master commands
@@ -74,7 +85,7 @@ public class SensorSite {
             InetSocketAddress addres = new InetSocketAddress(host, port);
 
             TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            THsHaServer server = new THsHaServer(
+            server = new THsHaServer(
                     new THsHaServer.Args(serverTransport).processor(
                             new TSensorSiteService.Processor <SensorSiteService>(
                                     new SensorSiteService(siteContext, sensorEvents))).executorService(
@@ -88,7 +99,16 @@ public class SensorSite {
     }
 
     public void stop() {
+        // stop the deployer
+        sensorDeployer.stop();
 
+        // stop the transports
+        for (Transport t : siteContext.getTransports().values()) {
+            t.stop();
+        }
+
+        // stop the server
+        server.stop();
     }
 
     public static void main(String[] args) {

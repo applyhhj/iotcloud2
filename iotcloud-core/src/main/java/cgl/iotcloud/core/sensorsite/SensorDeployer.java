@@ -76,6 +76,10 @@ public class SensorDeployer {
         }
     }
 
+    public void stop() {
+
+    }
+
     public void deploySensor(Map conf, SiteContext siteContext, SensorDeployDescriptor deployDescriptor) {
         try {
             ISensor sensor = Utils.loadSensor(new URL(deployDescriptor.getJarName()),

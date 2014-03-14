@@ -46,4 +46,8 @@ public class SiteContext {
     public SiteSensorDescriptor getSensor(SensorId id) {
         return sensors.get(id);
     }
+
+    public Map<String, Transport> getTransports() {
+        return transports;
+    }
 }

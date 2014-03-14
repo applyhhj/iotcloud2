@@ -1,9 +1,7 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.api.thrift.TMasterAPIService;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
-import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
