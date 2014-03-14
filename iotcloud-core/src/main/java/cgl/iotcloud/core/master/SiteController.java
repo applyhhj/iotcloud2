@@ -37,6 +37,7 @@ public class SiteController {
         LOG.info("Starting the site monitor on master.");
 
         heartBeats = new HeartBeats(siteEventsQueue);
+        active = true;
 
         SiteEventListener listener = new SiteEventListener();
         Thread t = new Thread(listener);
@@ -45,8 +46,6 @@ public class SiteController {
         SiteSensorEventListener sensorEventListener = new SiteSensorEventListener();
         Thread t2 = new Thread(sensorEventListener);
         t2.start();
-
-        active = true;
     }
 
     public void stop() {

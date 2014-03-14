@@ -21,21 +21,26 @@ import java.util.concurrent.Executors;
 public class SensorMaster {
     private static Logger LOG = LoggerFactory.getLogger(SensorMaster.class);
 
+    // this class manages the sensors and sites according to the events it receive
+    private SiteController manager;
+
+    // the api thrift server
+    private THsHaServer apiServer;
+
+    // the thrift server listening for sites
+    private THsHaServer siteServer;
+
+    private Map conf;
+
     private MasterContext masterContext;
 
     private BlockingQueue<SiteEvent> siteEventsQueue;
 
     private BlockingQueue<MasterSensorEvent> sensorEvents;
 
-    private SiteController manager;
-
-    private THsHaServer apiServer;
-
-    private THsHaServer siteServer;
-
     public void start() {
         // read the configuration file
-        Map conf = Utils.readConfig();
+        conf = Utils.readConfig();
 
         // create the context
         masterContext = new MasterContext();
@@ -49,43 +54,56 @@ public class SensorMaster {
         manager.start();
 
         // now start the server to listen for the sites
-        try {
-            String host = Configuration.getMasterHost(conf);
-            int port = Configuration.getMasterServerPort(conf);
-            InetSocketAddress addres = new InetSocketAddress(host, port);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String host = Configuration.getMasterHost(conf);
+                    int port = Configuration.getMasterServerPort(conf);
+                    InetSocketAddress addres = new InetSocketAddress(host, port);
 
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            siteServer = new THsHaServer(
-                    new THsHaServer.Args(serverTransport).processor(
-                            new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext, siteEventsQueue, sensorEvents))).executorService(
-                            Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
-            siteServer.serve();
-            LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
-        } catch (TTransportException e) {
-            String msg = "Error starting the Thrift server";
-            LOG.error(msg);
-            throw new RuntimeException(msg);
-        }
+                    TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
+                    siteServer = new THsHaServer(
+                            new THsHaServer.Args(serverTransport).processor(
+                                    new TMasterService.Processor <MasterServiceHandler>(new MasterServiceHandler(masterContext, siteEventsQueue, sensorEvents))).executorService(
+                                    Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
+                    LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
+                    siteServer.serve();
+                } catch (TTransportException e) {
+                    String msg = "Error starting the Thrift server";
+                    LOG.error(msg);
+                    throw new RuntimeException(msg);
+                }
+            }
+        });
+        t.start();
 
+        Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // start the server to listen for the API clients
+                try {
+                    String host = Configuration.getMasterHost(conf);
+                    int port = Configuration.getMasterAPIPort(conf);
+                    InetSocketAddress addres = new InetSocketAddress(host, port);
 
-        // start the server to listen for the API clients
-        try {
-            String host = Configuration.getMasterHost(conf);
-            int port = Configuration.getMasterAPIPort(conf);
-            InetSocketAddress addres = new InetSocketAddress(host, port);
+                    TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
+                    apiServer = new THsHaServer(
+                            new THsHaServer.Args(serverTransport).processor(
+                                    new TMasterAPIService.Processor<MasterAPIServiceHandler>(
+                                            new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
+                                    Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
+                    LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
+                    apiServer.serve();
+                } catch (TTransportException e) {
+                    String msg = "Error starting the Thrift server";
+                    LOG.error(msg);
+                    throw new RuntimeException(msg);
+                }
+            }
+        });
+        t2.start();
 
-            TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(addres);
-            apiServer = new THsHaServer(
-                    new THsHaServer.Args(serverTransport).processor(
-                            new TMasterAPIService.Processor <MasterAPIServiceHandler>(new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
-                            Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
-            apiServer.serve();
-            LOG.info("Started the SensorMaster server on host: {} and port: {}", host, port);
-        } catch (TTransportException e) {
-            String msg = "Error starting the Thrift server";
-            LOG.error(msg);
-            throw new RuntimeException(msg);
-        }
     }
 
     public void stop() {

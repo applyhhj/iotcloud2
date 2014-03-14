@@ -2,9 +2,6 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
-import cgl.iotcloud.core.master.MasterServiceHandler;
-import cgl.iotcloud.core.master.store.InMemorySensorData;
-import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
 import org.apache.thrift.server.THsHaServer;
