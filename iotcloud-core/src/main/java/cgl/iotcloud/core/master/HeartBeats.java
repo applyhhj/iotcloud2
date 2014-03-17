@@ -48,7 +48,7 @@ public class HeartBeats {
         }
 
         public void run() {
-            SensorSiteClient client = new SensorSiteClient(host, port);
+            SiteClient client = new SiteClient(host, port);
 
             boolean result = client.sendHearBeat();
             if (!result && status != SiteEvent.State.DEACTIVATED) {

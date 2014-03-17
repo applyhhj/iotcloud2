@@ -16,14 +16,14 @@ import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SensorSiteClient {
-    private static Logger LOG = LoggerFactory.getLogger(SensorSiteClient.class);
+public class SiteClient {
+    private static Logger LOG = LoggerFactory.getLogger(SiteClient.class);
 
     private TSensorSiteService.Client client;
 
     private int retries = 1;
 
-    public SensorSiteClient(String host, int port) {
+    public SiteClient(String host, int port) {
         TTransport transport = new TSocket(host, port);
         TProtocol protocol = new TBinaryProtocol(transport);
 

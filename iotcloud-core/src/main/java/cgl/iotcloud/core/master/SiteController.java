@@ -24,7 +24,7 @@ public class SiteController {
 
     private boolean active = false;
 
-    private Map<String, SensorSiteClient> siteClients = new HashMap<String, SensorSiteClient>();
+    private Map<String, SiteClient> siteClients = new HashMap<String, SiteClient>();
 
     public SiteController(MasterContext context, BlockingQueue<SiteEvent> siteEventsQueue,
                           BlockingQueue<MasterSensorEvent> sensorEvents) {
@@ -71,7 +71,7 @@ public class SiteController {
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
                             SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
-                            SensorSiteClient client = new SensorSiteClient(descriptor.getHost(), descriptor.getPort());
+                            SiteClient client = new SiteClient(descriptor.getHost(), descriptor.getPort());
                             siteClients.put(event.getSiteId(), client);
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         }
@@ -153,7 +153,7 @@ public class SiteController {
             SensorDeployDescriptor deployDescriptor = itr.next();
             List<String> sites = deployDescriptor.getDeploySites();
             for (String site : sites) {
-                SensorSiteClient client = siteClients.get(site);
+                SiteClient client = siteClients.get(site);
                 if (client != null) {
                     client.deploySensor(deployDescriptor);
                 }

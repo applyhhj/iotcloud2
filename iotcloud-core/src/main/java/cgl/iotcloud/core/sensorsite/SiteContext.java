@@ -18,12 +18,8 @@ public class SiteContext {
 
     private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
 
-    public void init() {
-        // at the end we are going to start the transports
-        for (Map.Entry<String, Transport> e : transports.entrySet()) {
-            Transport t = e.getValue();
-            t.start();
-        }
+    public String getSiteId() {
+        return siteId;
     }
 
     public void addSensor(SensorContext context, ISensor sensor) {

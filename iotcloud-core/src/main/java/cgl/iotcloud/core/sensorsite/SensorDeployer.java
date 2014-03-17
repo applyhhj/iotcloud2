@@ -1,9 +1,7 @@
 package cgl.iotcloud.core.sensorsite;
 
-import cgl.iotcloud.core.Configurator;
-import cgl.iotcloud.core.ISensor;
-import cgl.iotcloud.core.SensorContext;
-import cgl.iotcloud.core.Utils;
+import cgl.iotcloud.core.*;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,8 @@ public class SensorDeployer {
 
     private Map conf;
 
+    private MasterClient client;
+
     public SensorDeployer(Map conf, SiteContext siteContext, BlockingQueue<SensorEvent> events) {
         this.conf = conf;
         this.siteContext = siteContext;
@@ -28,6 +28,8 @@ public class SensorDeployer {
     }
 
     public void start() {
+        client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
+
         Thread t = new Thread(new Worker());
         t.start();
     }
@@ -92,8 +94,17 @@ public class SensorDeployer {
 
             // open the sensor
             sensor.open(sensorContext);
+
+            // notify the master about the sensor
+            client.registerSensor(siteContext.getSiteId(), siteContext.getSensor(sensorContext.getId()));
         } catch (MalformedURLException e) {
-            throw new RuntimeException("The jar name is not a correct url");
+            String msg = "The jar name is not a correct url";
+            LOG.error(msg);
+            throw new RuntimeException(msg, e);
+        } catch (TException e) {
+            String msg = "Failed to add the sensor to master";
+            LOG.error(msg);
+            throw new RuntimeException(msg, e);
         }
     }
 }
