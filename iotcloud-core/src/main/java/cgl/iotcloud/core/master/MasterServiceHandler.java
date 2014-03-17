@@ -35,7 +35,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         String host = request.getHost();
         int port = request.getPort();
 
-        SensorSiteDescriptor descriptor = new SensorSiteDescriptor(id, port, host);
+        SiteDescriptor descriptor = new SiteDescriptor(id, port, host);
         descriptor.setMetadata(request.getMetadata());
 
         masterContext.addSensorSite(descriptor);

@@ -5,6 +5,7 @@ import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
+import org.apache.log4j.helpers.LogLog;
 import org.apache.thrift.TException;
 
 import java.util.concurrent.BlockingQueue;
@@ -28,6 +29,8 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
     @Override
     public TResponse deploySensor(TSensorDetails sensor) throws TException {
+        LogLog.debug("Request received for deploying a sensor {}" + sensor);
+
         String className = sensor.getClassName();
         String jarName = sensor.getFilename();
 
@@ -44,6 +47,8 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
     @Override
     public TResponse startSensor(TSensorId id) throws TException {
+        LogLog.debug("Request received for starting a sensor with ID {}" + id);
+
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
                 SensorEventState.ACTIVATE);
         try {
@@ -56,6 +61,8 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
     @Override
     public TResponse stopSensor(TSensorId id) throws TException {
+        LogLog.debug("Request received for stopping a sensor with ID {}" + id);
+
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
                 SensorEventState.DEACTIVATE);
         try {

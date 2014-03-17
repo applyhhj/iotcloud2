@@ -3,14 +3,14 @@ package cgl.iotcloud.core.sensorsite;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 
-public class SiteSensorDescriptor {
+public class SensorDescriptor {
     private SensorContext sensorContext;
 
     private ISensor sensor;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SiteSensorDescriptor(SensorContext sensorContext, ISensor sensor) {
+    public SensorDescriptor(SensorContext sensorContext, ISensor sensor) {
         this.sensorContext = sensorContext;
         this.sensor = sensor;
     }

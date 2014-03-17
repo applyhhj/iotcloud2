@@ -74,7 +74,7 @@ public class SensorSite {
             t.start();
         }
 
-        sensorEvents = new ArrayBlockingQueue<SensorEvent>(1024);
+        sensorEvents = new ArrayBlockingQueue<SensorEvent>(Configuration.getSiteMaxSensorEvents(conf));
 
         sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
         sensorDeployer.start();

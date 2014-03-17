@@ -15,6 +15,7 @@ public class Configuration {
 
     // the maximum number of sensor sites possible
     public static final String IOT_SENSOR_SITES_MAX = "iot.sensorsites.max";
+    public static final String IOT_SENSORSITE_MAX_SENSOREVENTS = "iot.sensorsite.max.sensorevents";
 
     // transport specific configurations
     // this map holds the available transports
@@ -80,5 +81,9 @@ public class Configuration {
 
     public static int getIotSensorSitesMax(Map conf) {
         return (Integer) conf.get(IOT_SENSOR_SITES_MAX);
+    }
+    
+    public static int getSiteMaxSensorEvents(Map conf) {
+        return (Integer) conf.get(IOT_SENSORSITE_MAX_SENSOREVENTS);
     }
 }

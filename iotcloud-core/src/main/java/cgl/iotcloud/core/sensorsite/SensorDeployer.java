@@ -45,15 +45,15 @@ public class SensorDeployer {
                             SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
                             deploySensor(conf, siteContext, deployDescriptor);
                         } else if (event.getState() == SensorEventState.ACTIVATE) {
-                            SiteSensorDescriptor descriptorSite = siteContext.getSensor(event.getSensorId());
-                            if (descriptorSite != null) {
-                                ISensor sensor = descriptorSite.getSensor();
+                            SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
+                            if (descriptor != null) {
+                                ISensor sensor = descriptor.getSensor();
                                 sensor.activate();
                             }
                         } else if (event.getState() == SensorEventState.DEACTIVATE) {
-                            SiteSensorDescriptor descriptorSite = siteContext.getSensor(event.getSensorId());
-                            if (descriptorSite != null) {
-                                ISensor sensor = descriptorSite.getSensor();
+                            SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
+                            if (descriptor != null) {
+                                ISensor sensor = descriptor.getSensor();
                                 sensor.deactivate();
                             }
                         }

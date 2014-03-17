@@ -9,25 +9,25 @@ import java.util.List;
 import java.util.Map;
 
 public class MasterContext {
-    private Map<String, SensorSiteDescriptor> sites = new HashMap<String, SensorSiteDescriptor>();
+    private Map<String, SiteDescriptor> sites = new HashMap<String, SiteDescriptor>();
 
     private Map<String, List<SensorDetails>> siteSensors = new HashMap<String, List<SensorDetails>>();
 
     private Map<String, List<SensorDetails>> deactivatedSiteSensors = new HashMap<String, List<SensorDetails>>();
 
-    private Map<String, SensorSiteDescriptor> deactivatedSites = new HashMap<String, SensorSiteDescriptor>();
+    private Map<String, SiteDescriptor> deactivatedSites = new HashMap<String, SiteDescriptor>();
 
     private List<SensorDeployDescriptor> sensorsTobeDeployed = new ArrayList<SensorDeployDescriptor>();
 
-    public void addSensorSite(SensorSiteDescriptor sensorSite) {
-        sites.put(sensorSite.getId(), sensorSite);
+    public void addSensorSite(SiteDescriptor site) {
+        sites.put(site.getId(), site);
     }
 
-    public SensorSiteDescriptor getSensorSite(String siteId) {
+    public SiteDescriptor getSensorSite(String siteId) {
         return sites.get(siteId);
     }
 
-    public Map<String, SensorSiteDescriptor> getSensorSites() {
+    public Map<String, SiteDescriptor> getSensorSites() {
         return sites;
     }
 
@@ -49,8 +49,8 @@ public class MasterContext {
 
     public void makeSiteOffline(String site) {
         if (!siteSensors.containsKey(site)) {
-            SensorSiteDescriptor sensorSiteDescriptor = sites.get(site);
-            deactivatedSites.put(site, sensorSiteDescriptor);
+            SiteDescriptor siteDescriptor = sites.get(site);
+            deactivatedSites.put(site, siteDescriptor);
             deactivatedSiteSensors.put(site, siteSensors.get(site));
 
             sites.remove(site);

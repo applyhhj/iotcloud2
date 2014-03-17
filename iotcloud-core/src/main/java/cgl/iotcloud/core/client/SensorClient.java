@@ -2,7 +2,7 @@ package cgl.iotcloud.core.client;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.api.thrift.*;
-import cgl.iotcloud.core.master.SensorSiteDescriptor;
+import cgl.iotcloud.core.master.SiteDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -38,13 +38,13 @@ public class SensorClient {
         }
     }
 
-    public SensorSiteDescriptor getSensorSite(String id) {
+    public SiteDescriptor getSensorSite(String id) {
         try {
             TSiteDetailsResponse response = this.client.getSite(id);
             if (response.getState().getState() == TResponseState.SUCCESS) {
                 TSiteDetails details = response.getDetails();
-                SensorSiteDescriptor siteDescriptor =
-                        new SensorSiteDescriptor(details.getSiteId(), details.getPort(), details.getHost());
+                SiteDescriptor siteDescriptor =
+                        new SiteDescriptor(details.getSiteId(), details.getPort(), details.getHost());
                 return siteDescriptor;
             }
             return null;

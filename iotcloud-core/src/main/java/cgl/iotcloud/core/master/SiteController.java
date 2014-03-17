@@ -67,10 +67,10 @@ public class SiteController {
                             // stop the timers
                             heartBeats.stopForSite(event.getSiteId());
                         } else if (event.getStatus() == SiteEvent.State.ACTIVE) {
-                            SensorSiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
-                            SensorSiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
                             SensorSiteClient client = new SensorSiteClient(descriptor.getHost(), descriptor.getPort());
                             siteClients.put(event.getSiteId(), client);
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
