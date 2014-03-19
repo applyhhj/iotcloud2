@@ -4,6 +4,7 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
+import org.apache.thrift.TException;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TNonblockingServerTransport;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -35,8 +37,10 @@ public class SensorSite {
         // read the configuration file
         conf = Utils.readConfig();
 
+        String siteId = UUID.randomUUID().toString().replaceAll("-", "");
+
         // create the site context
-        siteContext = new SiteContext();
+        siteContext = new SiteContext(siteId);
 
         // read the available transports and register them
         Map transports = Configuration.getTransports(conf);
@@ -103,6 +107,20 @@ public class SensorSite {
             }
         });
         t.run();
+
+
+        try {
+            if (!registerSite()) {
+                String msg = "Failed to register the site. stopping the site";
+                stop();
+                LOG.error(msg);
+            }
+        } catch (TException e) {
+            String msg = "Error registering the site. stopping the site";
+            LOG.error(msg);
+            stop();
+            throw new RuntimeException(msg);
+        }
     }
 
     public void stop() {
@@ -151,5 +169,14 @@ public class SensorSite {
             LOG.error("Error loading the class {}", className, e);
             throw new RuntimeException("Error loading the class " + className, e);
         }
+    }
+
+    private boolean registerSite() throws TException {
+        // now register the site
+        String masterHost = Configuration.getMasterHost(conf);
+        int masterServerPort = Configuration.getMasterServerPort(conf);
+
+        MasterClient client = new MasterClient(masterHost, masterServerPort);
+        return client.registerSite(siteContext.getSiteId(), masterHost, masterServerPort);
     }
 }

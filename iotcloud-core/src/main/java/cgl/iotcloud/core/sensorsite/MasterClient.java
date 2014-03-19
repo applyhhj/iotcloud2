@@ -1,10 +1,7 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.SensorContext;
-import cgl.iotcloud.core.api.thrift.TChannel;
-import cgl.iotcloud.core.api.thrift.TDirection;
-import cgl.iotcloud.core.api.thrift.TSensor;
-import cgl.iotcloud.core.api.thrift.TSensorId;
+import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
 import cgl.iotcloud.core.transport.Channel;
@@ -28,8 +25,9 @@ public class MasterClient {
         this.client = new TMasterService.Client(protocol);
     }
 
-    public void registerSite(String siteId, String siteHost, int sitePort) throws TException {
-        client.registerSite(new TRegisterSiteRequest(siteId, sitePort, siteHost));
+    public boolean registerSite(String siteId, String siteHost, int sitePort) throws TException {
+        TResponse response = client.registerSite(new TRegisterSiteRequest(siteId, sitePort, siteHost));
+        return response.getState() == TResponseState.SUCCESS;
     }
 
     public void registerSensor(String siteId, SensorDescriptor sensor) throws TException {

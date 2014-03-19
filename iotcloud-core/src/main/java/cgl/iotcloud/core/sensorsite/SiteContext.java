@@ -18,6 +18,10 @@ public class SiteContext {
 
     private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
 
+    public SiteContext(String siteId) {
+        this.siteId = siteId;
+    }
+
     public String getSiteId() {
         return siteId;
     }
