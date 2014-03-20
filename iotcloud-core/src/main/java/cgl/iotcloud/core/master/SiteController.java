@@ -62,14 +62,19 @@ public class SiteController {
                     try {
                         SiteEvent event = siteEventsQueue.take();
                         if (event.getStatus() == SiteEvent.State.DEACTIVATED) {
+                            LOG.info("Deactivating the site {}", event.getSiteId());
                             // TODO we need to call a load balancer or something like that here
                             context.makeSiteOffline(event.getSiteId());
                             // stop the timers
                             heartBeats.stopForSite(event.getSiteId());
                         } else if (event.getStatus() == SiteEvent.State.ACTIVE) {
+                            LOG.info("Activating the site {}", event.getSiteId());
+
                             SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
+                            LOG.info("A new site added {}", event.getSiteId());
+
                             SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
                             SiteClient client = new SiteClient(descriptor.getHost(), descriptor.getPort());
                             siteClients.put(event.getSiteId(), client);
@@ -112,11 +117,11 @@ public class SiteController {
                         } else if (event.getState() == SensorEventState.ACTIVATE) {
                             startSensors(event);
                         } else if (event.getState() == SensorEventState.DEPLOY) {
-                            deploySensors(event);
+                            deploySensors();
                         } else if (event.getState() == SensorEventState.ADD) {
-                            addSensors(event);
+                            addSensors();
                         } else if (event.getState() == SensorEventState.REMOVE) {
-                            addSensors(event);
+                            removeSensors();
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for site changes", e);
@@ -141,11 +146,15 @@ public class SiteController {
         }
     }
 
-    private void addSensors(MasterSensorEvent event) {
+    private void removeSensors() {
+
+    }
+
+    private void addSensors() {
         // nothing to do
     }
 
-    private void deploySensors(MasterSensorEvent event) {
+    private void deploySensors() {
         List<SensorDeployDescriptor> sensorDeployDescriptors = context.getSensorsTobeDeployed();
 
         Iterator<SensorDeployDescriptor> itr = sensorDeployDescriptors.iterator();

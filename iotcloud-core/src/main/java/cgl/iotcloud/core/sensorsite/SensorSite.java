@@ -98,6 +98,7 @@ public class SensorSite {
                                     new TSensorSiteService.Processor <SensorSiteService>(
                                             new SensorSiteService(siteContext, sensorEvents))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
+                    LOG.info("Starting the SensorSite server on host: {} and port: {}", host, port);
                     server.serve();
                 } catch (TTransportException e) {
                     String msg = "Error starting the Thrift server";
