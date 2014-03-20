@@ -73,10 +73,10 @@ public class JMSTransport implements Transport {
             }
 
             if (channel.getDirection() == Direction.OUT) {
-                JMSSender sender = new JMSSender(connection, session, dest, channel.getOutQueue());
+                JMSSender sender = new JMSSender(connection, session, dest, channel.getOutQueue(), channel.getConverter());
                 senders.put(name, sender);
             } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(connection, session, dest, channel.getInQueue());
+                JMSListener listener = new JMSListener(connection, session, dest, channel.getInQueue(), channel.getConverter());
                 listeners.put(name, listener);
             }
         } catch (JMSException e) {

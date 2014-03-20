@@ -1,8 +1,8 @@
 package cgl.iotcloud.core.transport;
 
-public class IdentityConverter implements MessageConverter {
+public class IdentityConverter implements MessageProcessor {
     @Override
-    public Object convert(Object input) {
+    public Object process(Object input) {
         return input;
     }
 }

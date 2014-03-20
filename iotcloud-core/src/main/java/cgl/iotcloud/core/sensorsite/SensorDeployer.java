@@ -1,6 +1,8 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
+import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.Transport;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -92,10 +95,23 @@ public class SensorDeployer {
             ISensor sensor = Utils.loadSensor(new URL(deployDescriptor.getJarName()),
                     deployDescriptor.getClassName(), this.getClass().getClassLoader());
 
+            // get the sensor specific configurations
             Configurator configurator = sensor.getConfigurator(conf);
             SensorContext sensorContext = configurator.configure(siteContext);
 
+            // add the sensor to the site
             siteContext.addSensor(sensorContext, sensor);
+
+            // get the channels registered for this sensor
+            Map<String, List<Channel>> channels = sensorContext.getChannels();
+            for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
+                Transport t = siteContext.getTransport(entry.getKey());
+                if (t != null) {
+                    for (Channel c : entry.getValue()) {
+                        t.registerChannel(c.getName(), c);
+                    }
+                }
+            }
 
             // open the sensor
             sensor.open(sensorContext);

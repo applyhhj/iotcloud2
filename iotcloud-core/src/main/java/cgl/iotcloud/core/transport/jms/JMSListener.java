@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.transport.jms;
 
+import cgl.iotcloud.core.transport.MessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +20,19 @@ public class JMSListener {
 
     private MessageConsumer consumer;
 
-    public JMSListener(Connection connection, Session session, Destination destination, BlockingQueue<Message> inQueue) {
+    private MessageConverter converter;
+
+    public JMSListener(Connection connection, Session session, Destination destination, BlockingQueue<Message> inQueue,
+                       MessageConverter converter) {
+
+        if (connection == null || session == null || destination == null || inQueue == null || converter == null) {
+            throw new IllegalArgumentException("All the parameters are mandatory");
+        }
         this.connection = connection;
         this.session = session;
         this.destination = destination;
         this.inQueue = inQueue;
+        this.converter = converter;
     }
 
     public void start(){
@@ -33,7 +42,10 @@ public class JMSListener {
                 @Override
                 public void onMessage(Message message) {
                     try {
-                        inQueue.put(message);
+                        Object input = converter.convert(message, null);
+                        if (input != null) {
+                            inQueue.put(message);
+                        }
                     } catch (InterruptedException e) {
                         LOG.error("Failed to put the message to queue", e);
                     }

@@ -3,39 +3,51 @@ package cgl.iotcloud.core.transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-public class Channel <I, O> {
+public class Channel {
     private static Logger LOG = LoggerFactory.getLogger(Channel.class);
 
-    private BlockingQueue<I> inQueue;
+    private BlockingQueue inQueue;
 
-    private BlockingQueue<O> outQueue;
+    private BlockingQueue outQueue;
 
-    private MessageConverter<I, O> converter;
+    private List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
 
-    private Map properties;
+    private Map properties = new HashMap();
 
     private Direction direction;
 
-    public Channel(Direction direction, Map properties,
-                   BlockingQueue<I> inQueue, BlockingQueue<O> outQueue) {
+    private String name;
+
+    private MessageConverter converter;
+
+    public Channel(String name, Direction direction,
+                   BlockingQueue inQueue, BlockingQueue outQueue, MessageConverter converter) {
+        this.name = name;
         this.inQueue = inQueue;
         this.outQueue = outQueue;
-        this.properties = properties;
         this.direction = direction;
-    }
-
-    public void setConverter(MessageConverter<I, O> converter) {
         this.converter = converter;
     }
 
-    public BlockingQueue<I> getInQueue() {
+    public String getName() {
+        return name;
+    }
+
+    public void addMessageProcessor(MessageProcessor messageProcessor) {
+        this.messageProcessors.add(messageProcessor);
+    }
+
+    public BlockingQueue getInQueue() {
         return inQueue;
     }
 
-    public BlockingQueue<O> getOutQueue() {
+    public BlockingQueue getOutQueue() {
         return outQueue;
     }
 
@@ -52,6 +64,15 @@ public class Channel <I, O> {
         t.start();
     }
 
+    public MessageConverter getConverter() {
+        return converter;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void addProperties(Map properties) {
+        properties.putAll(properties);
+    }
+
     private class Worker implements Runnable {
         @Override
         public void run() {
@@ -60,9 +81,15 @@ public class Channel <I, O> {
             while (run) {
                 try {
                     try {
-                        I input = inQueue.take();
-                        O out = converter.convert(input);
-                        outQueue.put(out);
+                        Object input = null;
+                        Object out = null;
+                        for (MessageProcessor mp : messageProcessors) {
+                            input = inQueue.take();
+                            out = mp.process(input);
+                        }
+                        if (out != null) {
+                            outQueue.put(out);
+                        }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }
@@ -82,5 +109,16 @@ public class Channel <I, O> {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Channel channel = (Channel) o;
+        return !(name != null ? !name.equals(channel.name) : channel.name != null);
+    }
 
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

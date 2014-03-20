@@ -43,6 +43,18 @@ public class SensorContext {
         channelsForTransport.add(channel);
     }
 
+    public Channel getChannel(String transport, String channel) {
+        if (channels.containsKey(transport)) {
+            List<Channel> cs = channels.get(transport);
+            for (Channel c : cs) {
+                if (c.getName().equals(channel)) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setMetadata(Object metadata) {
         this.metadata = metadata;
     }
