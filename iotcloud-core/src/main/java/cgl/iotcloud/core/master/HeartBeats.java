@@ -1,5 +1,8 @@
 package cgl.iotcloud.core.master;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -7,6 +10,8 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
 public class HeartBeats {
+    private static Logger LOG = LoggerFactory.getLogger(HeartBeats.class);
+
     int retries = 1;
 
     private BlockingQueue<SiteEvent> eventsQueue;
@@ -48,23 +53,38 @@ public class HeartBeats {
         }
 
         public void run() {
-            SiteClient client = new SiteClient(host, port);
+            boolean success = false;
+            int tries = 0;
+            while (!success && tries < retries) {
+                SiteClient client = null;
+                try {
+                    client = new SiteClient(host, port);
+                    boolean result = client.sendHearBeat();
+                    if (result) success = true;
+                } catch (Exception e) {
+                    LOG.debug("Sensor site not reachable",e);
+                    success = false;
+                } finally {
+                    if (client != null) {
+                        client.close();
+                    }
+                }
+                tries++;
 
-            boolean result = client.sendHearBeat();
-            if (!result && status != SiteEvent.State.DEACTIVATED) {
-                // remove the site and its sensors from the master context
-                SiteEvent event = new SiteEvent(id, SiteEvent.State.DEACTIVATED);
-                status = SiteEvent.State.DEACTIVATED;
-                eventsQueue.add(event);
-            } else if (result && status == SiteEvent.State.DEACTIVATED) {
-                SiteEvent event = new SiteEvent(id, SiteEvent.State.ACTIVE);
-                status = SiteEvent.State.ACTIVE;
-                eventsQueue.add(event);
+                if (!success && tries >= retries && status != SiteEvent.State.DEACTIVATED) {
+                    // remove the site and its sensors from the master context
+                    SiteEvent event = new SiteEvent(id, SiteEvent.State.DEACTIVATED);
+                    status = SiteEvent.State.DEACTIVATED;
+                    eventsQueue.add(event);
+
+                    LOG.info("Deactivating the site with host: {} and port: {}", host, port);
+                } else if (success && status == SiteEvent.State.DEACTIVATED) {
+                    SiteEvent event = new SiteEvent(id, SiteEvent.State.ACTIVE);
+                    status = SiteEvent.State.ACTIVE;
+                    eventsQueue.add(event);
+                    LOG.info("Activating the site with host: {} and port: {}", host, port);
+                }
             }
-        }
-
-        public void setStatus(SiteEvent.State status) {
-            this.status = status;
         }
     }
 }

@@ -75,8 +75,8 @@ public class SensorMaster {
                     siteServer.serve();
                 } catch (TTransportException e) {
                     String msg = "Error starting the Thrift server";
-                    LOG.error(msg);
-                    throw new RuntimeException(msg);
+                    LOG.error(msg, e);
+                    throw new RuntimeException(msg, e);
                 }
             }
         });
@@ -101,8 +101,8 @@ public class SensorMaster {
                     apiServer.serve();
                 } catch (TTransportException e) {
                     String msg = "Error starting the Thrift server";
-                    LOG.error(msg);
-                    throw new RuntimeException(msg);
+                    LOG.error(msg, e);
+                    throw new RuntimeException(msg, e);
                 }
             }
         });
@@ -111,12 +111,19 @@ public class SensorMaster {
     }
 
     public void stop() {
+
         // stop receiving requests from clients
-        apiServer.stop();
+        if (apiServer != null) {
+            apiServer.stop();
+        }
         // stop handling the controller requests
-        manager.stop();
+        if (manager != null) {
+            manager.stop();
+        }
         // stop receiving requests from sites
-        siteServer.stop();
+        if (siteServer != null) {
+            siteServer.stop();
+        }
     }
 
     public static void main(String[] args) {

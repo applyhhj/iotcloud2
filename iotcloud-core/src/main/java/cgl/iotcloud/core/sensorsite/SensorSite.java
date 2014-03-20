@@ -107,7 +107,7 @@ public class SensorSite {
                 }
             }
         });
-        t.run();
+        t.start();
 
 
         try {
@@ -118,9 +118,9 @@ public class SensorSite {
             }
         } catch (TException e) {
             String msg = "Error registering the site. stopping the site";
-            LOG.error(msg);
+            LOG.error(msg, e);
             stop();
-            throw new RuntimeException(msg);
+            throw new RuntimeException(msg, e);
         }
     }
 
@@ -176,8 +176,19 @@ public class SensorSite {
         // now register the site
         String masterHost = Configuration.getMasterHost(conf);
         int masterServerPort = Configuration.getMasterServerPort(conf);
+        MasterClient client = null;
+        try {
+            client = new MasterClient(masterHost, masterServerPort);
 
-        MasterClient client = new MasterClient(masterHost, masterServerPort);
-        return client.registerSite(siteContext.getSiteId(), masterHost, masterServerPort);
+            String siteHost = Configuration.getSensorSiteHost(conf);
+            int siteServerPort = Configuration.getSensorSitePort(conf);
+
+            return client.registerSite(siteContext.getSiteId(), siteHost, siteServerPort);
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+
     }
 }

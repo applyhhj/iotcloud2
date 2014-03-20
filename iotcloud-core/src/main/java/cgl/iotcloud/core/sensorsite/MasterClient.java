@@ -8,9 +8,12 @@ import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +21,15 @@ import java.util.Map;
 public class MasterClient {
     private TMasterService.Client client;
 
-    public MasterClient(String host, int port) {
-        TTransport transport = new TSocket(host, port);
-        TProtocol protocol = new TBinaryProtocol(transport);
+    private TTransport transport;
 
+    public MasterClient(String host, int port) throws TTransportException {
+        TSocket socket = new TSocket(host, port);
+        transport = new TFramedTransport(socket);
+        TProtocol protocol = new TBinaryProtocol(transport);
         this.client = new TMasterService.Client(protocol);
+
+        transport.open();
     }
 
     public boolean registerSite(String siteId, String siteHost, int sitePort) throws TException {
@@ -58,5 +65,9 @@ public class MasterClient {
         TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
 
         client.unRegisterSensor(siteId, tSensorId);
+    }
+
+    public void close() {
+        transport.close();
     }
 }

@@ -2,6 +2,7 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
 import org.apache.thrift.TException;
+import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,11 @@ public class SensorDeployer {
     }
 
     public void start() {
-        client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
+        try {
+            client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
+        } catch (TTransportException e) {
+            throw new RuntimeException("Failed to create the connection to the master server", e);
+        }
 
         Thread t = new Thread(new Worker());
         t.start();
