@@ -16,7 +16,7 @@ public class JMSSender {
 
     private Destination dest;
 
-    private BlockingQueue<Message> outQueue;
+    private BlockingQueue outQueue;
 
     private MessageProducer producer;
 

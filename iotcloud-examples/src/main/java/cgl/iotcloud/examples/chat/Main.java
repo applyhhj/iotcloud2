@@ -19,7 +19,7 @@ public class Main {
 
             List<String> sites = client.getSensorSites();
 
-            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("file:///home/supun/dev/projects/iotcloud2/lib/iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.ChatSensor");
+            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("file:///home/supun/dev/pti/iotcloud2/lib/iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.ChatSensor");
             deployDescriptor.addDeploySites(sites);
 
             client.deploySensor(deployDescriptor);

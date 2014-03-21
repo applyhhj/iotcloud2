@@ -117,7 +117,7 @@ public class ChatSensor implements ISensor {
         public Object convert(Object input, Object context) {
             if (input instanceof TextMessage) {
                 try {
-                    SensorTextMessage message = new SensorTextMessage(((TextMessage) input).getText());
+                    return new SensorTextMessage(((TextMessage) input).getText());
                 } catch (JMSException e) {
 
                 }
@@ -133,6 +133,8 @@ public class ChatSensor implements ISensor {
                 try {
                     TextMessage message = ((Session) context).createTextMessage();
                     message.setText(((SensorTextMessage) input).getText());
+
+                    return message;
                 } catch (JMSException e) {
 
                 }

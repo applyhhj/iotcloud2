@@ -16,7 +16,7 @@ public class JMSListener {
 
     private Destination dest;
 
-    private BlockingQueue<Message> inQueue;
+    private BlockingQueue inQueue;
 
     private MessageConsumer consumer;
 
@@ -28,7 +28,7 @@ public class JMSListener {
 
     String destination;
 
-    public JMSListener(ConnectionFactory conFactory, String destination, boolean topic, BlockingQueue<Message> inQueue,
+    public JMSListener(ConnectionFactory conFactory, String destination, boolean topic, BlockingQueue inQueue,
                        MessageConverter converter) throws JMSException {
 
         if (conFactory == null || destination == null || inQueue == null || converter == null) {
@@ -67,7 +67,6 @@ public class JMSListener {
                     }
                 }
             });
-            connection.start();
         } catch (JMSException e) {
             String msg = "Failed to create a message consumer for destination: " + destination;
             LOG.error(msg);
