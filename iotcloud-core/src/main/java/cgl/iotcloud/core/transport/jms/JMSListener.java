@@ -60,7 +60,7 @@ public class JMSListener {
                     try {
                         Object input = converter.convert(message, null);
                         if (input != null) {
-                            inQueue.put(message);
+                            inQueue.put(input);
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Failed to put the message to queue", e);

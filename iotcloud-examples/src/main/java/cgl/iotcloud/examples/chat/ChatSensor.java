@@ -119,7 +119,7 @@ public class ChatSensor implements ISensor {
                 try {
                     return new SensorTextMessage(((TextMessage) input).getText());
                 } catch (JMSException e) {
-
+                    e.printStackTrace();
                 }
             }
             return null;
@@ -136,7 +136,7 @@ public class ChatSensor implements ISensor {
 
                     return message;
                 } catch (JMSException e) {
-
+                    e.printStackTrace();
                 }
             }
             return null;
