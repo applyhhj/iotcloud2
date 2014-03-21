@@ -11,6 +11,7 @@
         <module>iotcloud-core</module>
         <module>iotcloud-storm</module>
         <module>iotcloud-examples</module>
+        <module>iotcloud-distribution</module>
     </modules>
 
     <properties>

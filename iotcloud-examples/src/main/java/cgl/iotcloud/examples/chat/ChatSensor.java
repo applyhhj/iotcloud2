@@ -119,7 +119,7 @@ public class ChatSensor implements ISensor {
                 try {
                     return new SensorTextMessage(((TextMessage) input).getText());
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    LOG.error("Failed to convert JMS message to SensorTextMessage", e);
                 }
             }
             return null;
@@ -136,7 +136,7 @@ public class ChatSensor implements ISensor {
 
                     return message;
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    LOG.error("Failed to convert SensorTextMessage to JMS message", e);
                 }
             }
             return null;

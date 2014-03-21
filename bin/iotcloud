@@ -374,7 +374,7 @@ def print_usage(command=None):
         print_commands()
 
 def unknown_command(*args):
-    print "Unknown command: [storm %s]" % ' '.join(sys.argv[1:])
+    print "Unknown command: [iot %s]" % ' '.join(sys.argv[1:])
     print_usage()
 
 COMMANDS = {"deploy": jar, "kill": kill, "shell": shell, "master": master, "supervisor": supervisor, "localconfvalue": print_localconfvalue,
