@@ -10,7 +10,7 @@ iot.sensorsite.port: 12905
 iot.sensorsite.threads: 4
 
 iot.sensorsite.transports:
-    -jms:
+    jms:
       class: "cgl.iotcloud.core.transport.jms.JMSTransport"
       properties:
             java.naming.factory.initial: "org.apache.activemq.jndi.ActiveMQInitialContextFactory"

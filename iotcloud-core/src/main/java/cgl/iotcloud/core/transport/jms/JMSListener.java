@@ -14,7 +14,7 @@ public class JMSListener {
 
     private Session session;
 
-    private Destination destination;
+    private Destination dest;
 
     private BlockingQueue<Message> inQueue;
 
@@ -22,22 +22,38 @@ public class JMSListener {
 
     private MessageConverter converter;
 
-    public JMSListener(Connection connection, Session session, Destination destination, BlockingQueue<Message> inQueue,
-                       MessageConverter converter) {
+    private ConnectionFactory conFactory;
 
-        if (connection == null || session == null || destination == null || inQueue == null || converter == null) {
+    boolean topic;
+
+    String destination;
+
+    public JMSListener(ConnectionFactory conFactory, String destination, boolean topic, BlockingQueue<Message> inQueue,
+                       MessageConverter converter) throws JMSException {
+
+        if (conFactory == null || destination == null || inQueue == null || converter == null) {
             throw new IllegalArgumentException("All the parameters are mandatory");
         }
-        this.connection = connection;
-        this.session = session;
-        this.destination = destination;
+        this.conFactory = conFactory;
+        this.topic = topic;
         this.inQueue = inQueue;
         this.converter = converter;
+        this.destination = destination;
     }
 
     public void start(){
         try {
-            consumer = session.createConsumer(destination);
+            this.connection = conFactory.createConnection();
+            this.connection.start();
+
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            if (topic) {
+                dest = session.createTopic(destination);
+            } else {
+                dest = session.createQueue(destination);
+            }
+
+            consumer = session.createConsumer(dest);
             consumer.setMessageListener(new MessageListener() {
                 @Override
                 public void onMessage(Message message) {

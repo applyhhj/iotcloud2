@@ -32,7 +32,7 @@ public class ChatSensor implements ISensor {
         this.context = context;
 
         final Channel sendChannel = context.getChannel("jms", "sender");
-        final Channel receiveChannel = context.getChannel("jms", "receive");
+        final Channel receiveChannel = context.getChannel("jms", "receiver");
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -40,6 +40,7 @@ public class ChatSensor implements ISensor {
                 while (true) {
                     try {
                         sendChannel.getInQueue().put(new SensorTextMessage("Hello"));
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
 
                     }
@@ -89,8 +90,8 @@ public class ChatSensor implements ISensor {
             BlockingQueue<Message> outMassages = new ArrayBlockingQueue<Message>(1024);
             Map properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
-            properties.put(Configuration.CHANNEL_JMS_DESTINATION, "receiver");
-            Channel receiveChannel = new Channel("receive", Direction.IN, inMassages, outMassages, new JMSToTextMessageConverter());
+            properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
+            Channel receiveChannel = new Channel("receiver", Direction.IN, inMassages, outMassages, new JMSToTextMessageConverter());
             receiveChannel.addProperties(properties);
             context.addChannel("jms", receiveChannel);
 
@@ -98,8 +99,8 @@ public class ChatSensor implements ISensor {
             outMassages = new ArrayBlockingQueue<Message>(1024);
             properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
-            properties.put(Configuration.CHANNEL_JMS_DESTINATION, "sender");
-            Channel sendChannel = new Channel("send", Direction.OUT, inMassages, outMassages, new TextToJMSMessageConverter());
+            properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
+            Channel sendChannel = new Channel("sender", Direction.OUT, inMassages, outMassages, new TextToJMSMessageConverter());
             sendChannel.addProperties(properties);
             context.addChannel("jms", sendChannel);
 

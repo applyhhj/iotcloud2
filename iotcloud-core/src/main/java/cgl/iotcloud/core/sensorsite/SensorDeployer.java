@@ -67,7 +67,7 @@ public class SensorDeployer {
                                 sensor.deactivate();
                             }
                         }
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }
                 } catch (Throwable t) {

@@ -70,7 +70,7 @@ public class Channel {
 
     @SuppressWarnings("unchecked")
     public void addProperties(Map properties) {
-        properties.putAll(properties);
+        this.properties.putAll(properties);
     }
 
     private class Worker implements Runnable {

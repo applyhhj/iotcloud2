@@ -7,8 +7,10 @@ import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 
 import java.util.List;
 import java.util.Map;
@@ -18,15 +20,17 @@ public class SensorClient {
 
     private Map conf;
 
-    public SensorClient(Map conf) {
+    public SensorClient(Map conf) throws TTransportException {
         this.conf = conf;
 
         String host = Configuration.getMasterHost(conf);
         int port = Configuration.getMasterAPIPort(conf);
 
-        TTransport transport = new TSocket(host, port);
-        TProtocol protocol = new TBinaryProtocol(transport);
+        TSocket socket = new TSocket(host, port);
+        TTransport transport = new TFramedTransport(socket);
 
+        TProtocol protocol = new TBinaryProtocol(transport);
+        transport.open();
         this.client = new TMasterAPIService.Client(protocol);
     }
 
@@ -62,6 +66,4 @@ public class SensorClient {
             throw new RuntimeException("Failed to deploy the sensor", e);
         }
     }
-
-
 }

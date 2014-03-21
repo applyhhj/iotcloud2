@@ -14,34 +14,44 @@ public class JMSSender {
 
     private Session session;
 
-    private Destination destination;
+    private Destination dest;
 
-    private BlockingQueue outQueue;
+    private BlockingQueue<Message> outQueue;
 
     private MessageProducer producer;
 
     private MessageConverter converter;
 
-    public JMSSender(Connection connection, Session session, Destination destination,
-                     BlockingQueue outQueue, MessageConverter converter) {
-        this.connection = connection;
-        this.session = session;
-        this.destination = destination;
-        this.outQueue = outQueue;
-        this.converter = converter;
+    private ConnectionFactory conFactory;
 
-        try {
-            producer = session.createProducer(destination);
-        } catch (JMSException e) {
-            String msg = "Failed to create a message producer for destination: " + destination;
-            LOG.error(msg);
-            throw new RuntimeException(msg, e);
+    boolean topic;
+
+    String destination;
+
+    public JMSSender(ConnectionFactory conFactory, String destination, boolean topic,
+                     BlockingQueue outQueue, MessageConverter converter) {
+        if (conFactory == null || destination == null || outQueue == null || converter == null) {
+            throw new IllegalArgumentException("All the parameters are mandatory");
         }
+        this.conFactory = conFactory;
+        this.topic = topic;
+        this.outQueue  = outQueue;
+        this.converter = converter;
+        this.destination = destination;
     }
 
     public void start(){
         try {
-            connection.start();
+            this.connection = conFactory.createConnection();
+            this.connection.start();
+
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            if (topic) {
+                dest = session.createTopic(destination);
+            } else {
+                dest = session.createQueue(destination);
+            }
+            producer = session.createProducer(dest);
             // start the thread to listen
             Thread t = new Thread(new Worker());
             t.start();
@@ -74,7 +84,7 @@ public class JMSSender {
                         Object input = outQueue.take();
                         Object converted = converter.convert(input, session);
                         if (converted instanceof Message) {
-                            producer.send(destination, (Message) converted);
+                            producer.send(dest, (Message) converted);
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);

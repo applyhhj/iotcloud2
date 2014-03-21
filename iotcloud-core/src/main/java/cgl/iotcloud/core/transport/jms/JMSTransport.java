@@ -63,20 +63,11 @@ public class JMSTransport implements Transport {
         }
 
         try {
-            Connection connection = conFactory.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Destination dest;
-            if (topic) {
-                dest = session.createTopic(destination);
-            } else {
-                dest = session.createQueue(destination);
-            }
-
             if (channel.getDirection() == Direction.OUT) {
-                JMSSender sender = new JMSSender(connection, session, dest, channel.getOutQueue(), channel.getConverter());
+                JMSSender sender = new JMSSender(conFactory, destination, topic, channel.getOutQueue(), channel.getConverter());
                 senders.put(name, sender);
             } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(connection, session, dest, channel.getInQueue(), channel.getConverter());
+                JMSListener listener = new JMSListener(conFactory, destination, topic, channel.getInQueue(), channel.getConverter());
                 listeners.put(name, listener);
             }
         } catch (JMSException e) {
