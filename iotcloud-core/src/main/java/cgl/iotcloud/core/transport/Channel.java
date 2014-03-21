@@ -81,15 +81,17 @@ public class Channel {
             while (run) {
                 try {
                     try {
-                        Object input = null;
+                        Object input = inQueue.take();
                         Object out = null;
-                        for (MessageProcessor mp : messageProcessors) {
-                            input = inQueue.take();
-                            out = mp.process(input);
+                        if (!messageProcessors.isEmpty()) {
+                            for (MessageProcessor mp : messageProcessors) {
+                                out = mp.process(input);
+                                input = out;
+                            }
+                        } else {
+                            out = input;
                         }
-                        if (out != null) {
-                            outQueue.put(out);
-                        }
+                        outQueue.put(out);
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }

@@ -42,7 +42,7 @@ public class ChatSensor implements ISensor {
                         sendChannel.getInQueue().put(new SensorTextMessage("Hello"));
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-
+                        e.printStackTrace();
                     }
                 }
             }
@@ -55,8 +55,11 @@ public class ChatSensor implements ISensor {
                 while (true) {
                     try {
                         Object o = receiveChannel.getOutQueue().take();
-                    } catch (InterruptedException e) {
+                        if (o instanceof SensorTextMessage)
+                            System.out.println(((SensorTextMessage) o).getText());
 
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }

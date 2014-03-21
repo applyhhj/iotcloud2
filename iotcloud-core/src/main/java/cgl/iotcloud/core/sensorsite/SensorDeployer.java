@@ -104,11 +104,13 @@ public class SensorDeployer {
 
             // get the channels registered for this sensor
             Map<String, List<Channel>> channels = sensorContext.getChannels();
+
             for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
                 Transport t = siteContext.getTransport(entry.getKey());
                 if (t != null) {
                     for (Channel c : entry.getValue()) {
                         t.registerChannel(c.getName(), c);
+                        c.open();
                     }
                 }
             }
