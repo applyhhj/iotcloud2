@@ -38,10 +38,10 @@ if sys.platform == "cygwin":
 else:
     normclasspath = identity
 
-STORM_DIR = "/".join(os.path.realpath( __file__ ).split("/")[:-2])
-USER_CONF_DIR = os.path.expanduser("~/.storm")
-CLUSTER_CONF_DIR = STORM_DIR + "/conf"
-if (not os.path.isfile(USER_CONF_DIR + "/storm.yaml")):
+IOT_DIR = "/".join(os.path.realpath( __file__ ).split("/")[:-2])
+USER_CONF_DIR = os.path.expanduser("~/.iot")
+CLUSTER_CONF_DIR = IOT_DIR + "/conf"
+if (not os.path.isfile(USER_CONF_DIR + "/iot.yaml")):
     USER_CONF_DIR = CLUSTER_CONF_DIR
 CONFIG_OPTS = []
 CONFFILE = ""
@@ -50,12 +50,12 @@ JAR_JVM_OPTS = os.getenv('STORM_JAR_JVM_OPTS', '')
 
 def get_config_opts():
     global CONFIG_OPTS
-    return "-Dstorm.options=" + (','.join(CONFIG_OPTS)).replace(' ', "%%%%")
+    return "-Diot.options=" + (','.join(CONFIG_OPTS)).replace(' ', "%%%%")
 
-if not os.path.exists(STORM_DIR + "/RELEASE"):
+if not os.path.exists(IOT_DIR + "/RELEASE"):
+    print IOT_DIR
     print "******************************************"
-    print "The storm client can only be run from within a release. You appear to be trying to run the client from a checkout of Storm's source code."
-    print "\nYou can download a Storm release at http://storm-project.net/downloads.html"
+    print "The iot client can only be run from within a release. You appear to be trying to run the client from a checkout of IOTCloud's source code."
     print "******************************************"
     sys.exit(1)
 
@@ -68,8 +68,8 @@ def get_jars_full(adir):
     return ret
 
 def get_classpath(extrajars):
-    ret = get_jars_full(STORM_DIR)
-    ret.extend(get_jars_full(STORM_DIR + "/lib"))
+    ret = get_jars_full(IOT_DIR)
+    ret.extend(get_jars_full(IOT_DIR + "/lib"))
     ret.extend(extrajars)
     return normclasspath(":".join(ret))
 
@@ -130,9 +130,9 @@ def exec_storm_class(klass, jvmtype="-server", jvmopts=[], extrajars=[], args=[]
     global CONFFILE
     all_args = [
                    "java", jvmtype, get_config_opts(),
-                   "-Dstorm.home=" + STORM_DIR,
+                   "-Diot.home=" + IOT_DIR,
                    "-Djava.library.path=" + confvalue("java.library.path", extrajars),
-                   "-Dstorm.conf.file=" + CONFFILE,
+                   "-Diot.conf.file=" + CONFFILE,
                    "-cp", get_classpath(extrajars),
                    ] + jvmopts + [klass] + list(args)
     print "Running: " + " ".join(all_args)
@@ -153,7 +153,7 @@ def deploy(jarfile, klass, *args):
     exec_storm_class(
         klass,
         jvmtype="-client",
-        extrajars=[jarfile, USER_CONF_DIR, STORM_DIR + "/bin"],
+        extrajars=[jarfile, USER_CONF_DIR, IOT_DIR + "/bin"],
         args=args,
         jvmopts=[' '.join(filter(None, [JAR_JVM_OPTS, "-Dstorm.jar=" + jarfile]))])
 
@@ -171,7 +171,7 @@ def kill(*args):
         "backtype.storm.command.kill_topology",
         args=args,
         jvmtype="-client",
-        extrajars=[USER_CONF_DIR, STORM_DIR + "/bin"])
+        extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
 
 def activate(*args):
     """Syntax: [storm activate topology-name]
@@ -182,7 +182,7 @@ def activate(*args):
         "backtype.storm.command.activate",
         args=args,
         jvmtype="-client",
-        extrajars=[USER_CONF_DIR, STORM_DIR + "/bin"])
+        extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
 
 def listtopos(*args):
     """Syntax: [storm list]
@@ -193,7 +193,7 @@ def listtopos(*args):
         "backtype.storm.command.list",
         args=args,
         jvmtype="-client",
-        extrajars=[USER_CONF_DIR, STORM_DIR + "/bin"])
+        extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
 
 def deactivate(*args):
     """Syntax: [storm deactivate topology-name]
@@ -204,7 +204,7 @@ def deactivate(*args):
         "backtype.storm.command.deactivate",
         args=args,
         jvmtype="-client",
-        extrajars=[USER_CONF_DIR, STORM_DIR + "/bin"])
+        extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
 
 def rebalance(*args):
     """Syntax: [storm rebalance topology-name [-w wait-time-secs] [-n new-num-workers] [-e component=parallelism]*]
@@ -231,7 +231,7 @@ def rebalance(*args):
         "backtype.storm.command.rebalance",
         args=args,
         jvmtype="-client",
-        extrajars=[USER_CONF_DIR, STORM_DIR + "/bin"])
+        extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
 
 def shell(resourcesdir, command, *args):
     tmpjarpath = "stormshell" + str(random.randint(0, 10000000)) + ".jar"
@@ -255,7 +255,7 @@ def repl():
     cppaths = [CLUSTER_CONF_DIR]
     exec_storm_class("clojure.lang.Repl", jvmtype="-client", extrajars=cppaths)
 
-def master(klass="backtype.storm.daemon.nimbus"):
+def master(klass="cgl.iotcloud.core.master.SensorMaster"):
     """Syntax: [storm nimbus]
 
     Launches the nimbus daemon. This command should be run under 
@@ -267,7 +267,7 @@ def master(klass="backtype.storm.daemon.nimbus"):
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("nimbus.childopts", cppaths)) + [
         "-Dlogfile.name=nimbus.log",
-        "-Dlogback.configurationFile=" + STORM_DIR + "/logback/cluster.xml",
+        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
         ]
     exec_storm_class(
         klass,
@@ -275,7 +275,7 @@ def master(klass="backtype.storm.daemon.nimbus"):
         extrajars=cppaths,
         jvmopts=jvmopts)
 
-def supervisor(klass="backtype.storm.daemon.supervisor"):
+def site(klass="cgl.iotcloud.core.sensorsite.SensorSite"):
     """Syntax: [storm supervisor]
 
     Launches the supervisor daemon. This command should be run 
@@ -287,7 +287,7 @@ def supervisor(klass="backtype.storm.daemon.supervisor"):
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("supervisor.childopts", cppaths)) + [
         "-Dlogfile.name=supervisor.log",
-        "-Dlogback.configurationFile=" + STORM_DIR + "/logback/cluster.xml",
+        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
         ]
     exec_storm_class(
         klass,
@@ -308,13 +308,13 @@ def ui():
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("ui.childopts", cppaths)) + [
         "-Dlogfile.name=ui.log",
-        "-Dlogback.configurationFile=" + STORM_DIR + "/logback/cluster.xml",
+        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
         ]
     exec_storm_class(
         "backtype.storm.ui.core",
         jvmtype="-server",
         jvmopts=jvmopts,
-        extrajars=[STORM_DIR, CLUSTER_CONF_DIR])
+        extrajars=[IOT_DIR, CLUSTER_CONF_DIR])
 
 def logviewer():
     """Syntax: [storm logviewer]
@@ -329,20 +329,20 @@ def logviewer():
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("logviewer.childopts", cppaths)) + [
         "-Dlogfile.name=logviewer.log",
-        "-Dlogback.configurationFile=" + STORM_DIR + "/logback/cluster.xml",
+        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
         ]
     exec_storm_class(
         "backtype.storm.daemon.logviewer",
         jvmtype="-server",
         jvmopts=jvmopts,
-        extrajars=[STORM_DIR, CLUSTER_CONF_DIR])
+        extrajars=[IOT_DIR, CLUSTER_CONF_DIR])
 
 def version():
     """Syntax: [storm version]
 
     Prints the version number of this Storm release.
     """
-    releasefile = STORM_DIR + "/RELEASE"
+    releasefile = IOT_DIR + "/RELEASE"
     if os.path.exists(releasefile):
         print open(releasefile).readline().strip()
     else:
@@ -377,10 +377,10 @@ def unknown_command(*args):
     print "Unknown command: [iot %s]" % ' '.join(sys.argv[1:])
     print_usage()
 
-COMMANDS = {"deploy": jar, "kill": kill, "shell": shell, "master": master, "supervisor": supervisor, "localconfvalue": print_localconfvalue,
+COMMANDS = {"deploy": deploy, "kill": kill, "master": master, "site": site, "localconfvalue": print_localconfvalue,
             "remoteconfvalue": print_remoteconfvalue, "repl": repl, "classpath": print_classpath,
             "activate": activate, "deactivate": deactivate, "rebalance": rebalance, "help": print_usage,
-            "list": listtopos, "dev-zookeeper": dev_zookeeper, "version": version}
+            "list": listtopos, "version": version}
 
 def parse_config(config_list):
     global CONFIG_OPTS
