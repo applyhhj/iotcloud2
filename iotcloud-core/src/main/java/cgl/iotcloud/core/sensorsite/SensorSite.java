@@ -109,19 +109,8 @@ public class SensorSite {
         });
         t.start();
 
-
-        try {
-            if (!registerSite()) {
-                String msg = "Failed to register the site. stopping the site";
-                stop();
-                LOG.error(msg);
-            }
-        } catch (TException e) {
-            String msg = "Error registering the site. stopping the site";
-            LOG.error(msg, e);
-            stop();
-            throw new RuntimeException(msg, e);
-        }
+        MasterConnection masterConnection = new MasterConnection(conf, siteContext);
+        masterConnection.start();
     }
 
     public void stop() {
@@ -170,25 +159,5 @@ public class SensorSite {
             LOG.error("Error loading the class {}", className, e);
             throw new RuntimeException("Error loading the class " + className, e);
         }
-    }
-
-    private boolean registerSite() throws TException {
-        // now register the site
-        String masterHost = Configuration.getMasterHost(conf);
-        int masterServerPort = Configuration.getMasterServerPort(conf);
-        MasterClient client = null;
-        try {
-            client = new MasterClient(masterHost, masterServerPort);
-
-            String siteHost = Configuration.getSensorSiteHost(conf);
-            int siteServerPort = Configuration.getSensorSitePort(conf);
-
-            return client.registerSite(siteContext.getSiteId(), siteHost, siteServerPort);
-        } finally {
-            if (client != null) {
-                client.close();
-            }
-        }
-
     }
 }

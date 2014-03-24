@@ -107,7 +107,6 @@ public class SensorMaster {
             }
         });
         t2.start();
-
     }
 
     public void stop() {
