@@ -44,8 +44,8 @@ CLUSTER_CONF_DIR = IOT_DIR + "/conf"
 if (not os.path.isfile(USER_CONF_DIR + "/iot.yaml")):
     USER_CONF_DIR = CLUSTER_CONF_DIR
 CONFIG_OPTS = []
-CONFFILE = ""
-JAR_JVM_OPTS = os.getenv('STORM_JAR_JVM_OPTS', '')
+CONFFILE = "iot.yaml"
+JAR_JVM_OPTS = os.getenv('IOT_JAR_JVM_OPTS', '')
 
 
 def get_config_opts():
@@ -131,7 +131,7 @@ def exec_storm_class(klass, jvmtype="-server", jvmopts=[], extrajars=[], args=[]
     all_args = [
                    "java", jvmtype, get_config_opts(),
                    "-Diot.home=" + IOT_DIR,
-                   "-Djava.library.path=" + confvalue("java.library.path", extrajars),
+#                   "-Djava.library.path=" + confvalue("java.library.path", extrajars),
                    "-Diot.conf.file=" + CONFFILE,
                    "-cp", get_classpath(extrajars),
                    ] + jvmopts + [klass] + list(args)
@@ -265,9 +265,9 @@ def master(klass="cgl.iotcloud.core.master.SensorMaster"):
     (https://github.com/nathanmarz/storm/wiki/Setting-up-a-Storm-cluster)
     """
     cppaths = [CLUSTER_CONF_DIR]
-    jvmopts = parse_args(confvalue("nimbus.childopts", cppaths)) + [
-        "-Dlogfile.name=nimbus.log",
-        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
+    jvmopts = [
+        "-Dlogfile.name="+ IOT_DIR +"logs/master.log",
+        "-Dlog4j.configurationFile=" + IOT_DIR + "/log4j/log4j.xml",
         ]
     exec_storm_class(
         klass,
@@ -286,8 +286,8 @@ def site(klass="cgl.iotcloud.core.sensorsite.SensorSite"):
     """
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("supervisor.childopts", cppaths)) + [
-        "-Dlogfile.name=supervisor.log",
-        "-Dlogback.configurationFile=" + IOT_DIR + "/logback/cluster.xml",
+        "-Dlogfile.name=logs/supervisor.log",
+        "-Dlog4j.configuration=" + IOT_DIR + "/log4j/log4j.properties",
         ]
     exec_storm_class(
         klass,

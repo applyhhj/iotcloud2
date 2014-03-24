@@ -48,7 +48,13 @@
                 <include>*</include>
             </includes>
         </fileSet>
-
+        <fileSet>
+            <directory>${project.basedir}/../log4j</directory>
+            <outputDirectory>log4j</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <files>
