@@ -4,7 +4,6 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
-import org.apache.thrift.TException;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TNonblockingServerTransport;
@@ -37,7 +36,10 @@ public class SensorSite {
         // read the configuration file
         conf = Utils.readConfig();
 
-        String siteId = UUID.randomUUID().toString().replaceAll("-", "");
+        String siteId = Configuration.getSiteId(conf);
+        if (siteId == null) {
+            siteId = UUID.randomUUID().toString().replaceAll("-", "");
+        }
 
         // create the site context
         siteContext = new SiteContext(siteId);

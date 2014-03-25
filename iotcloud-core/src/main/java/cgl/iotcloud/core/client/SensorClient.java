@@ -18,16 +18,22 @@ import java.util.Map;
 public class SensorClient {
     private TMasterAPIService.Client client;
 
-    private Map conf;
+    private TTransport transport;
+
+    public static SensorClient getConfiguredClient(Map conf) {
+        try {
+            return new SensorClient(conf);
+        } catch (TTransportException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public SensorClient(Map conf) throws TTransportException {
-        this.conf = conf;
-
         String host = Configuration.getMasterHost(conf);
         int port = Configuration.getMasterAPIPort(conf);
 
         TSocket socket = new TSocket(host, port);
-        TTransport transport = new TFramedTransport(socket);
+        this.transport = new TFramedTransport(socket);
 
         TProtocol protocol = new TBinaryProtocol(transport);
         transport.open();
@@ -65,5 +71,9 @@ public class SensorClient {
         } catch (TException e) {
             throw new RuntimeException("Failed to deploy the sensor", e);
         }
+    }
+
+    public void close() {
+        transport.close();
     }
 }

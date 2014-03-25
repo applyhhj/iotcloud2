@@ -1,1 +1,3 @@
 iot.master.host: "localhost"
+
+iot.sensorsite.id: "local"
