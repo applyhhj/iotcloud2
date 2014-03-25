@@ -8,6 +8,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -92,7 +93,16 @@ public class SensorDeployer {
 
     public void deploySensor(Map conf, SiteContext siteContext, SensorDeployDescriptor deployDescriptor) {
         try {
-            ISensor sensor = Utils.loadSensor(new URL(deployDescriptor.getJarName()),
+            String url = "file://";
+            File file = new File(deployDescriptor.getJarName());
+            if (!file.isAbsolute()) {
+                String iotHome = Configuration.getIoTHome(conf);
+                url += iotHome + "/" + deployDescriptor.getJarName();
+            } else {
+                url += deployDescriptor.getJarName();
+            }
+
+            ISensor sensor = Utils.loadSensor(new URL(url),
                     deployDescriptor.getClassName(), this.getClass().getClassLoader());
 
             // get the sensor specific configurations

@@ -9,6 +9,9 @@ iot.sensorsite.host: "localhost"
 iot.sensorsite.port: 12905
 iot.sensorsite.threads: 4
 
+# if the absolute path of a sensor is not given this is the place to look
+iot.sensorsite.repository: "repository/sensors"
+
 iot.sensorsite.transports:
     jms:
       class: "cgl.iotcloud.core.transport.jms.JMSTransport"

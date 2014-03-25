@@ -19,6 +19,8 @@ public class SensorSubmitter {
         SensorClient client = SensorClient.getConfiguredClient(conf);
 
         client.deploySensor(sensorDeployDescriptor);
+
+        client.close();
     }
 }
 

@@ -1,8 +1,11 @@
 package cgl.iotcloud.core;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.Map;
 
 public class Configuration {
+    public static final String IOT_HOME ="iot.home";
+
     public static final String IOT_MASTER_SERVER_HOST = "iot.master.host";
     public static final String IOT_MASTER_SERVER_PORT = "iot.master.server.port";
     public static final String IOT_MASTER_API_PORT = "iot.master.api.port";
@@ -90,5 +93,19 @@ public class Configuration {
     
     public static int getSiteMaxSensorEvents(Map conf) {
         return (Integer) conf.get(IOT_SENSORSITE_MAX_SENSOREVENTS);
+    }
+
+    /**
+     * In this property we give precedence to the configuration value
+     * @param conf map with configuration
+     * @return the iot home
+     */
+    public static String getIoTHome(Map conf) {
+        String iotHome = (String) conf.get(IOT_HOME);
+        if (iotHome == null) {
+            return System.getProperty(IOT_HOME);
+        } else {
+            return iotHome;
+        }
     }
 }
