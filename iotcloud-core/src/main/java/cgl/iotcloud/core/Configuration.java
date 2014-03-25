@@ -16,6 +16,7 @@ public class Configuration {
     public static final String IOT_SENSORSITE_THREADS = "iot.sensorsite.threads";
     public static final String IOT_SENSORSITE_HOST = "iot.sensorsite.host";
     public static final String IOT_SENSORSITE_ID = "iot.sensorsite.id";
+    public static final String IOT_SENSORSITE_REPOSITORY = "iot.sensorsite.repository";
 
     // the maximum number of sensor sites possible
     public static final String IOT_SENSOR_SITES_MAX = "iot.sensorsites.max";
@@ -107,5 +108,9 @@ public class Configuration {
         } else {
             return iotHome;
         }
+    }
+
+    public static String getSensorRepositoryPath(Map conf) {
+        return (String) conf.get(IOT_SENSORSITE_REPOSITORY);
     }
 }

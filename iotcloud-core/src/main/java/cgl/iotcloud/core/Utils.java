@@ -81,10 +81,10 @@ public class Utils {
             Constructor<? extends ISensor> ctor = runClass.getConstructor();
             return ctor.newInstance();
         } catch (ClassNotFoundException x) {
-            LOG.error("Transport class cannot be found {}", className, x);
-            throw new RuntimeException("Transport class cannot be found " + className, x);
+            LOG.error("Sensor class cannot be found {}", className, x);
+            throw new RuntimeException("Sensor class cannot be found " + className, x);
         } catch (InstantiationException x) {
-            LOG.error("Transport class cannot be instantiated {}", className, x);
+            LOG.error("Sensor class cannot be instantiated {}", className, x);
             throw new RuntimeException("Transport class cannot be instantiated " + className, x);
         } catch (Exception e) {
             LOG.error("Error loading the class {}", className, e);

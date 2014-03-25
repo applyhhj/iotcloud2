@@ -286,8 +286,8 @@ def site(klass="cgl.iotcloud.core.sensorsite.SensorSite"):
     """
     cppaths = [CLUSTER_CONF_DIR]
     jvmopts = parse_args(confvalue("supervisor.childopts", cppaths)) + [
-        "-Dlogfile.name=logs/supervisor.log",
-        "-Dlog4j.configuration=" + IOT_DIR + "/log4j/log4j.properties",
+        "-Dlogfile.name="+ IOT_DIR +"logs/site.log",
+        "-Dlog4j.configurationFile=" + IOT_DIR + "/log4j/log4j.xml",
         ]
     exec_storm_class(
         klass,

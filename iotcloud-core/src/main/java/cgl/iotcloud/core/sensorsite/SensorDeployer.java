@@ -93,14 +93,19 @@ public class SensorDeployer {
 
     public void deploySensor(Map conf, SiteContext siteContext, SensorDeployDescriptor deployDescriptor) {
         try {
+            LOG.info("Deploying sensor with jar: {} and class: {}", deployDescriptor.getJarName(), deployDescriptor.getClassName());
+
             String url = "file://";
             File file = new File(deployDescriptor.getJarName());
             if (!file.isAbsolute()) {
                 String iotHome = Configuration.getIoTHome(conf);
-                url += iotHome + "/" + deployDescriptor.getJarName();
+                String repo = Configuration.getSensorRepositoryPath(conf);
+                url += iotHome + "/" + repo + "/" + deployDescriptor.getJarName();
             } else {
                 url += deployDescriptor.getJarName();
             }
+
+            LOG.info("The sensor jar URL is {}", url);
 
             ISensor sensor = Utils.loadSensor(new URL(url),
                     deployDescriptor.getClassName(), this.getClass().getClassLoader());
