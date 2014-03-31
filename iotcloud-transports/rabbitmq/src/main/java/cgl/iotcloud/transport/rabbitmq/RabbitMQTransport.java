@@ -6,13 +6,9 @@ import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 
 import com.rabbitmq.client.Address;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -26,9 +22,9 @@ public class RabbitMQTransport implements Transport {
     public static final String CORE_PROPERTY = "core";
     public static final String MAX_PROPERTY = "max";
 
-    private com.rabbitmq.client.Channel channel;
-
-    private Connection conn;
+    public static final String EXCHANGE_NAME_PROPERTY = "exchange";
+    public static final String ROUTING_KEY_PROPERTY = "routingKey";
+    public static final String QUEUE_NAME_PROPERTY = "queueName";
 
     private ExecutorService executorService;
 
@@ -38,9 +34,10 @@ public class RabbitMQTransport implements Transport {
 
     private Address[] addresses;
 
+    private String url;
+
     @Override
     public void configure(Map properties) {
-        ConnectionFactory factory = new ConnectionFactory();
         try {
             Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
             Object urlProp = params.get(URL_PROPERTY);
@@ -50,28 +47,23 @@ public class RabbitMQTransport implements Transport {
                 throw new RuntimeException(message);
             }
 
-            Address urls[] = null;
             if (urlProp instanceof String) {
-                factory.setUri((String) urlProp);
+                this.url = (String) urlProp;
             } else if (urlProp instanceof Object []) {
+                Address urls[];
                 int len = ((Object[]) urlProp).length;
                 urls = new Address[len];
                 for (int i = 0; i < len; i++) {
                     urls[i] = new Address ((String) ((Object[]) urlProp)[i]);
                 }
+                this.addresses = urls;
             }
-
-            this.addresses = urls;
 
             Map threads = (Map) params.get(THREAD_PROPERTY);
             if (threads != null) {
-                int core = (int) threads.get(CORE_PROPERTY);
+                int core = (Integer) threads.get(CORE_PROPERTY);
                 executorService = Executors.newScheduledThreadPool(core);
             }
-        } catch (IOException e) {
-            String msg = "Error in creating the RabbitMQ connection";
-            LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
         } catch (Exception e) {
             String msg = "Error in key management for rabbitMQ";
             LOG.error(msg, e);
@@ -86,27 +78,19 @@ public class RabbitMQTransport implements Transport {
             throw new IllegalArgumentException("Channel properties must be specified");
         }
 
-        String destination = Configuration.getChannelJmsDestination(channelConf);
-        String isTopic = Configuration.getChannelIsQueue(channelConf);
-        boolean topic = true;
-        if (isTopic != null && !Boolean.parseBoolean(isTopic)) {
-            topic = false;
-        }
+        if (channel.getDirection() == Direction.OUT) {
+            String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
+            String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
 
-        try {
-            if (channel.getDirection() == Direction.OUT) {
-                RabbitMQSender sender = new RabbitMQSender();
-                sender.start();
-                senders.put(name, sender);
-            } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(conFactory, destination, topic, channel.getInQueue(), channel.getConverter());
-                listener.start();
-                listeners.put(name, listener);
-            }
-        } catch (JMSException e) {
-            String msg = "Failed to create connection";
-            LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
+            RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, routingKey, executorService, addresses, url);
+            sender.start();
+            senders.put(name, sender);
+        } else if (channel.getDirection() == Direction.IN) {
+            String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+
+            RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), queueName, executorService, addresses, url);
+            listener.start();
+            receivers.put(name, listener);
         }
     }
 

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 
 public class RabbitMQReceiver {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQReceiver.class);
@@ -21,22 +22,48 @@ public class RabbitMQReceiver {
 
     private String queueName;
 
-    private boolean autoAck;
+    private boolean autoAck = false;
 
-    public RabbitMQReceiver(Channel channel,
-                            Connection conn,
-                            MessageConverter converter,
+    private Address []addresses;
+
+    private String url;
+
+    private ExecutorService executorService;
+
+    public RabbitMQReceiver(MessageConverter converter,
                             BlockingQueue inQueue,
-                            String queueName) {
-        this.channel = channel;
-        this.conn = conn;
+                            String queueName,
+                            ExecutorService executorService,
+                            Address []addresses,
+                            String url) {
         this.converter = converter;
         this.inQueue = inQueue;
+        this.executorService = executorService;
         this.queueName = queueName;
+        this.addresses = addresses;
+        this.url = url;
     }
 
     public void start() {
         try {
+            ConnectionFactory factory = new ConnectionFactory();
+            if (addresses == null) {
+                factory.setUri(url);
+                if (executorService != null) {
+                    conn = factory.newConnection(executorService);
+                } else {
+                    conn = factory.newConnection();
+                }
+            } else {
+                if (executorService != null) {
+                    conn = factory.newConnection(executorService, addresses);
+                } else {
+                    conn = factory.newConnection(addresses);
+                }
+            }
+
+            channel = conn.createChannel();
+
             channel.basicConsume(queueName, autoAck, "myConsumerTag",
                     new DefaultConsumer(channel) {
                         @Override
@@ -57,6 +84,10 @@ public class RabbitMQReceiver {
                     });
         } catch (IOException e) {
             String msg = "Error consuming the message";
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error connecting to broker";
             LOG.error(msg, e);
             throw new RuntimeException(msg, e);
         }

@@ -36,18 +36,20 @@ public class RabbitMQSender {
 
     private ExecutorService executorService;
 
-    public RabbitMQSender(String address,
-                          ExecutorService executorService,
-                          MessageConverter converter,
+    public RabbitMQSender(MessageConverter converter,
                           BlockingQueue outQueue,
                           String exchangeName,
-                          String routingKey) {
-        this.url = url;
+                          String routingKey,
+                          ExecutorService executorService,
+                          Address []addresses,
+                          String url) {
         this.executorService = executorService;
         this.converter = converter;
         this.outQueue = outQueue;
         this.exchangeName = exchangeName;
         this.routingKey = routingKey;
+        this.addresses = addresses;
+        this.url = url;
     }
 
     public void start() {
@@ -77,7 +79,9 @@ public class RabbitMQSender {
             LOG.error(msg, e);
             throw new RuntimeException(msg, e);
         } catch (Exception e) {
-            e.printStackTrace();
+            String msg = "Error creating the RabbitMQ channel";
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
         }
     }
 
