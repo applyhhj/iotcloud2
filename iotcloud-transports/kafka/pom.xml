@@ -16,10 +16,14 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kafka.verion>3.2.4</kafka.verion>
+        <kafka.verion>0.8.1</kafka.verion>
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.9.2</artifactId>
+            <version>${kafka.verion}</version>
+        </dependency>
     </dependencies>
 </project>
