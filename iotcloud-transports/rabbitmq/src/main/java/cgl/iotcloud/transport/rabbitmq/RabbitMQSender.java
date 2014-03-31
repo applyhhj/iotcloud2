@@ -1,13 +1,19 @@
 package cgl.iotcloud.transport.rabbitmq;
 
 import cgl.iotcloud.core.transport.MessageConverter;
+import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 
 public class RabbitMQSender {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQSender.class);
@@ -24,14 +30,20 @@ public class RabbitMQSender {
 
     private String routingKey;
 
-    public RabbitMQSender(Channel channel,
-                          Connection conn,
+    private Address []addresses;
+
+    private String url;
+
+    private ExecutorService executorService;
+
+    public RabbitMQSender(String address,
+                          ExecutorService executorService,
                           MessageConverter converter,
                           BlockingQueue outQueue,
                           String exchangeName,
                           String routingKey) {
-        this.channel = channel;
-        this.conn = conn;
+        this.url = url;
+        this.executorService = executorService;
         this.converter = converter;
         this.outQueue = outQueue;
         this.exchangeName = exchangeName;
@@ -39,7 +51,23 @@ public class RabbitMQSender {
     }
 
     public void start() {
+        ConnectionFactory factory = new ConnectionFactory();
         try {
+            if (addresses == null) {
+                factory.setUri(url);
+                if (executorService != null) {
+                    conn = factory.newConnection(executorService);
+                } else {
+                    conn = factory.newConnection();
+                }
+            } else {
+                if (executorService != null) {
+                    conn = factory.newConnection(executorService, addresses);
+                } else {
+                    conn = factory.newConnection(addresses);
+                }
+            }
+
             channel = conn.createChannel();
             channel.exchangeDeclare(exchangeName, "direct", true);
             String queueName = channel.queueDeclare().getQueue();
@@ -48,6 +76,8 @@ public class RabbitMQSender {
             String msg = "Error creating the RabbitMQ channel";
             LOG.error(msg, e);
             throw new RuntimeException(msg, e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

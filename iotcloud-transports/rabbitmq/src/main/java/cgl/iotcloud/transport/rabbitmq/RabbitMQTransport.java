@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.rabbitmq;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 
 import com.rabbitmq.client.Address;
@@ -10,6 +11,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,8 @@ public class RabbitMQTransport implements Transport {
 
     private Map<String, RabbitMQSender> senders = new HashMap<String, RabbitMQSender>();
 
+    private Address[] addresses;
+
     @Override
     public void configure(Map properties) {
         ConnectionFactory factory = new ConnectionFactory();
@@ -57,24 +61,13 @@ public class RabbitMQTransport implements Transport {
                 }
             }
 
+            this.addresses = urls;
+
             Map threads = (Map) params.get(THREAD_PROPERTY);
             if (threads != null) {
                 int core = (int) threads.get(CORE_PROPERTY);
                 executorService = Executors.newScheduledThreadPool(core);
-                if (urls == null) {
-                    conn = factory.newConnection(executorService);
-                } else {
-                    conn = factory.newConnection(executorService, urls);
-                }
-            } else {
-                if (urls == null) {
-                    conn = factory.newConnection();
-                } else {
-                    conn = factory.newConnection(urls);
-                }
             }
-
-            channel = conn.createChannel();
         } catch (IOException e) {
             String msg = "Error in creating the RabbitMQ connection";
             LOG.error(msg, e);
@@ -88,7 +81,33 @@ public class RabbitMQTransport implements Transport {
 
     @Override
     public void registerChannel(String name, Channel channel) {
+        Map channelConf = channel.getProperties();
+        if (channelConf == null) {
+            throw new IllegalArgumentException("Channel properties must be specified");
+        }
 
+        String destination = Configuration.getChannelJmsDestination(channelConf);
+        String isTopic = Configuration.getChannelIsQueue(channelConf);
+        boolean topic = true;
+        if (isTopic != null && !Boolean.parseBoolean(isTopic)) {
+            topic = false;
+        }
+
+        try {
+            if (channel.getDirection() == Direction.OUT) {
+                RabbitMQSender sender = new RabbitMQSender();
+                sender.start();
+                senders.put(name, sender);
+            } else if (channel.getDirection() == Direction.IN) {
+                JMSListener listener = new JMSListener(conFactory, destination, topic, channel.getInQueue(), channel.getConverter());
+                listener.start();
+                listeners.put(name, listener);
+            }
+        } catch (JMSException e) {
+            String msg = "Failed to create connection";
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
     }
 
     @Override
