@@ -30,7 +30,7 @@ public class JMSTransport implements Transport {
     public void configure(Map properties) {
         try {
             Hashtable<String, String> params = new Hashtable<String, String>();
-            params.putAll((Map)properties.get(Configuration.JMS_PROPERTIES));
+            params.putAll((Map)properties.get(Configuration.TRANSPORT_PROPERTIES));
 
             context = new InitialContext(params);
             conFactory = lookup(context, javax.jms.ConnectionFactory.class,
