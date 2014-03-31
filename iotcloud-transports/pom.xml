@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>rabbitmq</module>
+        <module>kafka</module>
     </modules>
     <dependencies>
         <dependency>
