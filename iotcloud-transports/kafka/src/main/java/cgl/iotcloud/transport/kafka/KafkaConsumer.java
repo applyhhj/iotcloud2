@@ -19,12 +19,10 @@ import java.util.concurrent.BlockingQueue;
 public class KafkaConsumer {
     private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
 
-    private long maxReads;
     private String topic;
     private int partition;
-    private List<String> seedBrokers;
-    private int port;
-    private List<String> m_replicaBrokers = new ArrayList<String>();
+    private Map<String, Integer> seedBrokers;
+    private Map<String, Integer> m_replicaBrokers = new HashMap<String, Integer>();
     private int soTimeout = 30000;
     private int bufferSize = 64 * 1024;
     private int fetchSize = 10000;
@@ -35,13 +33,11 @@ public class KafkaConsumer {
 
     private BlockingQueue inQueue;
 
-    public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, long maxReads, String topic,
-                         int partition, List<String> seedBrokers, int port) {
-        this.maxReads = maxReads;
+    public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, String topic,
+                         int partition, Map<String, Integer> seedBrokers) {
         this.topic = topic;
         this.partition = partition;
         this.seedBrokers = seedBrokers;
-        this.port = port;
 
         this.converter = converter;
         this.inQueue = inQueue;
@@ -60,11 +56,15 @@ public class KafkaConsumer {
         t.start();
     }
 
+    public void stop() {
+
+    }
+
     private class Worker implements Runnable {
         @Override
         public void run() {
             // find the meta data about the topic and partition we are interested in
-            PartitionMetadata metadata = findLeader(seedBrokers, port, topic, partition);
+            PartitionMetadata metadata = findLeader(seedBrokers, topic, partition);
             if (metadata == null) {
                 throw new RuntimeException("Can't find metadata for Topic and Partition");
             }
@@ -74,15 +74,16 @@ public class KafkaConsumer {
             }
 
             String leadBroker = metadata.leader().host();
+            int leadPort = metadata.leader().port();
             String clientName = "Client_" + topic + "_" + partition;
 
-            SimpleConsumer consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+            SimpleConsumer consumer = new SimpleConsumer(leadBroker, leadPort, soTimeout, bufferSize, clientName);
             long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
 
             int numErrors = 0;
-            while (maxReads > 0) {
+            while (true) {
                 if (consumer == null) {
-                    consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+                    consumer = new SimpleConsumer(leadBroker, leadPort, soTimeout, bufferSize, clientName);
                 }
                 FetchRequest req = new FetchRequestBuilder()
                         .clientId(clientName)
@@ -103,7 +104,7 @@ public class KafkaConsumer {
                     }
                     consumer.close();
                     consumer = null;
-                    leadBroker = findNewLeader(leadBroker, topic, partition, port);
+                    leadBroker = findNewLeader(leadBroker, topic, partition, leadPort);
                     continue;
                 }
                 numErrors = 0;
@@ -121,7 +122,13 @@ public class KafkaConsumer {
                     byte[] bytes = new byte[payload.limit()];
                     payload.get(bytes);
                     numRead++;
-                    maxReads--;
+
+                    Object converted = converter.convert(bytes, null);
+
+                    try {
+                        inQueue.put(converted);
+                    } catch (InterruptedException e) {
+                    }
                 }
 
                 if (numRead == 0) {
@@ -153,7 +160,7 @@ public class KafkaConsumer {
 
     private String findNewLeader(String a_oldLeader, String a_topic, int a_partition, int a_port) {
         for (int i = 0; i < 3; i++) {
-            PartitionMetadata metadata = findLeader(m_replicaBrokers, a_port, a_topic, a_partition);
+            PartitionMetadata metadata = findLeader(m_replicaBrokers, a_topic, a_partition);
             if (metadata == null) {
             } else if (metadata.leader() == null) {
             } else if (a_oldLeader.equalsIgnoreCase(metadata.leader().host()) && i == 0) {
@@ -172,16 +179,16 @@ public class KafkaConsumer {
         throw new RuntimeException("Unable to find new leader after Broker failure. Exiting");
     }
 
-    private PartitionMetadata findLeader(List<String> a_seedBrokers, int a_port, String a_topic, int a_partition) {
+    private PartitionMetadata findLeader(Map<String, Integer> a_seedBrokers, String a_topic, int a_partition) {
         PartitionMetadata returnMetaData = null;
         loop:
-        for (String seed : a_seedBrokers) {
+        for (Map.Entry<String, Integer> seed : a_seedBrokers.entrySet()) {
             SimpleConsumer consumer = null;
             try {
-                consumer = new SimpleConsumer(seed, a_port, soTimeout, bufferSize, "leaderLookup");
+                consumer = new SimpleConsumer(seed.getKey(), seed.getValue(), soTimeout, bufferSize, "leaderLookup");
                 List<String> topics = Collections.singletonList(a_topic);
                 TopicMetadataRequest req = new TopicMetadataRequest(topics);
-                kafka.javaapi.TopicMetadataResponse resp = consumer.send(req);
+                TopicMetadataResponse resp = consumer.send(req);
 
                 List<TopicMetadata> metaData = resp.topicsMetadata();
                 for (TopicMetadata item : metaData) {
@@ -202,7 +209,7 @@ public class KafkaConsumer {
         if (returnMetaData != null) {
             m_replicaBrokers.clear();
             for (kafka.cluster.Broker replica : returnMetaData.replicas()) {
-                m_replicaBrokers.add(replica.host());
+                m_replicaBrokers.put(replica.host(), replica.port());
             }
         }
         return returnMetaData;

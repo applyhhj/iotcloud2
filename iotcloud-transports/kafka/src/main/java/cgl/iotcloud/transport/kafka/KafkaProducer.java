@@ -54,6 +54,10 @@ public class KafkaProducer {
         t.start();
     }
 
+    public void stop() {
+
+    }
+
     private class Worker implements Runnable {
         @Override
         public void run() {
