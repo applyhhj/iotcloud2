@@ -8,84 +8,88 @@ import kafka.common.TopicAndPartition;
 import kafka.javaapi.*;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.message.MessageAndOffset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.*;
 
 public class KafkaConsumer {
-    public static void main(String args[]) {
-        KafkaConsumer example = new KafkaConsumer();
-        long maxReads = Long.parseLong(args[0]);
-        String topic = args[1];
-        int partition = Integer.parseInt(args[2]);
-        List<String> seeds = new ArrayList<String>();
-        seeds.add(args[3]);
-        int port = Integer.parseInt(args[4]);
-        try {
-            example.run(maxReads, topic, partition, seeds, port);
-        } catch (Exception e) {
-            System.out.println("Oops:" + e);
-            e.printStackTrace();
-        }
-    }
+    private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
 
+    private long maxReads;
+    private String topic;
+    private int partition;
+    private List<String> seedBrokers;
+    private int port;
     private List<String> m_replicaBrokers = new ArrayList<String>();
+    private int soTimeout = 30000;
+    private int bufferSize = 64 * 1024;
 
-    public KafkaConsumer() {
-        m_replicaBrokers = new ArrayList<String>();
+    public KafkaConsumer(long maxReads, String topic, int partition, List<String> seedBrokers, int port) {
+        this.maxReads = maxReads;
+        this.topic = topic;
+        this.partition = partition;
+        this.seedBrokers = seedBrokers;
+        this.port = port;
     }
 
-    public void run(long a_maxReads, String a_topic, int a_partition, List<String> a_seedBrokers, int a_port) throws Exception {
+    public void setSoTimeout(int soTimeout) {
+        this.soTimeout = soTimeout;
+    }
+
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
+    public void start() {
         // find the meta data about the topic and partition we are interested in
-        //
-        PartitionMetadata metadata = findLeader(a_seedBrokers, a_port, a_topic, a_partition);
+        PartitionMetadata metadata = findLeader(seedBrokers, port, topic, partition);
         if (metadata == null) {
-            System.out.println("Can't find metadata for Topic and Partition. Exiting");
-            return;
+            throw new RuntimeException("Can't find metadata for Topic and Partition");
         }
 
         if (metadata.leader() == null) {
-            System.out.println("Can't find Leader for Topic and Partition. Exiting");
-            return;
+            throw new RuntimeException("Can't find Leader for Topic and Partition");
         }
 
         String leadBroker = metadata.leader().host();
-        String clientName = "Client_" + a_topic + "_" + a_partition;
+        String clientName = "Client_" + topic + "_" + partition;
 
-        SimpleConsumer consumer = new SimpleConsumer(leadBroker, a_port, 100000, 64 * 1024, clientName);
-        long readOffset = getLastOffset(consumer, a_topic, a_partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
+        SimpleConsumer consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+        long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
 
         int numErrors = 0;
-        while (a_maxReads > 0) {
+        while (maxReads > 0) {
             if (consumer == null) {
-                consumer = new SimpleConsumer(leadBroker, a_port, 100000, 64 * 1024, clientName);
+                consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
             }
             FetchRequest req = new FetchRequestBuilder()
                     .clientId(clientName)
-                    .addFetch(a_topic, a_partition, readOffset, 100000)
+                    .addFetch(topic, partition, readOffset, 100000)
                     .build();
             FetchResponse fetchResponse = consumer.fetch(req);
 
             if (fetchResponse.hasError()) {
                 numErrors++;
                 // Something went wrong!
-                short code = fetchResponse.errorCode(a_topic, a_partition);
-                System.out.println("Error fetching data from the Broker:" + leadBroker + " Reason: " + code);
+                short code = fetchResponse.errorCode(topic, partition);
+                LOG.warn("Error fetching data from the Broker:" + leadBroker + " Reason: " + code);
                 if (numErrors > 5) break;
                 if (code == ErrorMapping.OffsetOutOfRangeCode()) {
                     // We asked for an invalid offset. For simple case ask for the last element to reset
-                    readOffset = getLastOffset(consumer, a_topic, a_partition, kafka.api.OffsetRequest.LatestTime(), clientName);
+                    readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.LatestTime(), clientName);
                     continue;
                 }
                 consumer.close();
                 consumer = null;
-                leadBroker = findNewLeader(leadBroker, a_topic, a_partition, a_port);
+                leadBroker = findNewLeader(leadBroker, topic, partition, port);
                 continue;
             }
             numErrors = 0;
 
             long numRead = 0;
-            for (MessageAndOffset messageAndOffset : fetchResponse.messageSet(a_topic, a_partition)) {
+            for (MessageAndOffset messageAndOffset : fetchResponse.messageSet(topic, partition)) {
                 long currentOffset = messageAndOffset.offset();
                 if (currentOffset < readOffset) {
                     System.out.println("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
@@ -96,9 +100,8 @@ public class KafkaConsumer {
 
                 byte[] bytes = new byte[payload.limit()];
                 payload.get(bytes);
-                System.out.println(String.valueOf(messageAndOffset.offset()) + ": " + new String(bytes, "UTF-8"));
                 numRead++;
-                a_maxReads--;
+                maxReads--;
             }
 
             if (numRead == 0) {
@@ -121,16 +124,15 @@ public class KafkaConsumer {
         OffsetResponse response = consumer.getOffsetsBefore(request);
 
         if (response.hasError()) {
-            System.out.println("Error fetching data Offset Data the Broker. Reason: " + response.errorCode(topic, partition));
-            return 0;
+            throw new RuntimeException("Error fetching data Offset Data the Broker. Reason: " + response.errorCode(topic, partition));
         }
         long[] offsets = response.offsets(topic, partition);
         return offsets[0];
     }
 
-    private String findNewLeader(String a_oldLeader, String a_topic, int a_partition, int a_port) throws Exception {
+    private String findNewLeader(String a_oldLeader, String a_topic, int a_partition, int a_port) {
         for (int i = 0; i < 3; i++) {
-            boolean goToSleep = false;
+            boolean goToSleep;
             PartitionMetadata metadata = findLeader(m_replicaBrokers, a_port, a_topic, a_partition);
             if (metadata == null) {
                 goToSleep = true;
@@ -139,7 +141,6 @@ public class KafkaConsumer {
             } else if (a_oldLeader.equalsIgnoreCase(metadata.leader().host()) && i == 0) {
                 // first time through if the leader hasn't changed give ZooKeeper a second to recover
                 // second time, assume the broker did recover before failover, or it was a non-Broker issue
-                //
                 goToSleep = true;
             } else {
                 return metadata.leader().host();
@@ -152,7 +153,7 @@ public class KafkaConsumer {
             }
         }
         System.out.println("Unable to find new leader after Broker failure. Exiting");
-        throw new Exception("Unable to find new leader after Broker failure. Exiting");
+        throw new RuntimeException("Unable to find new leader after Broker failure. Exiting");
     }
 
     private PartitionMetadata findLeader(List<String> a_seedBrokers, int a_port, String a_topic, int a_partition) {
@@ -161,7 +162,7 @@ public class KafkaConsumer {
         for (String seed : a_seedBrokers) {
             SimpleConsumer consumer = null;
             try {
-                consumer = new SimpleConsumer(seed, a_port, 100000, 64 * 1024, "leaderLookup");
+                consumer = new SimpleConsumer(seed, a_port, soTimeout, bufferSize, "leaderLookup");
                 List<String> topics = Collections.singletonList(a_topic);
                 TopicMetadataRequest req = new TopicMetadataRequest(topics);
                 kafka.javaapi.TopicMetadataResponse resp = consumer.send(req);
@@ -176,7 +177,7 @@ public class KafkaConsumer {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Error communicating with Broker [" + seed + "] to find Leader for [" + a_topic
+                LOG.warn("Error communicating with Broker [" + seed + "] to find Leader for [" + a_topic
                         + ", " + a_partition + "] Reason: " + e);
             } finally {
                 if (consumer != null) consumer.close();
