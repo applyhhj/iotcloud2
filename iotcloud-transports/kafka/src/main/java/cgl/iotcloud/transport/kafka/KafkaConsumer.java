@@ -1,5 +1,6 @@
 package cgl.iotcloud.transport.kafka;
 
+import cgl.iotcloud.core.transport.MessageConverter;
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
 import kafka.api.PartitionOffsetRequestInfo;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 public class KafkaConsumer {
     private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
@@ -25,13 +27,24 @@ public class KafkaConsumer {
     private List<String> m_replicaBrokers = new ArrayList<String>();
     private int soTimeout = 30000;
     private int bufferSize = 64 * 1024;
+    private int fetchSize = 10000;
 
-    public KafkaConsumer(long maxReads, String topic, int partition, List<String> seedBrokers, int port) {
+    private int pollingInterval = 10;
+
+    private MessageConverter converter;
+
+    private BlockingQueue inQueue;
+
+    public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, long maxReads, String topic,
+                         int partition, List<String> seedBrokers, int port) {
         this.maxReads = maxReads;
         this.topic = topic;
         this.partition = partition;
         this.seedBrokers = seedBrokers;
         this.port = port;
+
+        this.converter = converter;
+        this.inQueue = inQueue;
     }
 
     public void setSoTimeout(int soTimeout) {
@@ -43,75 +56,83 @@ public class KafkaConsumer {
     }
 
     public void start() {
-        // find the meta data about the topic and partition we are interested in
-        PartitionMetadata metadata = findLeader(seedBrokers, port, topic, partition);
-        if (metadata == null) {
-            throw new RuntimeException("Can't find metadata for Topic and Partition");
-        }
+        Thread t = new Thread(new Worker());
+        t.start();
+    }
 
-        if (metadata.leader() == null) {
-            throw new RuntimeException("Can't find Leader for Topic and Partition");
-        }
-
-        String leadBroker = metadata.leader().host();
-        String clientName = "Client_" + topic + "_" + partition;
-
-        SimpleConsumer consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
-        long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
-
-        int numErrors = 0;
-        while (maxReads > 0) {
-            if (consumer == null) {
-                consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+    private class Worker implements Runnable {
+        @Override
+        public void run() {
+            // find the meta data about the topic and partition we are interested in
+            PartitionMetadata metadata = findLeader(seedBrokers, port, topic, partition);
+            if (metadata == null) {
+                throw new RuntimeException("Can't find metadata for Topic and Partition");
             }
-            FetchRequest req = new FetchRequestBuilder()
-                    .clientId(clientName)
-                    .addFetch(topic, partition, readOffset, 100000)
-                    .build();
-            FetchResponse fetchResponse = consumer.fetch(req);
 
-            if (fetchResponse.hasError()) {
-                numErrors++;
-                // Something went wrong!
-                short code = fetchResponse.errorCode(topic, partition);
-                LOG.warn("Error fetching data from the Broker:" + leadBroker + " Reason: " + code);
-                if (numErrors > 5) break;
-                if (code == ErrorMapping.OffsetOutOfRangeCode()) {
-                    // We asked for an invalid offset. For simple case ask for the last element to reset
-                    readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.LatestTime(), clientName);
+            if (metadata.leader() == null) {
+                throw new RuntimeException("Can't find Leader for Topic and Partition");
+            }
+
+            String leadBroker = metadata.leader().host();
+            String clientName = "Client_" + topic + "_" + partition;
+
+            SimpleConsumer consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+            long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
+
+            int numErrors = 0;
+            while (maxReads > 0) {
+                if (consumer == null) {
+                    consumer = new SimpleConsumer(leadBroker, port, soTimeout, bufferSize, clientName);
+                }
+                FetchRequest req = new FetchRequestBuilder()
+                        .clientId(clientName)
+                        .addFetch(topic, partition, readOffset, fetchSize)
+                        .build();
+                FetchResponse fetchResponse = consumer.fetch(req);
+
+                if (fetchResponse.hasError()) {
+                    numErrors++;
+                    // Something went wrong!
+                    short code = fetchResponse.errorCode(topic, partition);
+                    LOG.warn("Error fetching data from the Broker:" + leadBroker + " Reason: " + code);
+                    if (numErrors > 5) break;
+                    if (code == ErrorMapping.OffsetOutOfRangeCode()) {
+                        // We asked for an invalid offset. For simple case ask for the last element to reset
+                        readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.LatestTime(), clientName);
+                        continue;
+                    }
+                    consumer.close();
+                    consumer = null;
+                    leadBroker = findNewLeader(leadBroker, topic, partition, port);
                     continue;
                 }
-                consumer.close();
-                consumer = null;
-                leadBroker = findNewLeader(leadBroker, topic, partition, port);
-                continue;
-            }
-            numErrors = 0;
+                numErrors = 0;
 
-            long numRead = 0;
-            for (MessageAndOffset messageAndOffset : fetchResponse.messageSet(topic, partition)) {
-                long currentOffset = messageAndOffset.offset();
-                if (currentOffset < readOffset) {
-                    System.out.println("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
-                    continue;
+                long numRead = 0;
+                for (MessageAndOffset messageAndOffset : fetchResponse.messageSet(topic, partition)) {
+                    long currentOffset = messageAndOffset.offset();
+                    if (currentOffset < readOffset) {
+                        System.out.println("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
+                        continue;
+                    }
+                    readOffset = messageAndOffset.nextOffset();
+                    ByteBuffer payload = messageAndOffset.message().payload();
+
+                    byte[] bytes = new byte[payload.limit()];
+                    payload.get(bytes);
+                    numRead++;
+                    maxReads--;
                 }
-                readOffset = messageAndOffset.nextOffset();
-                ByteBuffer payload = messageAndOffset.message().payload();
 
-                byte[] bytes = new byte[payload.limit()];
-                payload.get(bytes);
-                numRead++;
-                maxReads--;
-            }
-
-            if (numRead == 0) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ie) {
+                if (numRead == 0) {
+                    try {
+                        Thread.sleep(pollingInterval);
+                    } catch (InterruptedException ignored) {
+                    }
                 }
             }
+            if (consumer != null) consumer.close();
         }
-        if (consumer != null) consumer.close();
     }
 
     public static long getLastOffset(SimpleConsumer consumer, String topic, int partition,

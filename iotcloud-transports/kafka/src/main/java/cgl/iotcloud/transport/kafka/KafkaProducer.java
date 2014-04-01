@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 public class KafkaProducer {
@@ -22,19 +21,37 @@ public class KafkaProducer {
 
     private String topic;
 
+    private String brokerList;
+
+    private String serializerClass;
+
+    private String partitionClass;
+
+    private String requestRequiredAcks;
+
+    public KafkaProducer(MessageConverter converter, BlockingQueue outQueue,
+                         String topic, String brokerList, String serializerClass,
+                         String partitionClass, String requestRequiredAcks) {
+        this.converter = converter;
+        this.outQueue = outQueue;
+        this.topic = topic;
+        this.brokerList = brokerList;
+        this.serializerClass = serializerClass;
+        this.partitionClass = partitionClass;
+        this.requestRequiredAcks = requestRequiredAcks;
+    }
+
     public void start() {
-        long events = Long.parseLong("10");
-        Random rnd = new Random();
-
         Properties props = new Properties();
-        props.put("metadata.broker.list", "broker1:9092,broker2:9092 ");
-        props.put("serializer.class", "kafka.serializer.StringEncoder");
-        props.put("partitioner.class", "example.producer.SimplePartitioner");
-        props.put("request.required.acks", "1");
-
+        props.put("metadata.broker.list", brokerList);
+        props.put("serializer.class", serializerClass);
+        props.put("partitioner.class", partitionClass);
+        props.put("request.required.acks", requestRequiredAcks);
         ProducerConfig config = new ProducerConfig(props);
-
         producer = new Producer<String, String>(config);
+
+        Thread t = new Thread(new Worker());
+        t.start();
     }
 
     private class Worker implements Runnable {
