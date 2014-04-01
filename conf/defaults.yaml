@@ -26,6 +26,11 @@ iot.sensorsite.transports:
             threads:
                 max: 10
                 core: 4
+    kafka:
+      class: "cgl.iotcloud.transport.kafka.KafkaTransport"
+      properties:
+            url:
+
 
 
 

@@ -153,24 +153,19 @@ public class KafkaConsumer {
 
     private String findNewLeader(String a_oldLeader, String a_topic, int a_partition, int a_port) {
         for (int i = 0; i < 3; i++) {
-            boolean goToSleep;
             PartitionMetadata metadata = findLeader(m_replicaBrokers, a_port, a_topic, a_partition);
             if (metadata == null) {
-                goToSleep = true;
             } else if (metadata.leader() == null) {
-                goToSleep = true;
             } else if (a_oldLeader.equalsIgnoreCase(metadata.leader().host()) && i == 0) {
                 // first time through if the leader hasn't changed give ZooKeeper a second to recover
                 // second time, assume the broker did recover before failover, or it was a non-Broker issue
-                goToSleep = true;
             } else {
                 return metadata.leader().host();
             }
-            if (goToSleep) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {
-                }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
             }
         }
         System.out.println("Unable to find new leader after Broker failure. Exiting");
