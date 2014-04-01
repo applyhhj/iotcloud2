@@ -1,19 +1,18 @@
 package cgl.iotcloud.core;
 
 import cgl.iotcloud.core.transport.Channel;
-import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-public abstract class AbstractSensor {
+public abstract class AbstractSensor implements ISensor {
     private Map<String, QueueProducer> producers = new HashMap<String, QueueProducer>();
 
     private Map<String, QueueListener> listeners = new HashMap<String, QueueListener>();
 
-    public void startChannel(Channel channel, MessageSender sender) {
-        QueueProducer producer = new QueueProducer(channel.getInQueue(), sender);
+    public void startChannel(Channel channel, MessageSender sender, int interval) {
+        QueueProducer producer = new QueueProducer(channel.getInQueue(), sender, interval);
         producers.put(channel.getName(), producer);
 
         Thread t = new Thread(producer);
@@ -46,15 +45,24 @@ public abstract class AbstractSensor {
 
         private boolean run = true;
 
-        private QueueProducer(BlockingQueue queue, MessageSender handler) {
+        private int interval;
+
+        private QueueProducer(BlockingQueue queue, MessageSender handler, int interval) {
             this.queue = queue;
             this.messageSender = handler;
+            this.interval = interval;
         }
 
         @Override
         public void run() {
             while (run) {
                 messageSender.loop(queue);
+
+                try {
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -68,7 +76,6 @@ public abstract class AbstractSensor {
 
         private MessageReceiver messageReceiver;
 
-        private Logger logger;
         private boolean run = true;
 
         private QueueListener(BlockingQueue queue, MessageReceiver handler) {
