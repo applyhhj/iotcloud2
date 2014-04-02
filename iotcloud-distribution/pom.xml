@@ -22,6 +22,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>iotcloud2</groupId>
+            <artifactId>iotcloud-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>iotcloud2</groupId>
+            <artifactId>iotcloud-rabbitmq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>

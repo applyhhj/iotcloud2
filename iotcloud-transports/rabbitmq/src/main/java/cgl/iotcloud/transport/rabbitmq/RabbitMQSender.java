@@ -27,6 +27,8 @@ public class RabbitMQSender {
 
     private String routingKey;
 
+    private String queueName;
+
     private Address []addresses;
 
     private String url;
@@ -37,6 +39,7 @@ public class RabbitMQSender {
                           BlockingQueue outQueue,
                           String exchangeName,
                           String routingKey,
+                          String queueName,
                           ExecutorService executorService,
                           Address []addresses,
                           String url) {
@@ -47,6 +50,7 @@ public class RabbitMQSender {
         this.routingKey = routingKey;
         this.addresses = addresses;
         this.url = url;
+        this.queueName = queueName;
     }
 
     public void start() {
@@ -69,8 +73,11 @@ public class RabbitMQSender {
 
             channel = conn.createChannel();
             channel.exchangeDeclare(exchangeName, "direct", true);
-            String queueName = channel.queueDeclare().getQueue();
+            channel.queueDeclare(this.queueName, true, false, false, null).getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
+
+            Thread t = new Thread(new Worker());
+            t.start();
         } catch (IOException e) {
             String msg = "Error creating the RabbitMQ channel";
             LOG.error(msg, e);

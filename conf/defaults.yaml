@@ -22,7 +22,7 @@ iot.sensorsite.transports:
     rabbitmq:
       class: "cgl.iotcloud.transport.rabbitmq.RabbitMQTransport"
       properties:
-            url: "amqp://hostName:portNumber/virtualHost"
+            url: "amqp://localhost:5672"
             threads:
                 max: 10
                 core: 4

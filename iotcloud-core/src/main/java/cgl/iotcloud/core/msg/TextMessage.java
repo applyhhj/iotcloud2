@@ -1,6 +1,8 @@
 package cgl.iotcloud.core.msg;
 
-public class TextMessage {
+import java.io.Serializable;
+
+public class TextMessage implements Serializable {
     private String text;
 
     public TextMessage(String text) {
