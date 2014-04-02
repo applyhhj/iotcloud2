@@ -94,8 +94,8 @@ public class ChatSensor implements ISensor {
         public SensorContext configure(SiteContext siteContext) {
             SensorContext context = new SensorContext(new SensorId("chat", "general"));
 
-            BlockingQueue<Message> inMassages = new ArrayBlockingQueue<Message>(1024);
-            BlockingQueue<Message> outMassages = new ArrayBlockingQueue<Message>(1024);
+            BlockingQueue inMassages = new ArrayBlockingQueue(1024);
+            BlockingQueue outMassages = new ArrayBlockingQueue(1024);
             Map properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
@@ -103,8 +103,8 @@ public class ChatSensor implements ISensor {
             receiveChannel.addProperties(properties);
             context.addChannel("jms", receiveChannel);
 
-            inMassages = new ArrayBlockingQueue<Message>(1024);
-            outMassages = new ArrayBlockingQueue<Message>(1024);
+            inMassages = new ArrayBlockingQueue(1024);
+            outMassages = new ArrayBlockingQueue(1024);
             properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
