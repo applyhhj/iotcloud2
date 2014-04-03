@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class KafkaTransport implements Transport {
@@ -37,13 +38,13 @@ public class KafkaTransport implements Transport {
     public void configure(Map properties) {
         Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
         Object urlProp = params.get(PROP_URLS);
-        if (urlProp == null || !(urlProp instanceof Object [])) {
+        if (urlProp == null || !(urlProp instanceof List)) {
             String message = "Url is required by the Kafka Transport";
             LOG.error(message);
             throw new RuntimeException(message);
         }
 
-        for (Object o : (Object [])urlProp) {
+        for (Object o : (List)urlProp) {
             if (o instanceof String) {
                 String url = (String) o;
                 String tokens[] = url.split(":");

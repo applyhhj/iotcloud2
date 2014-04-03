@@ -50,7 +50,9 @@ public class KafkaProducer {
         if (partitionClass != null) {
             props.put("partitioner.class", partitionClass);
         }
-        props.put("request.required.acks", requestRequiredAcks);
+        if (requestRequiredAcks != null) {
+            props.put("request.required.acks", requestRequiredAcks);
+        }
         ProducerConfig config = new ProducerConfig(props);
         producer = new Producer<String, byte []>(config);
 

@@ -1,16 +1,21 @@
 package cgl.iotcloud.examples.chat;
 
 import cgl.iotcloud.core.*;
+import cgl.iotcloud.core.client.SensorClient;
 import cgl.iotcloud.core.msg.TextMessage;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.MessageConverter;
+import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -134,5 +139,24 @@ public class KafkaSensor extends AbstractSensor {
     @Override
     public void deactivate() {
 
+    }
+
+    public static void main(String[] args) {
+        // read the configuration file
+        Map conf = Utils.readConfig();
+        SensorClient client;
+        try {
+            client = new SensorClient(conf);
+
+            List<String> sites = new ArrayList<String>();
+            sites.add("local");
+
+            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.KafkaSensor");
+            deployDescriptor.addDeploySites(sites);
+
+            client.deploySensor(deployDescriptor);
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        }
     }
 }

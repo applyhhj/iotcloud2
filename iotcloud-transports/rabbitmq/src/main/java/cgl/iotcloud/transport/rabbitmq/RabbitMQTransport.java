@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,12 +50,12 @@ public class RabbitMQTransport implements Transport {
 
             if (urlProp instanceof String) {
                 this.url = (String) urlProp;
-            } else if (urlProp instanceof Object []) {
+            } else if (urlProp instanceof List) {
                 Address urls[];
-                int len = ((Object[]) urlProp).length;
+                int len = ((List) urlProp).size();
                 urls = new Address[len];
                 for (int i = 0; i < len; i++) {
-                    urls[i] = new Address ((String) ((Object[]) urlProp)[i]);
+                    urls[i] = new Address ((String) ((List) urlProp).get(i));
                 }
                 this.addresses = urls;
             }
