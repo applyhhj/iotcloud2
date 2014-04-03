@@ -38,7 +38,7 @@ public class KafkaTransport implements Transport {
         Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
         Object urlProp = params.get(PROP_URLS);
         if (urlProp == null || !(urlProp instanceof Object [])) {
-            String message = "Url is required by the RabbitMQTransport";
+            String message = "Url is required by the Kafka Transport";
             LOG.error(message);
             throw new RuntimeException(message);
         }
@@ -77,10 +77,14 @@ public class KafkaTransport implements Transport {
         String requestRequiredAcks = (String) channelConf.get(PROP_REQUEST_REQUIRED_ACKS);
 
         StringBuilder brokerList = new StringBuilder("");
+        int count = 0;
         for (Map.Entry<String, Integer> e : urls.entrySet()) {
-            brokerList.append(e.getKey()).append(":").append(e.getValue());
+            if (count == urls.entrySet().size() - 1) {
+                brokerList.append(e.getKey()).append(":").append(e.getValue());
+            } else {
+                brokerList.append(e.getKey()).append(":").append(e.getValue()).append(',');
+            }
         }
-
 
         KafkaProducer sender = new KafkaProducer(channel.getConverter(), channel.getOutQueue(), topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks);

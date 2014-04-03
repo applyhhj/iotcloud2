@@ -13,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
 public class KafkaProducer {
     private static Logger LOG = LoggerFactory.getLogger(KafkaProducer.class);
 
-    private Producer<String, String> producer;
+    private Producer<String, byte []> producer;
 
     private MessageConverter converter;
 
@@ -44,11 +44,15 @@ public class KafkaProducer {
     public void start() {
         Properties props = new Properties();
         props.put("metadata.broker.list", brokerList);
-        props.put("serializer.class", serializerClass);
-        props.put("partitioner.class", partitionClass);
+        if (serializerClass != null) {
+            props.put("serializer.class", serializerClass);
+        }
+        if (partitionClass != null) {
+            props.put("partitioner.class", partitionClass);
+        }
         props.put("request.required.acks", requestRequiredAcks);
         ProducerConfig config = new ProducerConfig(props);
-        producer = new Producer<String, String>(config);
+        producer = new Producer<String, byte []>(config);
 
         Thread t = new Thread(new Worker());
         t.start();
@@ -69,7 +73,8 @@ public class KafkaProducer {
                         Object input = outQueue.take();
                         Object converted = converter.convert(input, null);
 
-                        KeyedMessage<String, String> data = new KeyedMessage<String, String>(topic, "key", (String) converted);
+                        KeyedMessage<String, byte []> data = new KeyedMessage<String, byte []>(topic, "key", (byte []) converted);
+
                         producer.send(data);
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);

@@ -29,7 +29,7 @@ iot.sensorsite.transports:
     kafka:
       class: "cgl.iotcloud.transport.kafka.KafkaTransport"
       properties:
-            urls: ""
+            urls: ["localhost:9092"]
 
 
 iot.sensorsites.max: 1024
