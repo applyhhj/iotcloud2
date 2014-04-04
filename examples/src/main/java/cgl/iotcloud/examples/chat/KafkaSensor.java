@@ -8,6 +8,7 @@ import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.MessageConverter;
+
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class KafkaSensor extends AbstractSensor {
 
             Map sendProps = new HashMap();
             sendProps.put("topic", "test");
+            sendProps.put("serializerClass", "kafka.serializer.DefaultEncoder");
             // sendProps.put("routingKey", "test1");
             // sendProps.put("queueName", "test");
             Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024, new TextToByteConverter());

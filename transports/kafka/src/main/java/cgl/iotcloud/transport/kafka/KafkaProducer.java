@@ -13,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
 public class KafkaProducer {
     private static Logger LOG = LoggerFactory.getLogger(KafkaProducer.class);
 
-    private Producer<String, byte []> producer;
+    private Producer<byte[], byte []> producer;
 
     private MessageConverter converter;
 
@@ -54,7 +54,7 @@ public class KafkaProducer {
             props.put("request.required.acks", requestRequiredAcks);
         }
         ProducerConfig config = new ProducerConfig(props);
-        producer = new Producer<String, byte []>(config);
+        producer = new Producer<byte[], byte []>(config);
 
         Thread t = new Thread(new Worker());
         t.start();
@@ -75,7 +75,7 @@ public class KafkaProducer {
                         Object input = outQueue.take();
                         Object converted = converter.convert(input, null);
 
-                        KeyedMessage<String, byte []> data = new KeyedMessage<String, byte []>(topic, "key", (byte []) converted);
+                        KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic, "key".getBytes(), (byte []) converted);
 
                         producer.send(data);
                     } catch (InterruptedException e) {
@@ -84,9 +84,9 @@ public class KafkaProducer {
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }
