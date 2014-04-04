@@ -8,11 +8,11 @@
     <packaging>pom</packaging>
     <name>iotcloud</name>
     <modules>
-        <module>iotcloud-core</module>
-        <module>iotcloud-storm</module>
-        <module>iotcloud-transports</module>
-        <module>iotcloud-examples</module>
-        <module>iotcloud-distribution</module>
+        <module>core</module>
+        <module>storm</module>
+        <module>transports</module>
+        <module>examples</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
