@@ -2,7 +2,7 @@ package cgl.iotcloud.examples.chat;
 
 import cgl.iotcloud.core.*;
 import cgl.iotcloud.core.client.SensorClient;
-import cgl.iotcloud.core.msg.TextMessage;
+import cgl.iotcloud.core.msg.SensorTextMessage;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
@@ -37,7 +37,7 @@ public class KafkaSensor extends AbstractSensor {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {
-                    queue.put(new TextMessage("Hello"));
+                    queue.put(new SensorTextMessage("Hello"));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -48,8 +48,8 @@ public class KafkaSensor extends AbstractSensor {
         startChannel(receiveChannel, new MessageReceiver() {
             @Override
             public void onMessage(Object message) {
-                if (message instanceof TextMessage) {
-                    System.out.println(((TextMessage) message).getText());
+                if (message instanceof SensorTextMessage) {
+                    System.out.println(((SensorTextMessage) message).getText());
                 } else {
                     System.out.println("Unexpected message");
                 }

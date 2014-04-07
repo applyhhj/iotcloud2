@@ -1,17 +1,23 @@
 package cgl.iotcloud.examples.perf;
 
 import cgl.iotcloud.core.*;
+import cgl.iotcloud.core.client.SensorClient;
+import cgl.iotcloud.core.msg.SensorTextMessage;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.MessageConverter;
+import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -30,7 +36,7 @@ public class ActiveMQPerfSensor extends AbstractSensor {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {
-                    queue.put(new SensorBinaryMessage("Hello"));
+                    queue.put(new SensorTextMessage("Hello"));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -63,21 +69,21 @@ public class ActiveMQPerfSensor extends AbstractSensor {
             sendProps.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             sendProps.put(Configuration.CHANNEL_JMS_DESTINATION, "perf");
 
-            Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024, new BinaryToJMSConverter());
+            Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024, new TextToJMSConverter());
 
             context.addChannel("jms", sendChannel);
             return context;
         }
     }
 
-    private class BinaryToJMSConverter implements MessageConverter {
+    private class TextToJMSConverter implements MessageConverter {
         @Override
         public Object convert(Object input, Object context) {
-            if (context instanceof Session && input instanceof SensorBinaryMessage) {
+            if (context instanceof Session && input instanceof SensorTextMessage) {
                 try {
                     TextMessage message = ((Session) context).createTextMessage();
                     message.setLongProperty("time", System.currentTimeMillis());
-                    message.setText(((SensorBinaryMessage) input).getText());
+                    message.setText(((TextMessage) input).getText());
 
                     return message;
                 } catch (JMSException e) {
@@ -88,15 +94,22 @@ public class ActiveMQPerfSensor extends AbstractSensor {
         }
     }
 
-    private class SensorBinaryMessage {
-        String text;
+    public static void main(String[] args) {
+        // read the configuration file
+        Map conf = Utils.readConfig();
+        SensorClient client;
+        try {
+            client = new SensorClient(conf);
 
-        private SensorBinaryMessage(String text) {
-            this.text = text;
-        }
+            List<String> sites = new ArrayList<String>();
+            sites.add("local");
 
-        public String getText() {
-            return text;
+            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.perf.ActiveMQPerfSensor");
+            deployDescriptor.addDeploySites(sites);
+
+            client.deploySensor(deployDescriptor);
+        } catch (TTransportException e) {
+            e.printStackTrace();
         }
     }
 }
