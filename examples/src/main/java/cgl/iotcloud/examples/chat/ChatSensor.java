@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import java.util.ArrayList;
