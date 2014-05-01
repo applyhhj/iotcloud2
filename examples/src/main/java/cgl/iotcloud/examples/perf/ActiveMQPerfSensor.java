@@ -62,7 +62,7 @@ public class ActiveMQPerfSensor extends AbstractSensor {
 
     private class PerfConfigurator extends AbstractConfigurator {
         @Override
-        public SensorContext configure(SiteContext siteContext) {
+        public SensorContext configure(SiteContext siteContext, Map conf) {
             SensorContext context = new SensorContext(new SensorId("jms-perf", "perf"));
 
             Map sendProps = new HashMap();

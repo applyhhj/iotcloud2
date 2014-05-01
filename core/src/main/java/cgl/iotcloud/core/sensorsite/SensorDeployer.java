@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -112,7 +113,8 @@ public class SensorDeployer {
 
             // get the sensor specific configurations
             Configurator configurator = sensor.getConfigurator(conf);
-            SensorContext sensorContext = configurator.configure(siteContext);
+            Map<String, String> config = new HashMap<String, String>(deployDescriptor.getProperties());
+            SensorContext sensorContext = configurator.configure(siteContext, config);
 
             // add the sensor to the site
             siteContext.addSensor(sensorContext, sensor);

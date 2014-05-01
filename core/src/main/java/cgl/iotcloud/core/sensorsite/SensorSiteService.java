@@ -9,6 +9,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class SensorSiteService implements TSensorSiteService.Iface {
@@ -38,6 +39,12 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         String jarName = sensor.getFilename();
 
         SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(jarName, className);
+        if (sensor.getProperties() != null) {
+            for (Map.Entry<String, String> e : sensor.getProperties().entrySet()) {
+                deployDescriptor.addProperty(e.getKey(), e.getValue());
+            }
+        }
+
         SensorEvent event = new SensorEvent(deployDescriptor, SensorEventState.DEPLOY);
 
         try {

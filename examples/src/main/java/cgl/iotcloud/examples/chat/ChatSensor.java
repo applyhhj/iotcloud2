@@ -90,7 +90,7 @@ public class ChatSensor implements ISensor {
 
     private class ChatConfigurator implements Configurator {
         @Override
-        public SensorContext configure(SiteContext siteContext) {
+        public SensorContext configure(SiteContext siteContext, Map conf) {
             SensorContext context = new SensorContext(new SensorId("chat", "general"));
 
             BlockingQueue inMassages = new ArrayBlockingQueue(1024);

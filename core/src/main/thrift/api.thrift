@@ -46,6 +46,7 @@ struct TSiteDetailsResponse {
 struct TSensorDetails {
     1:required string filename
     2:required string className
+    3:optional map<string, string> properties
 }
 
 struct TSensorDeployResponse {

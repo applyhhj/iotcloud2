@@ -59,7 +59,7 @@ public class KafkaSensor extends AbstractSensor {
 
     private class KafkaConfigurator extends AbstractConfigurator {
         @Override
-        public SensorContext configure(SiteContext siteContext) {
+        public SensorContext configure(SiteContext siteContext, Map conf) {
             SensorContext context = new SensorContext(new SensorId("KafkaChat", "general"));
 
             Map sendProps = new HashMap();

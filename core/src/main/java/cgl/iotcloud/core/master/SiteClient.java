@@ -10,6 +10,7 @@ import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -19,6 +20,8 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class SiteClient {
     private static Logger LOG = LoggerFactory.getLogger(SiteClient.class);
@@ -52,6 +55,11 @@ public class SiteClient {
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {
         TSensorDetails sensorDetails = new TSensorDetails(deployDescriptor.getJarName(),
                 deployDescriptor.getClassName());
+
+        for (Map.Entry<String, String> e : deployDescriptor.getProperties().entrySet()) {
+            sensorDetails.putToProperties(e.getKey(), e.getValue());
+        }
+
         try {
             TResponse response = this.client.deploySensor(sensorDetails);
 

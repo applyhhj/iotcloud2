@@ -1,7 +1,9 @@
 package cgl.iotcloud.core.sensorsite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SensorDeployDescriptor {
     private String jarName;
@@ -9,6 +11,8 @@ public class SensorDeployDescriptor {
     private String className;
 
     private List<String> deploySites = new ArrayList<String>();
+
+    private Map<String, String> properties = new HashMap<String, String>();
 
     public SensorDeployDescriptor(String jarName, String className) {
         this.jarName = jarName;
@@ -29,6 +33,14 @@ public class SensorDeployDescriptor {
 
     public List<String> getDeploySites() {
         return deploySites;
+    }
+
+    public void addProperty(String name, String value) {
+        properties.put(name, value);
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     @Override
