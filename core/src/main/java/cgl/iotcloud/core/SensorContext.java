@@ -4,6 +4,7 @@ import cgl.iotcloud.core.transport.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.html.ObjectView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,8 +60,12 @@ public class SensorContext {
         this.metadata = metadata;
     }
 
-    private void addProperty(Object key, Object value) {
+    public void addProperty(Object key, Object value) {
         properties.put(key, value);
+    }
+
+    public Object getProperty(Object key) {
+        return properties.get(key);
     }
 
     public Map<String, List<Channel>> getChannels() {
