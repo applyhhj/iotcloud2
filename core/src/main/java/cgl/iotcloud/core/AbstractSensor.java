@@ -109,11 +109,13 @@ public abstract class AbstractSensor implements ISensor {
         @Override
         public void run() {
             while (run) {
-                while (pause) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                synchronized (this) {
+                    while (pause) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 try {
@@ -135,7 +137,7 @@ public abstract class AbstractSensor implements ISensor {
             pause = true;
         }
 
-        public void activate() {
+        public synchronized void activate() {
             pause = false;
             notifyAll();
         }
