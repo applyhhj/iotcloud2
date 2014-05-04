@@ -47,6 +47,8 @@ public abstract class AbstractSensor implements ISensor {
 
         private int interval;
 
+        private boolean pause = false;
+
         private QueueProducer(BlockingQueue queue, MessageSender handler, int interval) {
             this.queue = queue;
             this.messageSender = handler;
@@ -56,6 +58,15 @@ public abstract class AbstractSensor implements ISensor {
         @Override
         public void run() {
             while (run) {
+                synchronized (this){
+                    while (pause) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 messageSender.loop(queue);
 
                 try {
@@ -68,6 +79,16 @@ public abstract class AbstractSensor implements ISensor {
 
         public void stop() {
             run = false;
+            notifyAll();
+        }
+
+        public void deactivate() {
+            pause = true;
+        }
+
+        public synchronized void activate() {
+            pause = false;
+            notifyAll();
         }
     }
 
@@ -78,6 +99,8 @@ public abstract class AbstractSensor implements ISensor {
 
         private boolean run = true;
 
+        private boolean pause = false;
+
         private QueueListener(BlockingQueue queue, MessageReceiver handler) {
             this.queue = queue;
             this.messageReceiver = handler;
@@ -86,6 +109,13 @@ public abstract class AbstractSensor implements ISensor {
         @Override
         public void run() {
             while (run) {
+                while (pause) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 try {
                     Object o = queue.take();
 
@@ -98,6 +128,38 @@ public abstract class AbstractSensor implements ISensor {
 
         public void stop() {
             run = false;
+            notifyAll();
+        }
+
+        public void deactivate() {
+            pause = true;
+        }
+
+        public void activate() {
+            pause = false;
+            notifyAll();
+        }
+    }
+
+    @Override
+    public void activate() {
+        for (QueueProducer p : producers.values()) {
+            p.activate();
+        }
+
+        for (QueueListener p : listeners.values()) {
+            p.activate();
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        for (QueueProducer p : producers.values()) {
+            p.deactivate();
+        }
+
+        for (QueueListener p : listeners.values()) {
+            p.deactivate();
         }
     }
 }
