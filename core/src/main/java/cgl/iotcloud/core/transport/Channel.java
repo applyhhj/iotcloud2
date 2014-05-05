@@ -26,6 +26,8 @@ public class Channel {
 
     private MessageConverter converter;
 
+    private boolean run = true;
+
     public Channel(String name, Direction direction,
                    BlockingQueue inQueue, BlockingQueue outQueue, MessageConverter converter) {
         this.name = name;
@@ -60,6 +62,7 @@ public class Channel {
     }
 
     public void open() {
+        run = true;
         Thread t = new Thread(new Worker());
         t.start();
     }
@@ -76,7 +79,6 @@ public class Channel {
     private class Worker implements Runnable {
         @Override
         public void run() {
-            boolean run = true;
             int errorCount = 0;
             while (run) {
                 try {
@@ -109,6 +111,10 @@ public class Channel {
             LOG.error(message);
             throw new RuntimeException(message);
         }
+    }
+
+    public void close() {
+        run = false;
     }
 
     @Override
