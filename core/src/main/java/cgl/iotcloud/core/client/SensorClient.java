@@ -65,6 +65,11 @@ public class SensorClient {
 
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {
         TSensorDetails sensorDetails = new TSensorDetails(deployDescriptor.getJarName(), deployDescriptor.getClassName());
+
+        for (Map.Entry<String, String> e : deployDescriptor.getProperties().entrySet()) {
+            sensorDetails.putToProperties(e.getKey(), e.getValue());
+        }
+
         try {
             TResponse response = client.deploySensor(deployDescriptor.getDeploySites(), sensorDetails);
             return response.getState() == TResponseState.SUCCESS;

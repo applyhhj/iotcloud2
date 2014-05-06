@@ -97,7 +97,7 @@ public class SensorMaster {
                                     new TMasterAPIService.Processor<MasterAPIServiceHandler>(
                                             new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
-                    LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
+                    LOG.info("Starting the SensorMaster API server on host: {} and port: {}", host, port);
                     apiServer.serve();
                 } catch (TTransportException e) {
                     String msg = "Error starting the Thrift server";

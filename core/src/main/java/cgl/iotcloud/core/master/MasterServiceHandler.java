@@ -61,14 +61,18 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         SensorDetails sensorDetails = new SensorDetails(sensorID);
 
-        for (TChannel tChannel : sensor.getChannels()) {
-            ChannelDetails details = null;
-            if (tChannel.getDirection() == TDirection.IN) {
-                details = new ChannelDetails(Direction.IN);
-            } else if (tChannel.getDirection() == TDirection.OUT) {
-                details = new ChannelDetails(Direction.OUT);
+        if (sensor.getChannels() != null) {
+            for (TChannel tChannel : sensor.getChannels()) {
+                ChannelDetails details = null;
+                if (tChannel.getDirection() == TDirection.IN) {
+                    details = new ChannelDetails(Direction.IN);
+                } else if (tChannel.getDirection() == TDirection.OUT) {
+                    details = new ChannelDetails(Direction.OUT);
+                }
+                sensorDetails.addChannel(tChannel.getTransport(), details);
             }
-            sensorDetails.addChannel(tChannel.getTransport(), details);
+        } else {
+            LOG.warn("Sensor registered with no channels {}", id);
         }
         // TODO check
         sensorDetails.setMetadata(sensor.getMetadata());

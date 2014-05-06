@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
@@ -56,6 +57,11 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     public TResponse deploySensor(List<String> sites, TSensorDetails sensor) throws TException {
         SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(sensor.getFilename(), sensor.getClassName());
         deployDescriptor.addDeploySites(sites);
+
+        for (Map.Entry<String, String> e : sensor.getProperties().entrySet()) {
+            deployDescriptor.addProperty(e.getKey(), e.getValue());
+        }
+
         masterContext.addSensorToDeploy(deployDescriptor);
 
         MasterSensorEvent event = new MasterSensorEvent(null, SensorEventState.DEPLOY);
