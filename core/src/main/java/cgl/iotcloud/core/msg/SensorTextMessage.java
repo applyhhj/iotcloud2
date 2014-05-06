@@ -1,8 +1,6 @@
 package cgl.iotcloud.core.msg;
 
-import java.io.Serializable;
-
-public class SensorTextMessage implements Serializable {
+public class SensorTextMessage extends AbstractMessage {
     private String text;
 
     public SensorTextMessage(String text) {

@@ -110,6 +110,9 @@ public class RabbitMQSender {
                         Object converted = converter.convert(input, null);
                         if (converted instanceof byte []) {
                             channel.basicPublish(exchangeName, routingKey, null, (byte[]) converted);
+                        } else if (converted instanceof RabbitMQMessage) {
+                            channel.basicPublish(exchangeName, routingKey,
+                                    ((RabbitMQMessage) converted).getBasicProperties(), ((RabbitMQMessage) converted).getBody());
                         } else {
                             throw new RuntimeException("Expepected byte array after conversion");
                         }
