@@ -32,7 +32,7 @@ public class ActiveMQPerfSensor extends AbstractSensor {
     public void open(SensorContext context) {
         final Channel sendChannel = context.getChannel("jms", "sender");
 
-        startChannel(sendChannel, new MessageSender() {
+        startSend(sendChannel, new MessageSender() {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {

@@ -11,7 +11,7 @@ public abstract class AbstractSensor implements ISensor {
 
     private Map<String, QueueListener> listeners = new HashMap<String, QueueListener>();
 
-    public void startChannel(Channel channel, MessageSender sender, int interval) {
+    public void startSend(Channel channel, MessageSender sender, int interval) {
         QueueProducer producer = new QueueProducer(channel.getInQueue(), sender, interval);
         producers.put(channel.getName(), producer);
 
@@ -19,7 +19,7 @@ public abstract class AbstractSensor implements ISensor {
         t.start();
     }
 
-    public void startChannel(Channel channel, MessageReceiver receiver) {
+    public void startListen(Channel channel, MessageReceiver receiver) {
         QueueListener listener = new QueueListener(channel.getOutQueue(), receiver);
 
         listeners.put(channel.getName(), listener);

@@ -33,7 +33,7 @@ public class KafkaSensor extends AbstractSensor {
         final Channel sendChannel = context.getChannel("kafka", "sender");
         final Channel receiveChannel = context.getChannel("kafka", "receiver");
 
-        startChannel(sendChannel, new MessageSender() {
+        startSend(sendChannel, new MessageSender() {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {
@@ -45,7 +45,7 @@ public class KafkaSensor extends AbstractSensor {
             }
         }, 100);
 
-        startChannel(receiveChannel, new MessageReceiver() {
+        startListen(receiveChannel, new MessageReceiver() {
             @Override
             public void onMessage(Object message) {
                 if (message instanceof SensorTextMessage) {

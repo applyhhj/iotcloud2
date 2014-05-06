@@ -31,7 +31,7 @@ public class RabbitMQSensor extends AbstractSensor {
         final Channel sendChannel = context.getChannel("rabbitmq", "sender");
         final Channel receiveChannel = context.getChannel("rabbitmq", "receiver");
 
-        startChannel(sendChannel, new MessageSender() {
+        startSend(sendChannel, new MessageSender() {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {
@@ -43,7 +43,7 @@ public class RabbitMQSensor extends AbstractSensor {
             }
         }, 100);
 
-        startChannel(receiveChannel, new MessageReceiver() {
+        startListen(receiveChannel, new MessageReceiver() {
             @Override
             public void onMessage(Object message) {
                 if (message instanceof SensorTextMessage) {
