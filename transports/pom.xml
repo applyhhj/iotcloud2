@@ -16,6 +16,7 @@
     <modules>
         <module>rabbitmq</module>
         <module>kafka</module>
+        <module>mqtt</module>
     </modules>
     <dependencies>
         <dependency>

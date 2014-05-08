@@ -28,6 +28,7 @@
         <libthrift.version>0.9.1</libthrift.version>
         <log4j.slf4j.version>2.0-rc1</log4j.slf4j.version>
         <commons.cli.version>1.2</commons.cli.version>
+        <mqtt.version>1.7</mqtt.version>
     </properties>
 
     <dependencyManagement>
@@ -100,6 +101,11 @@
                 <groupId>org.apache.thrift</groupId>
                 <artifactId>libthrift</artifactId>
                 <version>${libthrift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.mqtt-client</groupId>
+                <artifactId>mqtt-client</artifactId>
+                <version>${mqtt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
