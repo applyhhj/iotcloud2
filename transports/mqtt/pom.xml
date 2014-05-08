@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mqtt</artifactId>
+    <artifactId>iotcloud-mqtt</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.fusesource.mqtt-client</groupId>
