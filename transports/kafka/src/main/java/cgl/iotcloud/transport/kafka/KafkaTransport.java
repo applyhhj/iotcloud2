@@ -89,7 +89,6 @@ public class KafkaTransport implements Transport {
 
         KafkaProducer sender = new KafkaProducer(channel.getConverter(), channel.getOutQueue(), topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks);
-        sender.start();
         producers.put(name, sender);
     }
 
@@ -98,7 +97,6 @@ public class KafkaTransport implements Transport {
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 
         KafkaConsumer listener = new KafkaConsumer(channel.getConverter(), channel.getInQueue(), topic, partition, urls);
-        listener.start();
         consumers.put(name, listener);
     }
 

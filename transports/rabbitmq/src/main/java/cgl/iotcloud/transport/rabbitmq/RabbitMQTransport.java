@@ -85,13 +85,11 @@ public class RabbitMQTransport implements Transport {
             String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
             RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, routingKey, queueName, executorService, addresses, url);
-            sender.start();
             senders.put(name, sender);
         } else if (channel.getDirection() == Direction.IN) {
             String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
             RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), queueName, executorService, addresses, url);
-            listener.start();
             receivers.put(name, listener);
         }
     }

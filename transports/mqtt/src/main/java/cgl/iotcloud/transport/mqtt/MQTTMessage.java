@@ -7,15 +7,9 @@ public class MQTTMessage {
 
     private String queue;
 
-    private String id;
-
-    private Runnable onComplete;
-
-    public MQTTMessage(String id, Buffer body, String queue, Runnable onComplete) {
+    public MQTTMessage(Buffer body, String queue) {
         this.body = body;
         this.queue = queue;
-        this.onComplete = onComplete;
-        this.id = id;
     }
 
     public Buffer getBody() {
@@ -24,13 +18,5 @@ public class MQTTMessage {
 
     public String getQueue() {
         return queue;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Runnable getOnComplete() {
-        return onComplete;
     }
 }

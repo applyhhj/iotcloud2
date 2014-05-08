@@ -1,5 +1,6 @@
 package cgl.iotcloud.transport.mqtt;
 
+import cgl.iotcloud.core.transport.MessageConverter;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
@@ -26,15 +27,18 @@ public class MQTTConsumer {
 
     private QoS qoS;
 
-    public MQTTConsumer(String url, BlockingQueue messages, String queueName) {
-        this(url, messages, queueName, QoS.AT_MOST_ONCE);
+    private MessageConverter converter;
+
+    public MQTTConsumer(String url, BlockingQueue messages, String queueName, MessageConverter converter) {
+        this(url, messages, queueName, converter, QoS.AT_MOST_ONCE);
     }
 
-    public MQTTConsumer(String url, BlockingQueue messages, String queueName, QoS qoS) {
+    public MQTTConsumer(String url, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
         this.url = url;
         this.messages = messages;
         this.queueName = queueName;
         this.qoS = qoS;
+        this.converter = converter;
     }
 
     public void setTrace(boolean trace) {
@@ -94,9 +98,11 @@ public class MQTTConsumer {
 
             public void onPublish(UTF8Buffer topic, Buffer payload, Runnable onComplete) {
                 final String uuid = UUID.randomUUID().toString();
-                MQTTMessage message = new MQTTMessage(uuid, payload, topic.toString(), onComplete);
                 try {
-                    messages.put(message);
+                    MQTTMessage message = new MQTTMessage(payload, topic.toString());
+                    Object converted = converter.convert(message, null);
+                    messages.put(converted);
+                    onComplete.run();
                 } catch (InterruptedException e) {
                     LOG.error("Failed to put the message to queue", e);
                 }
@@ -136,10 +142,6 @@ public class MQTTConsumer {
                 });
             }
         });
-    }
-
-    public void ack(MQTTMessage msg) {
-        msg.getOnComplete().run();
     }
 
     public void close() {
