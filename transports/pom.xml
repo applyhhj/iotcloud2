@@ -17,6 +17,7 @@
         <module>rabbitmq</module>
         <module>kafka</module>
         <module>mqtt</module>
+        <module>kestrel</module>
     </modules>
     <dependencies>
         <dependency>
