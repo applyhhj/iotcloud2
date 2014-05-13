@@ -1,9 +1,10 @@
-package cgl.iotcloud.transport.mqtt;
+package cgl.iotcloud.transport.kestrel;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
+import net.lag.kestrel.thrift.Kestrel;
 import org.fusesource.mqtt.client.QoS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MQTTTransport implements Transport {
-    private static Logger LOG = LoggerFactory.getLogger(MQTTTransport.class);
+public class KestrelTransport implements Transport {
+    private static Logger LOG = LoggerFactory.getLogger(KestrelTransport.class);
 
     public static final String URL_PROPERTY = "url";
 
@@ -20,9 +21,9 @@ public class MQTTTransport implements Transport {
 
     public static final String QOS = "qosLevel";
 
-    private Map<String, MQTTConsumer> receivers = new HashMap<String, MQTTConsumer>();
+    private Map<String, KestrelConsumer> receivers = new HashMap<String, KestrelConsumer>();
 
-    private Map<String, MQTTProducer> senders = new HashMap<String, MQTTProducer>();
+    private Map<String, KestrelProducer> senders = new HashMap<String, KestrelProducer>();
 
     private String url;
 
@@ -66,32 +67,32 @@ public class MQTTTransport implements Transport {
         }
 
         if (channel.getDirection() == Direction.OUT) {
-            MQTTProducer sender = new MQTTProducer(url, channel.getOutQueue(), queueName, channel.getConverter(), qoS);
+            KestrelProducer sender = new KestrelProducer(url, channel.getInQueue(), queueName, channel.getConverter(), qoS);
             senders.put(name, sender);
         } else if (channel.getDirection() == Direction.IN) {
-            MQTTConsumer listener = new MQTTConsumer(url, channel.getInQueue(), queueName, channel.getConverter(), qoS);
+            Kestrel listener = new KestrelConsumer(url, channel.getInQueue(), queueName, channel.getConverter(), qoS);
             receivers.put(name, listener);
         }
     }
 
     @Override
     public void start() {
-        for (MQTTProducer producer : senders.values()) {
+        for (KestrelProducer producer : senders.values()) {
             producer.open();
         }
 
-        for (MQTTConsumer consumer : receivers.values()) {
+        for (KestrelConsumer consumer : receivers.values()) {
             consumer.open();
         }
     }
 
     @Override
     public void stop() {
-        for (MQTTProducer producer : senders.values()) {
+        for (KestrelProducer producer : senders.values()) {
             producer.close();
         }
 
-        for (MQTTConsumer consumer : receivers.values()) {
+        for (KestrelConsumer consumer : receivers.values()) {
             consumer.close();
         }
     }
