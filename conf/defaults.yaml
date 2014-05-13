@@ -34,6 +34,13 @@ iot.sensorsite.transports:
           class: "cgl.iotcloud.transport.kafka.KafkaTransport"
           properties:
                 url: "mqtt://localhost:1883"
+    kestrel:
+              class: "cgl.iotcloud.transport.kestrel.KestrelTransport"
+              properties:
+                    servers:
+                          -
+                             host: "localhost"
+                             port: 1234
 
 iot.sensorsites.max: 1024
 
