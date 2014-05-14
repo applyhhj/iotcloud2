@@ -28,6 +28,8 @@ public class MQTTProducer {
 
     private MessageConverter converter;
 
+    private boolean run = true;
+
     public MQTTProducer(String url, BlockingQueue messages, String queueName, MessageConverter converter) {
         this(url, messages, queueName, converter, QoS.AT_MOST_ONCE);
     }
@@ -118,6 +120,7 @@ public class MQTTProducer {
     }
 
     public void close() {
+        run = false;
         if (connection != null && (state == State.CONNECTED || state == State.TOPIC_CONNECTED)) {
             // To disconnect..
             connection.disconnect(new Callback<Void>() {
@@ -136,7 +139,6 @@ public class MQTTProducer {
     private class Worker implements Runnable {
         @Override
         public void run() {
-            boolean run = true;
             int errorCount = 0;
             while (run) {
                 try {
