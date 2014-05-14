@@ -24,6 +24,12 @@ public class KestrelTransport implements Transport {
 
     public static final String SERVER = "server";
 
+    public static final String BLACKLIST_TIME = "blackListTime";
+
+    public static final String EXPIRATION_TIME = "expirationTIme";
+
+    public static final String RECEIVE_TIMEOUT = "receiveTimeOut";
+
     private Map<String, KestrelConsumer> receivers = new HashMap<String, KestrelConsumer>();
 
     private Map<String, KestrelProducer> senders = new HashMap<String, KestrelProducer>();
@@ -71,22 +77,41 @@ public class KestrelTransport implements Transport {
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
         String qosProp = (String) channelConf.get(ACK);
         String server = (String) channelConf.get(SERVER);
+        if (server == null) {
+            throw new IllegalArgumentException("The server should be present");
+        }
+        String blackListProp = (String) channelConf.get(BLACKLIST_TIME);
+        String expirationProp = (String) channelConf.get(EXPIRATION_TIME);
+        String timeOutProp = (String) channelConf.get(RECEIVE_TIMEOUT);
+
         int qosInt = Integer.parseInt(qosProp);
 
-        QoS qoS = QoS.AT_MOST_ONCE;
-        if (qosInt == 2) {
-            qoS = QoS.EXACTLY_ONCE;
-        } else if (qosInt == 1) {
-            qoS = QoS.AT_LEAST_ONCE;
+        Server s = urls.get(server);
+        if (s == null) {
+            throw new IllegalArgumentException("The server configuration should exist " + server);
         }
 
-        Server s = urls.get(server);
-
         if (channel.getDirection() == Direction.OUT) {
-            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getInQueue(), queueName, channel.getConverter(), qoS);
+            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getOutQueue(), channel.getConverter());
+            if (blackListProp != null) {
+                long blackListTime = Long.parseLong(blackListProp);
+                sender.setBlackListTime(blackListTime);
+            }
+            if (expirationProp != null) {
+                long expirationTime = Long.parseLong(expirationProp);
+                sender.setBlackListTime(expirationTime);
+            }
             senders.put(name, sender);
         } else if (channel.getDirection() == Direction.IN) {
-            Kestrel listener = new KestrelConsumer(new KestrelDestination(), channel.getInQueue(), queueName, channel.getConverter(), qoS);
+            KestrelConsumer listener = new KestrelConsumer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getInQueue());
+            if (blackListProp != null) {
+                long blackListTime = Long.parseLong(blackListProp);
+                listener.setBlackListTime(blackListTime);
+            }
+            if (timeOutProp != null) {
+                int timOut = Integer.parseInt(timeOutProp);
+                listener.setTimeoutMillis(timOut);
+            }
             receivers.put(name, listener);
         }
     }

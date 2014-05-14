@@ -14,7 +14,9 @@ public class KestrelConsumer {
     // by default we are going to black list a server for 30 secs
     private long blackListTime = 30000L;
 
-    public static final int MAX_ITEMS = 1024;
+    public static final int MAX_ITEMS = 64;
+
+    public static final int WAIT_TIME = 10;
 
     private Logger logger;
 
@@ -80,6 +82,7 @@ public class KestrelConsumer {
     }
 
     public void close() {
+        run = false;
         closeClient();
     }
 
@@ -100,39 +103,30 @@ public class KestrelConsumer {
         @Override
         public void run() {
             while (run) {
-                if (System.currentTimeMillis() < sleepTime) {
-                    boolean queueWorking = false;
-                    for (String q : destination.getQueue()) {
-                        try {
-                            getValidClient();
-                        } catch (TException e) {
-                            closeClient();
-                            sleepTime = System.currentTimeMillis() + blackListTime;
-                            break;
-                        }
-
-
-                        List<Item> items = null;
-                        try {
-                            items = client.get(q, MAX_ITEMS, 0, 0);
-                            queueWorking = true;
-                            if (items != null) {
-                                for (Item item :items) {
-                                    KestrelMessage m = new KestrelMessage(item.get_data(), item.get_id(), destination, q);
-                                    messages.put(m);
-                                }
-                            }
-                        } catch (TException e) {
-                            logger.debug("Error retrieving messages from queue {} and host {} port {}", q, destination.getHost(), destination.getPort());
-                            closeClient();
-                        } catch (InterruptedException e) {
-                            logger.error("Failed to add the message to the queue", e);
-                        }
-                    }
-                    // if a single queue isn't working we are going to sleep
-                    if (!queueWorking) {
+                if (System.currentTimeMillis() > sleepTime) {
+                    String q = destination.getQueue();
+                    try {
+                        getValidClient();
+                    } catch (TException e) {
                         closeClient();
                         sleepTime = System.currentTimeMillis() + blackListTime;
+                    }
+
+                    List<Item> items;
+                    try {
+                        items = client.get(q, MAX_ITEMS, WAIT_TIME, 0);
+                        if (items != null) {
+                            for (Item item :items) {
+                                KestrelMessage m = new KestrelMessage(item.get_data(), item.get_id(), destination, q);
+                                messages.put(m);
+                            }
+                        }
+                    } catch (TException e) {
+                        logger.debug("Error retrieving messages from queue {} and host {} port {}", q, destination.getHost(), destination.getPort());
+                        closeClient();
+                        sleepTime = System.currentTimeMillis() + blackListTime;
+                    } catch (InterruptedException e) {
+                        logger.error("Failed to add the message to the queue", e);
                     }
                 } else {
                     try {
