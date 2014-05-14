@@ -1,19 +1,15 @@
 package cgl.iotcloud.transport.kestrel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Destination {
+public class KestrelDestination {
     private String host;
 
     private int port;
 
-    private List<String> queue = new ArrayList<String>();
+    private String queue;
 
-    public Destination(String host, int port, List<String> queue) {
+    public KestrelDestination(String host, int port, String queue) {
         this.host = host;
         this.port = port;
-        this.queue.addAll(queue);
     }
 
     public String getHost() {
@@ -24,7 +20,7 @@ public class Destination {
         return port;
     }
 
-    public List<String> getQueues() {
+    public String getQueue() {
         return queue;
     }
 }

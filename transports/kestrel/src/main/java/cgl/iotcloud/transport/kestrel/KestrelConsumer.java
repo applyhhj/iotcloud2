@@ -26,11 +26,11 @@ public class KestrelConsumer {
 
     private int timeoutMillis = 30000;
 
-    private Destination destination;
+    private KestrelDestination destination;
 
     private long sleepTime = 0;
 
-    public KestrelConsumer(Logger logger, Destination destination, BlockingQueue messages) {
+    public KestrelConsumer(Logger logger, KestrelDestination destination, BlockingQueue messages) {
         if (logger == null) {
             this.logger = LoggerFactory.getLogger(KestrelConsumer.class);
         }
@@ -38,7 +38,7 @@ public class KestrelConsumer {
         this.destination = destination;
     }
 
-    public KestrelConsumer(Destination destination, BlockingQueue<KestrelMessage> messages) {
+    public KestrelConsumer(KestrelDestination destination, BlockingQueue<KestrelMessage> messages) {
         this(null, destination, messages);
     }
 
@@ -102,7 +102,7 @@ public class KestrelConsumer {
             while (run) {
                 if (System.currentTimeMillis() < sleepTime) {
                     boolean queueWorking = false;
-                    for (String q : destination.getQueues()) {
+                    for (String q : destination.getQueue()) {
                         try {
                             getValidClient();
                         } catch (TException e) {
@@ -114,7 +114,7 @@ public class KestrelConsumer {
 
                         List<Item> items = null;
                         try {
-                            items = client.get(q, MAX_ITEMS, 0, timeoutMillis);
+                            items = client.get(q, MAX_ITEMS, 0, 0);
                             queueWorking = true;
                             if (items != null) {
                                 for (Item item :items) {
