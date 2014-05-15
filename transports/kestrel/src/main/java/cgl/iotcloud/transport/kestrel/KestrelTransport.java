@@ -4,8 +4,6 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
-import net.lag.kestrel.thrift.Kestrel;
-import org.fusesource.mqtt.client.QoS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
