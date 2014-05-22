@@ -13,7 +13,6 @@
         <module>transports</module>
         <module>examples</module>
         <module>distribution</module>
-        <module>kestrel</module>
     </modules>
 
     <properties>
