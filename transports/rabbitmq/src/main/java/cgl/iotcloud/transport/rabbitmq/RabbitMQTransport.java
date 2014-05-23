@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.rabbitmq;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 
@@ -29,9 +30,9 @@ public class RabbitMQTransport implements Transport {
 
     private ExecutorService executorService;
 
-    private Map<String, RabbitMQReceiver> receivers = new HashMap<String, RabbitMQReceiver>();
+    private Map<ChannelName, RabbitMQReceiver> receivers = new HashMap<ChannelName, RabbitMQReceiver>();
 
-    private Map<String, RabbitMQSender> senders = new HashMap<String, RabbitMQSender>();
+    private Map<ChannelName, RabbitMQSender> senders = new HashMap<ChannelName, RabbitMQSender>();
 
     private Address[] addresses;
 
@@ -73,7 +74,7 @@ public class RabbitMQTransport implements Transport {
     }
 
     @Override
-    public void registerChannel(String name, Channel channel) {
+    public void registerChannel(ChannelName name, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");

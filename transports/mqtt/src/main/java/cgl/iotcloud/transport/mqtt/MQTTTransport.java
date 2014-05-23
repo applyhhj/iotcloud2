@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.mqtt;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 import org.fusesource.mqtt.client.QoS;
@@ -20,9 +21,9 @@ public class MQTTTransport implements Transport {
 
     public static final String QOS = "qosLevel";
 
-    private Map<String, MQTTConsumer> receivers = new HashMap<String, MQTTConsumer>();
+    private Map<ChannelName, MQTTConsumer> receivers = new HashMap<ChannelName, MQTTConsumer>();
 
-    private Map<String, MQTTProducer> senders = new HashMap<String, MQTTProducer>();
+    private Map<ChannelName, MQTTProducer> senders = new HashMap<ChannelName, MQTTProducer>();
 
     private String url;
 
@@ -48,7 +49,7 @@ public class MQTTTransport implements Transport {
     }
 
     @Override
-    public void registerChannel(String name, Channel channel) {
+    public void registerChannel(ChannelName name, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");

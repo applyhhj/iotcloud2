@@ -2,6 +2,7 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Transport;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
@@ -126,7 +127,7 @@ public class SensorDeployer {
                 Transport t = siteContext.getTransport(entry.getKey());
                 if (t != null) {
                     for (Channel c : entry.getValue()) {
-                        t.registerChannel(c.getName(), c);
+                        t.registerChannel(new ChannelName(sensorContext.getId(), c.getName()), c);
                         c.open();
                     }
                 }

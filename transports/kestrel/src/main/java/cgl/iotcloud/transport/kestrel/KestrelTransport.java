@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.kestrel;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 import org.slf4j.Logger;
@@ -28,9 +29,9 @@ public class KestrelTransport implements Transport {
 
     public static final String RECEIVE_TIMEOUT = "receiveTimeOut";
 
-    private Map<String, KestrelConsumer> receivers = new HashMap<String, KestrelConsumer>();
+    private Map<ChannelName, KestrelConsumer> receivers = new HashMap<ChannelName, KestrelConsumer>();
 
-    private Map<String, KestrelProducer> senders = new HashMap<String, KestrelProducer>();
+    private Map<ChannelName, KestrelProducer> senders = new HashMap<ChannelName, KestrelProducer>();
 
     private Map<String, Server> urls = new HashMap<String, Server>();
 
@@ -66,7 +67,7 @@ public class KestrelTransport implements Transport {
     }
 
     @Override
-    public void registerChannel(String name, Channel channel) {
+    public void registerChannel(ChannelName name, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");

@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 import org.slf4j.Logger;
@@ -31,8 +32,8 @@ public class KafkaTransport implements Transport {
 
     private Map<String, Integer> urls = new HashMap<String, Integer>();
 
-    private Map<String, KafkaProducer> producers = new HashMap<String, KafkaProducer>();
-    private Map<String, KafkaConsumer> consumers = new HashMap<String, KafkaConsumer>();
+    private Map<ChannelName, KafkaProducer> producers = new HashMap<ChannelName, KafkaProducer>();
+    private Map<ChannelName, KafkaConsumer> consumers = new HashMap<ChannelName, KafkaConsumer>();
 
     @Override
     public void configure(Map properties) {
@@ -58,7 +59,7 @@ public class KafkaTransport implements Transport {
     }
 
     @Override
-    public void registerChannel(String name, Channel channel) {
+    public void registerChannel(ChannelName name, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");
@@ -71,7 +72,7 @@ public class KafkaTransport implements Transport {
         }
     }
 
-    private void createSender(String name, Map channelConf, Channel channel) {
+    private void createSender(ChannelName name, Map channelConf, Channel channel) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         String serializerClass = (String) channelConf.get(PROP_SERIALIZER_CLASS);
         String partitionClass = (String) channelConf.get(PROP_PARTITION_CLASS);
@@ -93,7 +94,7 @@ public class KafkaTransport implements Transport {
         sender.start();
     }
 
-    private void createReceiver(String name, Map channelConf, Channel channel) {
+    private void createReceiver(ChannelName name, Map channelConf, Channel channel) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 

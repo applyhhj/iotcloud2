@@ -2,6 +2,7 @@ package cgl.iotcloud.core.transport.jms;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.transport.Channel;
+import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.transport.Transport;
 import org.slf4j.Logger;
@@ -23,8 +24,8 @@ public class JMSTransport implements Transport {
     /** Initial context */
     private Context context = null;
 
-    private Map<String, JMSSender> senders = new HashMap<String, JMSSender>();
-    private Map<String, JMSListener> listeners = new HashMap<String, JMSListener>();
+    private Map<ChannelName, JMSSender> senders = new HashMap<ChannelName, JMSSender>();
+    private Map<ChannelName, JMSListener> listeners = new HashMap<ChannelName, JMSListener>();
 
     @Override
     public void configure(Map properties) {
@@ -49,7 +50,7 @@ public class JMSTransport implements Transport {
         }
     }
 
-    public void registerChannel(String name, Channel channel) {
+    public void registerChannel(ChannelName name, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");
@@ -81,22 +82,22 @@ public class JMSTransport implements Transport {
 
     @Override
     public void start() {
-        for (Map.Entry<String, JMSSender> e : senders.entrySet()) {
+        for (Map.Entry<ChannelName, JMSSender> e : senders.entrySet()) {
             e.getValue().start();
         }
 
-        for (Map.Entry<String, JMSListener> e : listeners.entrySet()) {
+        for (Map.Entry<ChannelName, JMSListener> e : listeners.entrySet()) {
             e.getValue().start();
         }
     }
 
     @Override
     public void stop() {
-        for (Map.Entry<String, JMSSender> e : senders.entrySet()) {
+        for (Map.Entry<ChannelName, JMSSender> e : senders.entrySet()) {
             e.getValue().stop();
         }
 
-        for (Map.Entry<String, JMSListener> e : listeners.entrySet()) {
+        for (Map.Entry<ChannelName, JMSListener> e : listeners.entrySet()) {
             e.getValue().stop();
         }
     }
