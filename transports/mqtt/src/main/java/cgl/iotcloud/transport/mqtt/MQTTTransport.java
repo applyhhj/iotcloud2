@@ -56,21 +56,25 @@ public class MQTTTransport implements Transport {
 
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
         String qosProp = (String) channelConf.get(QOS);
-        int qosInt = Integer.parseInt(qosProp);
-
         QoS qoS = QoS.AT_MOST_ONCE;
-        if (qosInt == 2) {
-            qoS = QoS.EXACTLY_ONCE;
-        } else if (qosInt == 1) {
-            qoS = QoS.AT_LEAST_ONCE;
+        if (qosProp != null) {
+            int qosInt = Integer.parseInt(qosProp);
+
+            if (qosInt == 2) {
+                qoS = QoS.EXACTLY_ONCE;
+            } else if (qosInt == 1) {
+                qoS = QoS.AT_LEAST_ONCE;
+            }
         }
 
         if (channel.getDirection() == Direction.OUT) {
             MQTTProducer sender = new MQTTProducer(url, channel.getOutQueue(), queueName, channel.getConverter(), qoS);
             senders.put(name, sender);
+            sender.open();
         } else if (channel.getDirection() == Direction.IN) {
             MQTTConsumer listener = new MQTTConsumer(url, channel.getInQueue(), queueName, channel.getConverter(), qoS);
             receivers.put(name, listener);
+            listener.open();
         }
     }
 

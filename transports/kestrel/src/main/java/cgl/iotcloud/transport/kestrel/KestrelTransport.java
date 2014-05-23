@@ -100,6 +100,7 @@ public class KestrelTransport implements Transport {
                 sender.setBlackListTime(expirationTime);
             }
             senders.put(name, sender);
+            sender.open();
         } else if (channel.getDirection() == Direction.IN) {
             KestrelConsumer listener = new KestrelConsumer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getInQueue());
             if (blackListProp != null) {
@@ -111,6 +112,7 @@ public class KestrelTransport implements Transport {
                 listener.setTimeoutMillis(timOut);
             }
             receivers.put(name, listener);
+            listener.open();
         }
     }
 

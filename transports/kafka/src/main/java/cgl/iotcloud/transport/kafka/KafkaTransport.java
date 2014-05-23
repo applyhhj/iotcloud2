@@ -90,6 +90,7 @@ public class KafkaTransport implements Transport {
         KafkaProducer sender = new KafkaProducer(channel.getConverter(), channel.getOutQueue(), topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks);
         producers.put(name, sender);
+        sender.start();
     }
 
     private void createReceiver(String name, Map channelConf, Channel channel) {
@@ -98,6 +99,7 @@ public class KafkaTransport implements Transport {
 
         KafkaConsumer listener = new KafkaConsumer(channel.getConverter(), channel.getInQueue(), topic, partition, urls);
         consumers.put(name, listener);
+        listener.start();
     }
 
     @Override
