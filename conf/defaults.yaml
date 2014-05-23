@@ -33,7 +33,7 @@ iot.sensorsite.transports:
     mqtt:
           class: "cgl.iotcloud.transport.mqtt.MQTTTransport"
           properties:
-                url: "mqtt://localhost:1883"
+                url: "localhost:1883"
     kestrel:
           class: "cgl.iotcloud.transport.kestrel.KestrelTransport"
           properties:

@@ -1,8 +1,6 @@
 package cgl.iotcloud.transport.mqtt;
 
 import cgl.iotcloud.core.transport.MessageConverter;
-import org.fusesource.hawtbuf.Buffer;
-import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
 import org.fusesource.mqtt.codec.MQTTFrame;
 import org.slf4j.Logger;
@@ -18,6 +16,8 @@ public class MQTTProducer {
 
     private String url;
 
+    private int port;
+
     private BlockingQueue messages;
 
     private String queueName;
@@ -30,16 +30,17 @@ public class MQTTProducer {
 
     private boolean run = true;
 
-    public MQTTProducer(String url, BlockingQueue messages, String queueName, MessageConverter converter) {
-        this(url, messages, queueName, converter, QoS.AT_MOST_ONCE);
+    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter) {
+        this(url, port, messages, queueName, converter, QoS.AT_MOST_ONCE);
     }
 
-    public MQTTProducer(String url, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
+    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
         this.url = url;
         this.messages = messages;
         this.queueName = queueName;
         this.qoS = qoS;
         this.converter = converter;
+        this.port = port;
     }
 
     public void setTrace(boolean trace) {
@@ -59,7 +60,11 @@ public class MQTTProducer {
         MQTT mqtt = new MQTT();
 
         try {
-            mqtt.setHost(url);
+            if (port != -1) {
+                mqtt.setHost(url, port);
+            } else {
+                mqtt.setHost(url);
+            }
         } catch (URISyntaxException e) {
             String msg = "Invalid URL for the MQTT Broker";
             LOG.error(msg, e);
@@ -97,21 +102,8 @@ public class MQTTProducer {
 
             // Once we connect..
             public void onSuccess(Void v) {
-                // Subscribe to a topic
-                Topic[] topics = {new Topic(queueName, qoS)};
-                connection.subscribe(topics, new Callback<byte[]>() {
-                    public void onSuccess(byte[] qoses) {
-                        // The result of the subcribe request.
-                        LOG.debug("Subscribed to the topic {}", queueName);
-                        state = State.TOPIC_CONNECTED;
-                    }
-
-                    public void onFailure(Throwable value) {
-                        LOG.error("Failed to subscribe to topic", value);
-                        connection.disconnect(null);
-                        state = State.DISCONNECTED;
-                    }
-                });
+                LOG.debug("Connection established");
+                state = State.CONNECTED;
             }
         });
 
@@ -142,7 +134,7 @@ public class MQTTProducer {
             int errorCount = 0;
             while (run) {
                 try {
-                    if (state == State.TOPIC_CONNECTED) {
+                    if (state == State.CONNECTED) {
                         try {
                             Object input = messages.take();
                             Object converted = converter.convert(input, null);
@@ -160,9 +152,9 @@ public class MQTTProducer {
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }

@@ -19,6 +19,8 @@ public class MQTTConsumer {
 
     private String url;
 
+    private int port;
+
     private BlockingQueue messages;
 
     private String queueName;
@@ -29,11 +31,11 @@ public class MQTTConsumer {
 
     private MessageConverter converter;
 
-    public MQTTConsumer(String url, BlockingQueue messages, String queueName, MessageConverter converter) {
-        this(url, messages, queueName, converter, QoS.AT_MOST_ONCE);
+    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter) {
+        this(url, port, messages, queueName, converter, QoS.AT_MOST_ONCE);
     }
 
-    public MQTTConsumer(String url, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
+    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
         this.url = url;
         this.messages = messages;
         this.queueName = queueName;
@@ -58,7 +60,11 @@ public class MQTTConsumer {
         MQTT mqtt = new MQTT();
 
         try {
-            mqtt.setHost(url);
+            if (port != -1) {
+                mqtt.setHost(url, port);
+            } else {
+                mqtt.setHost(url);
+            }
         } catch (URISyntaxException e) {
             String msg = "Invalid URL for the MQTT Broker";
             LOG.error(msg, e);

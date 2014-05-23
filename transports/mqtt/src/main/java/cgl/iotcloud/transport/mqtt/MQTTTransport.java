@@ -27,6 +27,10 @@ public class MQTTTransport implements Transport {
 
     private String url;
 
+    private String host;
+
+    private int port;
+
     @Override
     public void configure(Map properties) {
         try {
@@ -40,6 +44,12 @@ public class MQTTTransport implements Transport {
 
             if (urlProp instanceof String) {
                 this.url = (String) urlProp;
+                if (url.contains(":")) {
+                    this.host = url.substring(0, url.indexOf(":"));
+                    this.port = Integer.parseInt(url.substring(url.indexOf(":") + 1));
+                } else {
+                    this.host = url;
+                }
             }
         } catch (Exception e) {
             String msg = "Error in key management for rabbitMQ";
@@ -69,11 +79,11 @@ public class MQTTTransport implements Transport {
         }
 
         if (channel.getDirection() == Direction.OUT) {
-            MQTTProducer sender = new MQTTProducer(url, channel.getOutQueue(), queueName, channel.getConverter(), qoS);
+            MQTTProducer sender = new MQTTProducer(host, port, channel.getOutQueue(), queueName, channel.getConverter(), qoS);
             senders.put(name, sender);
             sender.open();
         } else if (channel.getDirection() == Direction.IN) {
-            MQTTConsumer listener = new MQTTConsumer(url, channel.getInQueue(), queueName, channel.getConverter(), qoS);
+            MQTTConsumer listener = new MQTTConsumer(host, port, channel.getInQueue(), queueName, channel.getConverter(), qoS);
             receivers.put(name, listener);
             listener.open();
         }
