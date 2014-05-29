@@ -92,18 +92,23 @@ public class MQTTProducer {
 
         connection = mqtt.callbackConnection();
 
-        connection.connect(new Callback<Void>() {
-            public void onFailure(Throwable value) {
-                state = State.INIT;
-                String s = "Failed to connect to the broker";
-                LOG.error(s, value);
-                throw new RuntimeException(s, value);
-            }
+        connection.getDispatchQueue().execute(new Runnable() {
+            @Override
+            public void run() {
+                connection.connect(new Callback<Void>() {
+                    public void onFailure(Throwable value) {
+                        state = State.INIT;
+                        String s = "Failed to connect to the broker";
+                        LOG.error(s, value);
+                        throw new RuntimeException(s, value);
+                    }
 
-            // Once we connect..
-            public void onSuccess(Void v) {
-                LOG.debug("Connection established");
-                state = State.CONNECTED;
+                    // Once we connect..
+                    public void onSuccess(Void v) {
+                        LOG.debug("Connection established");
+                        state = State.CONNECTED;
+                    }
+                });
             }
         });
 
@@ -115,16 +120,22 @@ public class MQTTProducer {
         run = false;
         if (connection != null && (state == State.CONNECTED || state == State.TOPIC_CONNECTED)) {
             // To disconnect..
-            connection.disconnect(new Callback<Void>() {
-                public void onSuccess(Void v) {
-                    // called once the connection is disconnected.
-                    state = State.DISCONNECTED;
-                }
-                public void onFailure(Throwable value) {
-                    // Disconnects never fail.
-                    state = State.DISCONNECTED;
+            connection.getDispatchQueue().execute(new Runnable() {
+                @Override
+                public void run() {
+                    connection.disconnect(new Callback<Void>() {
+                        public void onSuccess(Void v) {
+                            // called once the connection is disconnected.
+                            state = State.DISCONNECTED;
+                        }
+                        public void onFailure(Throwable value) {
+                            // Disconnects never fail.
+                            state = State.DISCONNECTED;
+                        }
+                    });
                 }
             });
+
         }
     }
 
@@ -136,13 +147,18 @@ public class MQTTProducer {
                 try {
                     if (state == State.CONNECTED) {
                         try {
-                            Object input = messages.take();
-                            Object converted = converter.convert(input, null);
-                            if (converted instanceof byte []) {
-                                connection.publish(queueName, (byte [])converted, qoS, false, null);
-                            } else {
-                                throw new RuntimeException("Expepected byte array after conversion");
-                            }
+                            final Object input = messages.take();
+                            final Object converted = converter.convert(input, null);
+                            connection.getDispatchQueue().execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (converted instanceof byte []) {
+                                        connection.publish(queueName, (byte [])converted, qoS, false, null);
+                                    } else {
+                                        throw new RuntimeException("Expepected byte array after conversion");
+                                    }
+                                }
+                            });
                         } catch (InterruptedException e) {
                             LOG.error("Exception occurred in the worker listening for consumer changes", e);
                         }

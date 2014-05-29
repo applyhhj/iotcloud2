@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.mqtt;
 
 import cgl.iotcloud.core.transport.MessageConverter;
+import com.sun.xml.internal.bind.v2.model.annotation.RuntimeAnnotationReader;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
@@ -121,29 +122,39 @@ public class MQTTConsumer {
             }
         });
 
-        connection.connect(new Callback<Void>() {
-            public void onFailure(Throwable value) {
-                state = State.INIT;
-                String s = "Failed to connect to the broker";
-                LOG.error(s, value);
-                throw new RuntimeException(s, value);
-            }
-
-            // Once we connect..
-            public void onSuccess(Void v) {
-                // Subscribe to a topic
-                Topic[] topics = {new Topic(queueName, qoS)};
-                connection.subscribe(topics, new Callback<byte[]>() {
-                    public void onSuccess(byte[] qoses) {
-                        // The result of the subcribe request.
-                        LOG.debug("Subscribed to the topic {}", queueName);
-                        state = State.TOPIC_CONNECTED;
+        connection.getDispatchQueue().execute(new Runnable() {
+            @Override
+            public void run() {
+                connection.connect(new Callback<Void>() {
+                    public void onFailure(Throwable value) {
+                        state = State.INIT;
+                        String s = "Failed to connect to the broker";
+                        LOG.error(s, value);
+                        throw new RuntimeException(s, value);
                     }
 
-                    public void onFailure(Throwable value) {
-                        LOG.error("Failed to subscribe to topic", value);
-                        connection.disconnect(null);
-                        state = State.DISCONNECTED;
+                    // Once we connect..
+                    public void onSuccess(Void v) {
+                        connection.getDispatchQueue().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Subscribe to a topic
+                                Topic[] topics = {new Topic(queueName, qoS)};
+                                connection.subscribe(topics, new Callback<byte[]>() {
+                                    public void onSuccess(byte[] qoses) {
+                                        // The result of the subcribe request.
+                                        LOG.debug("Subscribed to the topic {}", queueName);
+                                        state = State.TOPIC_CONNECTED;
+                                    }
+
+                                    public void onFailure(Throwable value) {
+                                        LOG.error("Failed to subscribe to topic", value);
+                                        connection.disconnect(null);
+                                        state = State.DISCONNECTED;
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -152,15 +163,20 @@ public class MQTTConsumer {
 
     public void close() {
         if (connection != null && (state == State.CONNECTED || state == State.TOPIC_CONNECTED)) {
-            // To disconnect..
-            connection.disconnect(new Callback<Void>() {
-                public void onSuccess(Void v) {
-                    // called once the connection is disconnected.
-                    state = State.DISCONNECTED;
-                }
-                public void onFailure(Throwable value) {
-                    // Disconnects never fail.
-                    state = State.DISCONNECTED;
+            connection.getDispatchQueue().execute(new Runnable() {
+                @Override
+                public void run() {
+                    // To disconnect..
+                    connection.disconnect(new Callback<Void>() {
+                        public void onSuccess(Void v) {
+                            // called once the connection is disconnected.
+                            state = State.DISCONNECTED;
+                        }
+                        public void onFailure(Throwable value) {
+                            // Disconnects never fail.
+                            state = State.DISCONNECTED;
+                        }
+                    });
                 }
             });
         }
