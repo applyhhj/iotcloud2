@@ -73,7 +73,7 @@ public class RabbitMQSender {
 
             channel = conn.createChannel();
             channel.exchangeDeclare(exchangeName, "direct", true);
-            channel.queueDeclare(this.queueName, true, false, false, null).getQueue();
+            channel.queueDeclare(this.queueName, true, false, false, null);
             channel.queueBind(queueName, exchangeName, routingKey);
 
             Thread t = new Thread(new Worker());

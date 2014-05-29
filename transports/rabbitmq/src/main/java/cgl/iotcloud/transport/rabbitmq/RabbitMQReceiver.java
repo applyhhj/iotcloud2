@@ -63,6 +63,7 @@ public class RabbitMQReceiver {
             }
 
             channel = conn.createChannel();
+            channel.queueDeclare(this.queueName, true, false, false, null);
             channel.basicConsume(queueName, autoAck, "myConsumerTag",
                     new DefaultConsumer(channel) {
                         @Override
