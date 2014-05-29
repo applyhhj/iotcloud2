@@ -72,7 +72,7 @@ public class RabbitMQSender {
             }
 
             channel = conn.createChannel();
-            channel.exchangeDeclare(exchangeName, "direct", true);
+            channel.exchangeDeclare(exchangeName, "direct", false);
             channel.queueDeclare(this.queueName, true, false, false, null);
             channel.queueBind(queueName, exchangeName, routingKey);
 

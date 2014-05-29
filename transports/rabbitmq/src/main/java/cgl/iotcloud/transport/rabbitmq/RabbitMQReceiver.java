@@ -30,6 +30,10 @@ public class RabbitMQReceiver {
 
     private ExecutorService executorService;
 
+    private String exchangeName;
+
+    private String routingKey;
+
     public RabbitMQReceiver(MessageConverter converter,
                             BlockingQueue inQueue,
                             String queueName,
@@ -63,7 +67,13 @@ public class RabbitMQReceiver {
             }
 
             channel = conn.createChannel();
-            channel.queueDeclare(this.queueName, true, false, false, null);
+
+            if (exchangeName != null && routingKey != null) {
+                channel.exchangeDeclare(exchangeName, "direct", false);
+                channel.queueDeclare(this.queueName, true, false, false, null);
+                channel.queueBind(queueName, exchangeName, routingKey);
+            }
+
             channel.basicConsume(queueName, autoAck, "myConsumerTag",
                     new DefaultConsumer(channel) {
                         @Override
@@ -105,5 +115,13 @@ public class RabbitMQReceiver {
         } catch (IOException e) {
             LOG.error("Error closing the rabbit MQ connection", e);
         }
+    }
+
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
     }
 }
