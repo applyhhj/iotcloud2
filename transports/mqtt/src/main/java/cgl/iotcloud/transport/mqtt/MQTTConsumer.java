@@ -1,7 +1,6 @@
 package cgl.iotcloud.transport.mqtt;
 
 import cgl.iotcloud.core.transport.MessageConverter;
-import com.sun.xml.internal.bind.v2.model.annotation.RuntimeAnnotationReader;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
@@ -42,6 +41,7 @@ public class MQTTConsumer {
         this.queueName = queueName;
         this.qoS = qoS;
         this.converter = converter;
+        this.port = port;
     }
 
     public void setTrace(boolean trace) {
