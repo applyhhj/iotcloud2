@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 public class SiteController {
     private static Logger LOG = LoggerFactory.getLogger(SiteController.class);
 
-    private MasterContext context;
+    private final MasterContext context;
 
     private BlockingQueue<SiteEvent> siteEventsQueue;
 
@@ -86,9 +86,9 @@ public class SiteController {
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }
@@ -129,9 +129,9 @@ public class SiteController {
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }
@@ -155,19 +155,21 @@ public class SiteController {
     }
 
     private void deploySensors() {
-        List<SensorDeployDescriptor> sensorDeployDescriptors = context.getSensorsTobeDeployed();
+        synchronized (context) {
+            List<SensorDeployDescriptor> sensorDeployDescriptors = context.getSensorsTobeDeployed();
 
-        Iterator<SensorDeployDescriptor> itr = sensorDeployDescriptors.iterator();
-        while (itr.hasNext()) {
-            SensorDeployDescriptor deployDescriptor = itr.next();
-            List<String> sites = deployDescriptor.getDeploySites();
-            for (String site : sites) {
-                SiteClient client = siteClients.get(site);
-                if (client != null) {
-                    client.deploySensor(deployDescriptor);
+            Iterator<SensorDeployDescriptor> itr = sensorDeployDescriptors.iterator();
+            while (itr.hasNext()) {
+                SensorDeployDescriptor deployDescriptor = itr.next();
+                List<String> sites = deployDescriptor.getDeploySites();
+                for (String site : sites) {
+                    SiteClient client = siteClients.get(site);
+                    if (client != null) {
+                        client.deploySensor(deployDescriptor);
+                    }
                 }
+                itr.remove();
             }
-            itr.remove();
         }
     }
 

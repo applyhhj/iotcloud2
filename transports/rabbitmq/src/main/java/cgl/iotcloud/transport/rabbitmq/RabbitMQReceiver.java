@@ -72,8 +72,9 @@ public class RabbitMQReceiver {
                                                    byte[] body)
                                 throws IOException {
                             long deliveryTag = envelope.getDeliveryTag();
+                            RabbitMQMessage message = new RabbitMQMessage(properties, body);
                             try {
-                                Object o = converter.convert(body, null);
+                                Object o = converter.convert(message, null);
                                 inQueue.put(o);
                             } catch (InterruptedException e) {
                                 LOG.error("Failed to put the object to the queue");
@@ -94,8 +95,12 @@ public class RabbitMQReceiver {
 
     public void stop() {
         try {
-            channel.close();
-            conn.close();
+            if (channel != null) {
+                channel.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         } catch (IOException e) {
             LOG.error("Error closing the rabbit MQ connection", e);
         }
