@@ -114,7 +114,7 @@ public class KestrelConsumer {
 
                     List<Item> items;
                     try {
-                        items = client.get(q, MAX_ITEMS, WAIT_TIME, 0);
+                        items = client.get(q, MAX_ITEMS, timeoutMillis, 0);
                         if (items != null) {
                             for (Item item :items) {
                                 KestrelMessage m = new KestrelMessage(item.get_data(), item.get_id(), destination, q);
