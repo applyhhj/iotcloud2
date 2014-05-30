@@ -10,6 +10,7 @@ public class KestrelDestination {
     public KestrelDestination(String host, int port, String queue) {
         this.host = host;
         this.port = port;
+        this.queue = queue;
     }
 
     public String getHost() {
