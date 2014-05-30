@@ -83,7 +83,10 @@ public class KestrelTransport implements Transport {
         String expirationProp = (String) channelConf.get(EXPIRATION_TIME);
         String timeOutProp = (String) channelConf.get(RECEIVE_TIMEOUT);
 
-        int qosInt = Integer.parseInt(qosProp);
+        int qosInt = 0;
+        if (qosProp != null) {
+            qosInt = Integer.parseInt(qosProp);
+        }
 
         Server s = urls.get(server);
         if (s == null) {

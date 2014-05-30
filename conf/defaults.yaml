@@ -38,7 +38,7 @@ iot.sensorsite.transports:
           class: "cgl.iotcloud.transport.kestrel.KestrelTransport"
           properties:
                 servers:
-                    s1: "localhost:1234"
+                    s1: "localhost:2229"
 
 iot.sensorsites.max: 1024
 
