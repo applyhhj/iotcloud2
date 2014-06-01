@@ -5,6 +5,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -119,7 +120,8 @@ public class KestrelConsumer {
                         if (items != null) {
                             for (Item item :items) {
                                 byte[] bytes = item.get_data();
-                                KestrelMessage m = new KestrelMessage(bytes, item.get_id(), destination, q);
+                                byte[] newBytes = Arrays.copyOf(bytes, bytes.length);
+                                KestrelMessage m = new KestrelMessage(newBytes, item.get_id(), destination, q);
                                 messages.put(m);
                             }
                         }
