@@ -110,14 +110,16 @@ public class KestrelConsumer {
                     } catch (TException e) {
                         closeClient();
                         sleepTime = System.currentTimeMillis() + blackListTime;
+                        continue;
                     }
 
                     List<Item> items;
                     try {
-                        items = client.get(q, MAX_ITEMS, timeoutMillis, 0);
+                        items = client.get(q, MAX_ITEMS, 0, 0);
                         if (items != null) {
                             for (Item item :items) {
-                                KestrelMessage m = new KestrelMessage(item.get_data(), item.get_id(), destination, q);
+                                byte[] bytes = item.get_data();
+                                KestrelMessage m = new KestrelMessage(bytes, item.get_id(), destination, q);
                                 messages.put(m);
                             }
                         }

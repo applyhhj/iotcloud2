@@ -77,6 +77,7 @@ public class KestrelProducer {
                         } catch (TException e) {
                             closeClient();
                             sleepTime = System.currentTimeMillis() + blackListTime;
+                            continue;
                         }
 
                         try {
@@ -88,8 +89,7 @@ public class KestrelProducer {
                                     Object input = outQueue.take();
                                     Object converted = converter.convert(input, null);
                                     if (converted instanceof byte []) {
-                                        ByteBuffer byteBuffer = ByteBuffer.allocate(((byte[]) converted).length);
-                                        byteBuffer.put((byte[]) converted);
+                                        ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) converted);
                                         messages.add(byteBuffer);
                                     } else {
                                         throw new RuntimeException("Expepected byte array after conversion");
@@ -99,8 +99,7 @@ public class KestrelProducer {
                                 Object input = outQueue.take();
                                 Object converted = converter.convert(input, null);
                                 if (converted instanceof byte []) {
-                                    ByteBuffer byteBuffer = ByteBuffer.allocate(((byte[]) converted).length);
-                                    byteBuffer.put((byte[]) converted);
+                                    ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) converted);
                                     messages.add(byteBuffer);
                                 } else {
                                     throw new RuntimeException("Expepected byte array after conversion");
