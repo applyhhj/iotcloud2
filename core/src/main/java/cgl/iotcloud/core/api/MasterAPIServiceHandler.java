@@ -1,11 +1,14 @@
 package cgl.iotcloud.core.api;
 
+import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.master.MasterSensorEvent;
 import cgl.iotcloud.core.master.SiteDescriptor;
+import cgl.iotcloud.core.master.events.SensorStopEvent;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorEventState;
+import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,8 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     private MasterContext masterContext;
 
     private BlockingQueue<MasterSensorEvent> sensorEvents;
+
+    private EventBus sensorEventBus;
 
     public MasterAPIServiceHandler(MasterContext masterContext, BlockingQueue<MasterSensorEvent> sensorEvents) {
         this.masterContext = masterContext;
@@ -81,8 +86,16 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
-    public TResponse stopSensor(List<String> sites, TSensorId id) throws TException {
+    public TResponse stopSiteSensors(List<String> sites, TSensorId id) throws TException {
         return null;
+    }
+
+    @Override
+    public TResponse stopAllSensors(TSensorId id) throws TException {
+        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
+        SensorStopEvent sensorStopEvent = new SensorStopEvent(sensorId);
+        sensorEventBus.post(sensorStopEvent);
+        return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override

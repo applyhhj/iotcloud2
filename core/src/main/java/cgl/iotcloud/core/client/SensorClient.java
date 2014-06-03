@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.client;
 
 import cgl.iotcloud.core.Configuration;
+import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.SiteDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
@@ -76,6 +77,10 @@ public class SensorClient {
         } catch (TException e) {
             throw new RuntimeException("Failed to deploy the sensor", e);
         }
+    }
+
+    public boolean stopSensor(SensorId id) {
+        return false;
     }
 
     public void close() {

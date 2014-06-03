@@ -5,6 +5,7 @@ import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.api.MasterAPIServiceHandler;
 import cgl.iotcloud.core.api.thrift.TMasterAPIService;
 import cgl.iotcloud.core.master.thrift.TMasterService;
+import com.google.common.eventbus.EventBus;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TNonblockingServerTransport;
@@ -41,6 +42,12 @@ public class SensorMaster {
 
     // the events from APIs
     private BlockingQueue<MasterSensorEvent> sensorEvents;
+
+    // this event bus carries the events about the sensors
+    private EventBus sensorEventBus = new EventBus();
+
+    // this event bus carries event about the sites
+    private EventBus siteEventBus = new EventBus();
 
     public void start() {
         // read the configuration file
