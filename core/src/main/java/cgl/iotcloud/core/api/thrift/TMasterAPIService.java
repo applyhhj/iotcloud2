@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
 
     public cgl.iotcloud.core.api.thrift.TResponse startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
 
+    public cgl.iotcloud.core.api.thrift.TResponse startAllSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
+
     public cgl.iotcloud.core.api.thrift.TResponse stopSiteSensors(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
 
     public cgl.iotcloud.core.api.thrift.TResponse stopAllSensors(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException;
@@ -75,6 +77,8 @@ import org.slf4j.LoggerFactory;
     public void deploySensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorDetails sensor, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.deploySensor_call> resultHandler) throws org.apache.thrift.TException;
 
     public void startSensor(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.startSensor_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void startAllSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.startAllSensor_call> resultHandler) throws org.apache.thrift.TException;
 
     public void stopSiteSensors(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.stopSiteSensors_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -195,6 +199,29 @@ import org.slf4j.LoggerFactory;
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "startSensor failed: unknown result");
+    }
+
+    public cgl.iotcloud.core.api.thrift.TResponse startAllSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    {
+      send_startAllSensor(id);
+      return recv_startAllSensor();
+    }
+
+    public void send_startAllSensor(cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
+    {
+      startAllSensor_args args = new startAllSensor_args();
+      args.setId(id);
+      sendBase("startAllSensor", args);
+    }
+
+    public cgl.iotcloud.core.api.thrift.TResponse recv_startAllSensor() throws org.apache.thrift.TException
+    {
+      startAllSensor_result result = new startAllSensor_result();
+      receiveBase(result, "startAllSensor");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "startAllSensor failed: unknown result");
     }
 
     public cgl.iotcloud.core.api.thrift.TResponse stopSiteSensors(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id) throws org.apache.thrift.TException
@@ -416,6 +443,38 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public void startAllSensor(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<startAllSensor_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      startAllSensor_call method_call = new startAllSensor_call(id, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class startAllSensor_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private cgl.iotcloud.core.api.thrift.TSensorId id;
+      public startAllSensor_call(cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<startAllSensor_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.id = id;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("startAllSensor", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        startAllSensor_args args = new startAllSensor_args();
+        args.setId(id);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public cgl.iotcloud.core.api.thrift.TResponse getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_startAllSensor();
+      }
+    }
+
     public void stopSiteSensors(List<String> sites, cgl.iotcloud.core.api.thrift.TSensorId id, org.apache.thrift.async.AsyncMethodCallback<stopSiteSensors_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       stopSiteSensors_call method_call = new stopSiteSensors_call(sites, id, resultHandler, this, ___protocolFactory, ___transport);
@@ -532,6 +591,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("getSite", new getSite());
       processMap.put("deploySensor", new deploySensor());
       processMap.put("startSensor", new startSensor());
+      processMap.put("startAllSensor", new startAllSensor());
       processMap.put("stopSiteSensors", new stopSiteSensors());
       processMap.put("stopAllSensors", new stopAllSensors());
       processMap.put("getSensors", new getSensors());
@@ -614,6 +674,26 @@ import org.slf4j.LoggerFactory;
       public startSensor_result getResult(I iface, startSensor_args args) throws org.apache.thrift.TException {
         startSensor_result result = new startSensor_result();
         result.success = iface.startSensor(args.sites, args.id);
+        return result;
+      }
+    }
+
+    public static class startAllSensor<I extends Iface> extends org.apache.thrift.ProcessFunction<I, startAllSensor_args> {
+      public startAllSensor() {
+        super("startAllSensor");
+      }
+
+      public startAllSensor_args getEmptyArgsInstance() {
+        return new startAllSensor_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public startAllSensor_result getResult(I iface, startAllSensor_args args) throws org.apache.thrift.TException {
+        startAllSensor_result result = new startAllSensor_result();
+        result.success = iface.startAllSensor(args.id);
         return result;
       }
     }
@@ -3764,6 +3844,724 @@ import org.slf4j.LoggerFactory;
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, startSensor_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = new cgl.iotcloud.core.api.thrift.TResponse();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class startAllSensor_args implements org.apache.thrift.TBase<startAllSensor_args, startAllSensor_args._Fields>, java.io.Serializable, Cloneable, Comparable<startAllSensor_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startAllSensor_args");
+
+    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new startAllSensor_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new startAllSensor_argsTupleSchemeFactory());
+    }
+
+    public cgl.iotcloud.core.api.thrift.TSensorId id; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      ID((short)1, "id");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // ID
+            return ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TSensorId.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startAllSensor_args.class, metaDataMap);
+    }
+
+    public startAllSensor_args() {
+    }
+
+    public startAllSensor_args(
+      cgl.iotcloud.core.api.thrift.TSensorId id)
+    {
+      this();
+      this.id = id;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public startAllSensor_args(startAllSensor_args other) {
+      if (other.isSetId()) {
+        this.id = new cgl.iotcloud.core.api.thrift.TSensorId(other.id);
+      }
+    }
+
+    public startAllSensor_args deepCopy() {
+      return new startAllSensor_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.id = null;
+    }
+
+    public cgl.iotcloud.core.api.thrift.TSensorId getId() {
+      return this.id;
+    }
+
+    public startAllSensor_args setId(cgl.iotcloud.core.api.thrift.TSensorId id) {
+      this.id = id;
+      return this;
+    }
+
+    public void unsetId() {
+      this.id = null;
+    }
+
+    /** Returns true if field id is set (has been assigned a value) and false otherwise */
+    public boolean isSetId() {
+      return this.id != null;
+    }
+
+    public void setIdIsSet(boolean value) {
+      if (!value) {
+        this.id = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case ID:
+        if (value == null) {
+          unsetId();
+        } else {
+          setId((cgl.iotcloud.core.api.thrift.TSensorId)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case ID:
+        return getId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case ID:
+        return isSetId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof startAllSensor_args)
+        return this.equals((startAllSensor_args)that);
+      return false;
+    }
+
+    public boolean equals(startAllSensor_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_id = true && this.isSetId();
+      boolean that_present_id = true && that.isSetId();
+      if (this_present_id || that_present_id) {
+        if (!(this_present_id && that_present_id))
+          return false;
+        if (!this.id.equals(that.id))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(startAllSensor_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetId()).compareTo(other.isSetId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("startAllSensor_args(");
+      boolean first = true;
+
+      sb.append("id:");
+      if (this.id == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.id);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (id != null) {
+        id.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class startAllSensor_argsStandardSchemeFactory implements SchemeFactory {
+      public startAllSensor_argsStandardScheme getScheme() {
+        return new startAllSensor_argsStandardScheme();
+      }
+    }
+
+    private static class startAllSensor_argsStandardScheme extends StandardScheme<startAllSensor_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, startAllSensor_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
+                struct.id.read(iprot);
+                struct.setIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, startAllSensor_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.id != null) {
+          oprot.writeFieldBegin(ID_FIELD_DESC);
+          struct.id.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class startAllSensor_argsTupleSchemeFactory implements SchemeFactory {
+      public startAllSensor_argsTupleScheme getScheme() {
+        return new startAllSensor_argsTupleScheme();
+      }
+    }
+
+    private static class startAllSensor_argsTupleScheme extends TupleScheme<startAllSensor_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, startAllSensor_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetId()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetId()) {
+          struct.id.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, startAllSensor_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.id = new cgl.iotcloud.core.api.thrift.TSensorId();
+          struct.id.read(iprot);
+          struct.setIdIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class startAllSensor_result implements org.apache.thrift.TBase<startAllSensor_result, startAllSensor_result._Fields>, java.io.Serializable, Cloneable, Comparable<startAllSensor_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startAllSensor_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new startAllSensor_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new startAllSensor_resultTupleSchemeFactory());
+    }
+
+    public cgl.iotcloud.core.api.thrift.TResponse success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, cgl.iotcloud.core.api.thrift.TResponse.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startAllSensor_result.class, metaDataMap);
+    }
+
+    public startAllSensor_result() {
+    }
+
+    public startAllSensor_result(
+      cgl.iotcloud.core.api.thrift.TResponse success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public startAllSensor_result(startAllSensor_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new cgl.iotcloud.core.api.thrift.TResponse(other.success);
+      }
+    }
+
+    public startAllSensor_result deepCopy() {
+      return new startAllSensor_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public cgl.iotcloud.core.api.thrift.TResponse getSuccess() {
+      return this.success;
+    }
+
+    public startAllSensor_result setSuccess(cgl.iotcloud.core.api.thrift.TResponse success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((cgl.iotcloud.core.api.thrift.TResponse)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof startAllSensor_result)
+        return this.equals((startAllSensor_result)that);
+      return false;
+    }
+
+    public boolean equals(startAllSensor_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(startAllSensor_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("startAllSensor_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class startAllSensor_resultStandardSchemeFactory implements SchemeFactory {
+      public startAllSensor_resultStandardScheme getScheme() {
+        return new startAllSensor_resultStandardScheme();
+      }
+    }
+
+    private static class startAllSensor_resultStandardScheme extends StandardScheme<startAllSensor_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, startAllSensor_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new cgl.iotcloud.core.api.thrift.TResponse();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, startAllSensor_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class startAllSensor_resultTupleSchemeFactory implements SchemeFactory {
+      public startAllSensor_resultTupleScheme getScheme() {
+        return new startAllSensor_resultTupleScheme();
+      }
+    }
+
+    private static class startAllSensor_resultTupleScheme extends TupleScheme<startAllSensor_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, startAllSensor_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, startAllSensor_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {

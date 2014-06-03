@@ -80,6 +80,19 @@ public class SensorClient {
     }
 
     public boolean stopSensor(SensorId id) {
+        try {
+            client.stopAllSensors(new TSensorId(id.getName(), id.getGroup()));
+        } catch (TException e) {
+            throw new RuntimeException("Failed to stop the sensors", e);
+        }
+        return false;
+    }
+
+    public boolean startSensor(SensorId id) {
+//        try {
+//        } catch (TException e) {
+//            throw new RuntimeException("Failed to stop the sensors", e);
+//        }
         return false;
     }
 

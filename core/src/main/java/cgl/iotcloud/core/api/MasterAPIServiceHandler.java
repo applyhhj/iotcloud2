@@ -80,6 +80,14 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
+    public TResponse startAllSensor(TSensorId id) throws TException {
+        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
+        SensorStartEvent sensorStopEvent = new SensorStartEvent(sensorId);
+        sensorEventBus.post(sensorStopEvent);
+        return new TResponse(TResponseState.SUCCESS, "success");
+    }
+
+    @Override
     public TResponse stopSiteSensors(List<String> sites, TSensorId id) throws TException {
         SensorId sensorId = new SensorId(id.getName(), id.getGroup());
         SensorStopEvent sensorStopEvent = new SensorStopEvent(sensorId, sites);
