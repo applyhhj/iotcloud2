@@ -5,9 +5,10 @@ import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.master.MasterSensorEvent;
 import cgl.iotcloud.core.master.SiteDescriptor;
+import cgl.iotcloud.core.master.events.SensorDeployEvent;
+import cgl.iotcloud.core.master.events.SensorStartEvent;
 import cgl.iotcloud.core.master.events.SensorStopEvent;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
-import cgl.iotcloud.core.sensorsite.SensorEventState;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -23,13 +24,11 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     private MasterContext masterContext;
 
-    private BlockingQueue<MasterSensorEvent> sensorEvents;
-
     private EventBus sensorEventBus;
 
-    public MasterAPIServiceHandler(MasterContext masterContext, BlockingQueue<MasterSensorEvent> sensorEvents) {
+    public MasterAPIServiceHandler(MasterContext masterContext, EventBus sensorEventBus) {
         this.masterContext = masterContext;
-        this.sensorEvents = sensorEvents;
+        this.sensorEventBus = sensorEventBus;
     }
 
     @Override
@@ -67,27 +66,25 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
             deployDescriptor.addProperty(e.getKey(), e.getValue());
         }
 
-        masterContext.addSensorToDeploy(deployDescriptor);
-
-        MasterSensorEvent event = new MasterSensorEvent(null, SensorEventState.DEPLOY);
-        try {
-            sensorEvents.put(event);
-        } catch (InterruptedException e) {
-            masterContext.removeSensorDeploy(deployDescriptor);
-            LOG.error("Failed to add the new site..");
-        }
-
+        SensorDeployEvent deployEvent = new SensorDeployEvent(sites, deployDescriptor);
+        sensorEventBus.post(deployEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
     public TResponse startSensor(List<String> sites, TSensorId id) throws TException {
-        return null;
+        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
+        SensorStartEvent sensorStopEvent = new SensorStartEvent(sensorId, sites);
+        sensorEventBus.post(sensorStopEvent);
+        return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
     public TResponse stopSiteSensors(List<String> sites, TSensorId id) throws TException {
-        return null;
+        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
+        SensorStopEvent sensorStopEvent = new SensorStopEvent(sensorId, sites);
+        sensorEventBus.post(sensorStopEvent);
+        return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override

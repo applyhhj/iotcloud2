@@ -49,6 +49,10 @@ public class SensorMaster {
     // this event bus carries event about the sites
     private EventBus siteEventBus = new EventBus();
 
+    private SensorController sensorController;
+
+    private SiteClientCache siteClientCache;
+
     public void start() {
         // read the configuration file
         conf = Utils.readConfig();
@@ -60,9 +64,17 @@ public class SensorMaster {
         siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
         sensorEvents = new ArrayBlockingQueue<MasterSensorEvent>(1024);
 
+        // create the site client cache
+        siteClientCache = new SiteClientCache(masterContext);
+
         // start the thread to manager the sites
-        manager = new SiteController(masterContext, siteEventsQueue, sensorEvents);
+        manager = new SiteController(masterContext, siteEventsQueue);
         manager.start();
+
+        // start the thread to manage the sensor deployments from clients
+        sensorController = new SensorController(siteClientCache, masterContext);
+        // register this with sensor event bus
+        sensorEventBus.register(sensorController);
 
         // now start the server to listen for the sites
         Thread t = new Thread(new Runnable() {
@@ -102,7 +114,7 @@ public class SensorMaster {
                     apiServer = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TMasterAPIService.Processor<MasterAPIServiceHandler>(
-                                            new MasterAPIServiceHandler(masterContext, sensorEvents))).executorService(
+                                            new MasterAPIServiceHandler(masterContext, sensorEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
                     LOG.info("Starting the SensorMaster API server on host: {} and port: {}", host, port);
                     apiServer.serve();
@@ -130,6 +142,9 @@ public class SensorMaster {
         if (siteServer != null) {
             siteServer.stop();
         }
+
+        // un register the even notifications
+        sensorEventBus.unregister(sensorController);
     }
 
     public static void main(String[] args) {
