@@ -77,7 +77,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         }
         sensorDetails.setMetadata(sensor.getMetadata());
 
-        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.ACTIVATE, siteId);
+        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEPLOY, siteId);
         updateEvent.setSensorDetails(sensorDetails);
 
         sensorEventBus.post(updateEvent);

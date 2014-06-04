@@ -35,7 +35,7 @@ public class MasterSensorController {
         } else if (event.getState() == SensorState.UN_DEPLOY) {
             undeploySensor(event);
         } else {
-            LOG.warn("Unrecognized event type {}", event);
+            LOG.warn("Unrecognized event type {}", event.getState());
         }
     }
 

@@ -3,10 +3,7 @@ package cgl.iotcloud.core.cmd;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.client.SensorClient;
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 import org.apache.thrift.transport.TTransportException;
 
 import java.util.Map;
@@ -25,7 +22,7 @@ public class CommandClient {
         }
     }
 
-    public void stopSensor(String name, String group) {
+    public void killSensor(String name, String group) {
         client.stopSensor(new SensorId(name, group));
     }
 
@@ -35,15 +32,24 @@ public class CommandClient {
 
     public static void main(String[] args) {
         Options options = new Options();
-        options.addOption("stop", false, "No of queues");
-        options.addOption("i", true, "IP");
-        options.addOption("qr", true, "Receive Queue name");
-        options.addOption("qs", true, "Send Queue name");
-        options.addOption("name", false, "Topology name");
-        options.addOption("nw", false, "No of workers");
+        options.addOption("kill", false, "Stop a sensor");
+        options.addOption("name", true, "IP");
+        options.addOption("group", true, "Receive Queue name");
 
-        options.addOption("local", false, "Weather local storm is used");
-
+        CommandClient client = new CommandClient();
         CommandLineParser commandLineParser = new BasicParser();
+        try {
+            CommandLine cmd = commandLineParser.parse(options, args);
+
+            if (cmd.hasOption("kill")) {
+                String name = cmd.getOptionValue("name");
+                String group = cmd.getOptionValue("group");
+
+                client.killSensor(name, group);
+            }
+        } catch (ParseException e) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("cmd", options );
+        }
     }
 }

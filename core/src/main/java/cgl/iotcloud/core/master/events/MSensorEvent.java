@@ -3,9 +3,6 @@ package cgl.iotcloud.core.master.events;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MSensorEvent {
     private SensorState state;
 
@@ -13,6 +10,7 @@ public class MSensorEvent {
 
     public MSensorEvent(SensorId id, SensorState state) {
         this.id = id;
+        this.state = state;
     }
 
     public SensorId getId() {

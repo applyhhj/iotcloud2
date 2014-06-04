@@ -157,7 +157,7 @@ def jar(jarfile, klass, *args):
         args=args,
         jvmopts=[' '.join(filter(None, [JAR_JVM_OPTS, "-Dstorm.jar=" + jarfile]))])
 
-def kill(*args):
+def cmd(*args):
     """Syntax: [storm kill topology-name [-w wait-time-secs]]
 
     Kills the topology with the name topology-name. Storm will 
@@ -168,7 +168,7 @@ def kill(*args):
     of time Storm waits between deactivation and shutdown with the -w flag.
     """
     exec_storm_class(
-        "backtype.storm.command.kill_topology",
+        "cgl.iotcloud.core.cmd.CommandClient",
         args=args,
         jvmtype="-client",
         extrajars=[USER_CONF_DIR, IOT_DIR + "/bin"])
@@ -378,7 +378,7 @@ def unknown_command(*args):
     print "Unknown command: [iot %s]" % ' '.join(sys.argv[1:])
     print_usage()
 
-COMMANDS = {"jar": jar, "kill": kill, "master": master, "site": site, "localconfvalue": print_localconfvalue,
+COMMANDS = {"jar": jar, "cmd": cmd, "master": master, "site": site, "localconfvalue": print_localconfvalue,
             "remoteconfvalue": print_remoteconfvalue, "repl": repl, "classpath": print_classpath,
             "activate": activate, "deactivate": deactivate, "rebalance": rebalance, "help": print_usage,
             "list": listtopos, "version": version}
