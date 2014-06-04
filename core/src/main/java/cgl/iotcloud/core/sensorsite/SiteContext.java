@@ -31,6 +31,10 @@ public class SiteContext {
         sensors.put(context.getId(), details);
     }
 
+    public SensorDescriptor removeSensor(SensorId sensorId) {
+        return sensors.remove(sensorId);
+    }
+
     public void addTransport(String tName, Transport t) {
         transports.put(tName, t);
     }

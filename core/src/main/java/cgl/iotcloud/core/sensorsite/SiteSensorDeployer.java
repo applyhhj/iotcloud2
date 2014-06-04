@@ -72,8 +72,7 @@ public class SiteSensorDeployer {
                                 sensor.deactivate();
                             }
                         } else if (event.getState() == SensorState.UN_DEPLOY) {
-                            SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
-                            unDeploySensor(descriptor);
+                            unDeploySensor(event);
                         }
                     } catch (Exception e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
@@ -98,57 +97,27 @@ public class SiteSensorDeployer {
         run = false;
     }
 
-    public void unDeploySensor(SensorDescriptor descriptor) {
+    public void unDeploySensor(SensorEvent event) {
         try {
+            SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
+            if (descriptor == null) {
+                LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
+                return;
+            }
+
             LOG.info("Un-Deploying sensor {}", descriptor.getSensorContext().getId());
 
             ISensor sensor = descriptor.getSensor();
             sensor.close();
 
-            String url = "file://";
-            File file = new File(deployDescriptor.getJarName());
-            if (!file.isAbsolute()) {
-                String iotHome = Configuration.getIoTHome(conf);
-                String repo = Configuration.getSensorRepositoryPath(conf);
-                url += iotHome + "/" + repo + "/" + deployDescriptor.getJarName();
-            } else {
-                url += deployDescriptor.getJarName();
-            }
-
-            LOG.info("The sensor jar URL is {}", url);
-
-            ISensor sensor = Utils.loadSensor(new URL(url),
-                    deployDescriptor.getClassName(), this.getClass().getClassLoader());
-
-            // get the sensor specific configurations
-            Configurator configurator = sensor.getConfigurator(conf);
-            Map<String, String> config = new HashMap<String, String>(deployDescriptor.getProperties());
-            SensorContext sensorContext = configurator.configure(siteContext, config);
-
-            // add the sensor to the site
-            siteContext.addSensor(sensorContext, sensor);
-
-            // get the channels registered for this sensor
-            Map<String, List<Channel>> channels = sensorContext.getChannels();
-
+            Map<String, List<Channel>> channels = descriptor.getSensorContext().getChannels();
             for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
-                Transport t = siteContext.getTransport(entry.getKey());
-                if (t != null) {
-                    for (Channel c : entry.getValue()) {
-                        t.registerChannel(new ChannelName(sensorContext.getId(), c.getName()), c);
-                        c.open();
-                    }
+                for (Channel channel : entry.getValue()) {
+                    channel.close();
                 }
             }
-
-
-
-            // notify the master about the sensor
-            client.registerSensor(siteContext.getSiteId(), siteContext.getSensor(sensorContext.getId()));
-        } catch (MalformedURLException e) {
-            String msg = "The jar name is not a correct url";
-            LOG.error(msg);
-            throw new RuntimeException(msg, e);
+            // notify the master about the undeployment sensor
+            client.unRegisterSensor(siteContext.getSiteId(), descriptor);
         } catch (TException e) {
             String msg = "Failed to add the sensor to master";
             LOG.error(msg);
