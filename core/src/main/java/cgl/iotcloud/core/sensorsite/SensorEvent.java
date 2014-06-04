@@ -4,23 +4,23 @@ import cgl.iotcloud.core.SensorId;
 
 public class SensorEvent {
 
-    private SensorEventState state;
+    private SensorState state;
 
     private SensorId sensorId;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SensorEvent(SensorId sensorId, SensorEventState state) {
+    public SensorEvent(SensorId sensorId, SensorState state) {
         this.state = state;
         this.sensorId = sensorId;
     }
 
-    public SensorEvent(SensorDeployDescriptor deployDescriptor, SensorEventState state) {
+    public SensorEvent(SensorDeployDescriptor deployDescriptor, SensorState state) {
         this.deployDescriptor = deployDescriptor;
         this.state = state;
     }
 
-    public SensorEventState getState() {
+    public SensorState getState() {
         return state;
     }
 

@@ -115,6 +115,25 @@ public class SiteClient {
         }
     }
 
+    public boolean unDeploySensor(SensorId id) {
+        TSensorId sensorId = new TSensorId(id.getName(), id.getGroup());
+        try {
+            TResponse response = this.client.unDeploySensor(sensorId);
+
+            if (response.getState() == TResponseState.SUCCESS) {
+                return true;
+            } else if (response.getState() == TResponseState.FAILURE) {
+                LOG.error("Failed to stop the sensor: {}", id);
+                return false;
+            }
+            return false;
+        } catch (TException e) {
+            String msg = "Failed to deploy the sensor";
+            LOG.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
     public void close() {
         if (transport != null) {
             transport.close();

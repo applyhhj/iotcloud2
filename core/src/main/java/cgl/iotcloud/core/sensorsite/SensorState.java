@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.sensorsite;
 
-public enum SensorEventState {
+public enum SensorState {
     DEPLOY,
     DEACTIVATE,
     ACTIVATE,

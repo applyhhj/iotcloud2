@@ -24,7 +24,7 @@ public class SensorSite {
 
     private SiteContext siteContext;
 
-    private SensorDeployer sensorDeployer;
+    private SiteSensorDeployer sensorDeployer;
 
     private THsHaServer server;
 
@@ -82,7 +82,7 @@ public class SensorSite {
 
         sensorEvents = new ArrayBlockingQueue<SensorEvent>(Configuration.getSiteMaxSensorEvents(conf));
 
-        sensorDeployer = new SensorDeployer(conf, siteContext, sensorEvents);
+        sensorDeployer = new SiteSensorDeployer(conf, siteContext, sensorEvents);
         sensorDeployer.start();
 
         Thread t = new Thread(new Runnable() {
@@ -117,7 +117,7 @@ public class SensorSite {
 
     public void stop() {
         // stop the deployer
-        sensorDeployer.stop();
+        sensorDeployer.close();
 
         // stop the transports
         for (Transport t : siteContext.getTransports().values()) {

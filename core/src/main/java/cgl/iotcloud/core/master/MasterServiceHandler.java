@@ -2,17 +2,16 @@ package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
-import cgl.iotcloud.core.master.events.MSensorUpdateEvent;
+import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
-import cgl.iotcloud.core.sensorsite.SensorEventState;
+import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.transport.Direction;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 
 public class MasterServiceHandler implements TMasterService.Iface {
@@ -78,7 +77,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         }
         sensorDetails.setMetadata(sensor.getMetadata());
 
-        MSensorUpdateEvent updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.ACTIVATE);
+        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.ACTIVATE, siteId);
         updateEvent.setSensorDetails(sensorDetails);
 
         sensorEventBus.post(updateEvent);
@@ -88,7 +87,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
     @Override
     public TResponse unRegisterSensor(String siteId, TSensorId id) throws TException {
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
-        MSensorUpdateEvent updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.UN_DEPLOY);
+        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.UN_DEPLOY, siteId);
         sensorEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");
     }
@@ -114,15 +113,15 @@ public class MasterServiceHandler implements TMasterService.Iface {
         }
 
         sensorDetails.setMetadata(sensor.getMetadata());
-        MSensorUpdateEvent updateEvent;
+        MSensorSiteEvent updateEvent;
         if (sensor.getState() == TSensorState.UPDATE) {
-            updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.UPDATE);
+            updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
         } else if (sensor.getState() == TSensorState.ACTIVE) {
-            updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.ACTIVATE);
+            updateEvent = new MSensorSiteEvent(sensorID, SensorState.ACTIVATE, siteId);
         } else if (sensor.getState() == TSensorState.DE_ACTIVATE) {
-            updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.DEACTIVATE);
+            updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEACTIVATE, siteId);
         } else {
-            updateEvent = new MSensorUpdateEvent(sensorID, Arrays.asList(siteId), SensorEventState.UPDATE);
+            updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
         }
         updateEvent.setSensorDetails(sensorDetails);
 

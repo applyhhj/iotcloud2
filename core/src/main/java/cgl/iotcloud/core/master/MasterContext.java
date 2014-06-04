@@ -68,17 +68,15 @@ public class MasterContext {
         sites.remove(site);
     }
 
-    public void addSensorToDeploy(SensorDeployDescriptor deployDescriptor) {
-        sensorsTobeDeployed.add(deployDescriptor);
-    }
-
-    public void removeSensorDeploy(SensorDeployDescriptor deployDescriptor) {
-        sensorsTobeDeployed.remove(deployDescriptor);
-    }
-
-    public List<SensorDeployDescriptor> getSensorsTobeDeployed() {
-        List<SensorDeployDescriptor> deployDescriptors = new ArrayList<SensorDeployDescriptor>(sensorsTobeDeployed);
-        sensorsTobeDeployed.clear();
-        return deployDescriptors;
+    public SensorDetails getSensor(String siteId, SensorId name) {
+        List<SensorDetails> details = siteSensors.get(siteId);
+        if (details != null) {
+            for (SensorDetails detail : details) {
+                if (detail.getSensorId().equals(name)) {
+                    return detail;
+                }
+            }
+        }
+        return null;
     }
 }

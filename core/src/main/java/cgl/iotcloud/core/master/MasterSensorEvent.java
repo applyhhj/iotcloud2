@@ -1,19 +1,19 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.sensorsite.SensorEventState;
+import cgl.iotcloud.core.sensorsite.SensorState;
 
 public class MasterSensorEvent {
-    private SensorEventState state;
+    private SensorState state;
 
     private SensorId sensorId;
 
-    public MasterSensorEvent(SensorId sensorId, SensorEventState state) {
+    public MasterSensorEvent(SensorId sensorId, SensorState state) {
         this.state = state;
         this.sensorId = sensorId;
     }
 
-    public SensorEventState getState() {
+    public SensorState getState() {
         return state;
     }
 

@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.sensorsite.SensorState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ public class SensorDetails {
     private Map<String, List<ChannelDetails>> channels = new HashMap<String, List<ChannelDetails>>();
 
     private Object metadata;
+
+    private SensorState state = SensorState.ACTIVATE;
 
     public SensorDetails(SensorId sensorId) {
         this.sensorId = sensorId;
@@ -42,6 +45,14 @@ public class SensorDetails {
 
     public Object getMetadata() {
         return metadata;
+    }
+
+    public SensorState getState() {
+        return state;
+    }
+
+    public void setState(SensorState state) {
+        this.state = state;
     }
 
     @Override

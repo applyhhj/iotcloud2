@@ -45,7 +45,20 @@ public class SensorSiteService implements TSensorSiteService.Iface {
             }
         }
 
-        SensorEvent event = new SensorEvent(deployDescriptor, SensorEventState.DEPLOY);
+        SensorEvent event = new SensorEvent(deployDescriptor, SensorState.DEPLOY);
+
+        try {
+            sensorEvents.put(event);
+        } catch (InterruptedException e) {
+            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for deployment");
+        }
+        return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to be deployed");
+    }
+
+    @Override
+    public TResponse unDeploySensor(TSensorId id) throws TException {
+        LOG.info("Request received for Un-Deploying a sensor with ID {}" + id);
+        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()), SensorState.UN_DEPLOY);
 
         try {
             sensorEvents.put(event);
@@ -60,7 +73,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         LOG.info("Request received for starting a sensor with ID {}" + id);
 
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorEventState.ACTIVATE);
+                SensorState.ACTIVATE);
         try {
             sensorEvents.put(event);
         } catch (InterruptedException e) {
@@ -74,7 +87,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         LOG.info("Request received for stopping a sensor with ID {}" + id);
 
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorEventState.DEACTIVATE);
+                SensorState.DEACTIVATE);
         try {
             sensorEvents.put(event);
         } catch (InterruptedException e) {

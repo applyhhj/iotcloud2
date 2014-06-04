@@ -1,21 +1,17 @@
 package cgl.iotcloud.core.master.events;
 
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.sensorsite.SensorState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MSensorEvent {
-    protected List<String> sites = new ArrayList<String>();
+    private SensorState state;
 
     protected SensorId id;
 
-    public MSensorEvent(SensorId id, List<String> sites) {
-        this.id = id;
-        this.sites = sites;
-    }
-
-    public MSensorEvent(SensorId id) {
+    public MSensorEvent(SensorId id, SensorState state) {
         this.id = id;
     }
 
@@ -23,7 +19,7 @@ public class MSensorEvent {
         return id;
     }
 
-    public List<String> getSites() {
-        return sites;
+    public SensorState getState() {
+        return state;
     }
 }
