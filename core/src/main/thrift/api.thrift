@@ -10,6 +10,14 @@ enum TDirection {
     OUT
 }
 
+enum TSensorState {
+    DEPLOY,
+    ACTIVE,
+    DE_ACTIVATE,
+    UN_DEPLOY,
+    UPDATE
+}
+
 struct TChannel {
     1:string transport
     2:TDirection direction
@@ -17,6 +25,7 @@ struct TChannel {
 
 struct TSensor {
     1:TSensorId id
+    2:TSensorState state
     3:binary metadata
     4:list<TChannel> channels
 }

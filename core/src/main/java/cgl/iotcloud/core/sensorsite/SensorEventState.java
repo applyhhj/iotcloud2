@@ -4,6 +4,6 @@ public enum SensorEventState {
     DEPLOY,
     DEACTIVATE,
     ACTIVATE,
-    ADD,
-    REMOVE
+    UN_DEPLOY,
+    UPDATE
 }

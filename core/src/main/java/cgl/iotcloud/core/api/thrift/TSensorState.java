@@ -27,13 +27,16 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-@SuppressWarnings("all") public enum TResponseState implements org.apache.thrift.TEnum {
-  SUCCESS(0),
-  FAILURE(1);
+@SuppressWarnings("all") public enum TSensorState implements org.apache.thrift.TEnum {
+  DEPLOY(0),
+  ACTIVE(1),
+  DE_ACTIVATE(2),
+  UN_DEPLOY(3),
+  UPDATE(4);
 
   private final int value;
 
-  private TResponseState(int value) {
+  private TSensorState(int value) {
     this.value = value;
   }
 
@@ -48,12 +51,18 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static TResponseState findByValue(int value) { 
+  public static TSensorState findByValue(int value) { 
     switch (value) {
       case 0:
-        return SUCCESS;
+        return DEPLOY;
       case 1:
-        return FAILURE;
+        return ACTIVE;
+      case 2:
+        return DE_ACTIVATE;
+      case 3:
+        return UN_DEPLOY;
+      case 4:
+        return UPDATE;
       default:
         return null;
     }

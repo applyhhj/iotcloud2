@@ -3,6 +3,10 @@ package cgl.iotcloud.core.cmd;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.client.SensorClient;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.thrift.transport.TTransportException;
 
 import java.util.Map;
@@ -30,6 +34,16 @@ public class CommandClient {
     }
 
     public static void main(String[] args) {
+        Options options = new Options();
+        options.addOption("stop", false, "No of queues");
+        options.addOption("i", true, "IP");
+        options.addOption("qr", true, "Receive Queue name");
+        options.addOption("qs", true, "Send Queue name");
+        options.addOption("name", false, "Topology name");
+        options.addOption("nw", false, "No of workers");
 
+        options.addOption("local", false, "Weather local storm is used");
+
+        CommandLineParser commandLineParser = new BasicParser();
     }
 }

@@ -1,9 +1,7 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.master.events.SensorDeployEvent;
-import cgl.iotcloud.core.master.events.SensorEvent;
-import cgl.iotcloud.core.master.events.SensorStartEvent;
-import cgl.iotcloud.core.master.events.SensorStopEvent;
+import cgl.iotcloud.core.master.events.*;
+import cgl.iotcloud.core.sensorsite.SensorEventState;
 import com.google.common.eventbus.Subscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,7 @@ public class SensorController {
     }
 
     @Subscribe
-    public void deploySensor(SensorDeployEvent deployEvent) {
+    public void deploySensor(MasterSensorDeployEvent deployEvent) {
         List<String> sites = getSites(deployEvent);
 
         for (String site : sites) {
@@ -45,7 +43,7 @@ public class SensorController {
         }
     }
 
-    private List<String> getSites(SensorEvent deployEvent) {
+    private List<String> getSites(MSensorEvent deployEvent) {
         List<String> sites = new ArrayList<String>(deployEvent.getSites());
         if (sites.isEmpty()) {
             sites.addAll(context.getSensorSites().keySet());
@@ -54,7 +52,7 @@ public class SensorController {
     }
 
     @Subscribe
-    public void stopSensor(SensorStopEvent stopEvent) {
+    public void stopSensor(MasterSensorStopEvent stopEvent) {
         List<String> sites = getSites(stopEvent);
 
         for (String site : sites) {
@@ -72,7 +70,7 @@ public class SensorController {
     }
 
     @Subscribe
-    public void startSensor(SensorStartEvent startEvent) {
+    public void startSensor(MasterSensorStartEvent startEvent) {
         List<String> sites = getSites(startEvent);
 
         for (String site : sites) {
@@ -86,6 +84,21 @@ public class SensorController {
                 // there is nothing much we can do at this point except to log it
                 LOG.error("Failed to deploy the sensor on the site {}", site);
             }
+        }
+    }
+
+    @Subscribe
+    public void updateSensor(MSensorUpdateEvent updateEvent) {
+        if (updateEvent.getState() == SensorEventState.DEPLOY) {
+            for (String site : updateEvent.getSites()) {
+                context.addSensor(site, updateEvent.getSensorDetails());
+            }
+        } else if (updateEvent.getState() == SensorEventState.UN_DEPLOY) {
+
+        } else if (updateEvent.getState() == SensorEventState.ACTIVATE) {
+
+        } else if (updateEvent.getState() == SensorEventState.DEACTIVATE) {
+
         }
     }
 }

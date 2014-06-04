@@ -3,11 +3,10 @@ package cgl.iotcloud.core.api;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
-import cgl.iotcloud.core.master.MasterSensorEvent;
 import cgl.iotcloud.core.master.SiteDescriptor;
-import cgl.iotcloud.core.master.events.SensorDeployEvent;
-import cgl.iotcloud.core.master.events.SensorStartEvent;
-import cgl.iotcloud.core.master.events.SensorStopEvent;
+import cgl.iotcloud.core.master.events.MasterSensorDeployEvent;
+import cgl.iotcloud.core.master.events.MasterSensorStartEvent;
+import cgl.iotcloud.core.master.events.MasterSensorStopEvent;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterAPIServiceHandler.class);
@@ -66,7 +64,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
             deployDescriptor.addProperty(e.getKey(), e.getValue());
         }
 
-        SensorDeployEvent deployEvent = new SensorDeployEvent(sites, deployDescriptor);
+        MasterSensorDeployEvent deployEvent = new MasterSensorDeployEvent(sites, deployDescriptor);
         sensorEventBus.post(deployEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
@@ -74,7 +72,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     @Override
     public TResponse startSensor(List<String> sites, TSensorId id) throws TException {
         SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        SensorStartEvent sensorStopEvent = new SensorStartEvent(sensorId, sites);
+        MasterSensorStartEvent sensorStopEvent = new MasterSensorStartEvent(sensorId, sites);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
@@ -82,7 +80,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     @Override
     public TResponse startAllSensor(TSensorId id) throws TException {
         SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        SensorStartEvent sensorStopEvent = new SensorStartEvent(sensorId);
+        MasterSensorStartEvent sensorStopEvent = new MasterSensorStartEvent(sensorId);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
@@ -90,7 +88,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     @Override
     public TResponse stopSiteSensors(List<String> sites, TSensorId id) throws TException {
         SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        SensorStopEvent sensorStopEvent = new SensorStopEvent(sensorId, sites);
+        MasterSensorStopEvent sensorStopEvent = new MasterSensorStopEvent(sensorId, sites);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
@@ -98,7 +96,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     @Override
     public TResponse stopAllSensors(TSensorId id) throws TException {
         SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        SensorStopEvent sensorStopEvent = new SensorStopEvent(sensorId);
+        MasterSensorStopEvent sensorStopEvent = new MasterSensorStopEvent(sensorId);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
