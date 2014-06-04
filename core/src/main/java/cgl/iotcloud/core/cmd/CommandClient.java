@@ -23,7 +23,7 @@ public class CommandClient {
     }
 
     public void killSensor(String name, String group) {
-        client.stopSensor(new SensorId(name, group));
+        client.unDeploySensor(new SensorId(name, group));
     }
 
     public void startSensor(String name, String group) {

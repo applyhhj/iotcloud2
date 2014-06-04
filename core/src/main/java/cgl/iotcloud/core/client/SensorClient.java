@@ -85,15 +85,25 @@ public class SensorClient {
         } catch (TException e) {
             throw new RuntimeException("Failed to stop the sensors", e);
         }
-        return false;
+        return true;
+    }
+
+    public boolean unDeploySensor(SensorId id) {
+        try {
+            client.unDeployAllSensor(new TSensorId(id.getName(), id.getGroup()));
+        } catch (TException e) {
+            throw new RuntimeException("Failed to unDeploy the sensors", e);
+        }
+        return true;
     }
 
     public boolean startSensor(SensorId id) {
-//        try {
-//        } catch (TException e) {
-//            throw new RuntimeException("Failed to stop the sensors", e);
-//        }
-        return false;
+        try {
+            client.stopAllSensors(new TSensorId(id.getName(), id.getGroup()));
+        } catch (TException e) {
+            throw new RuntimeException("Failed to unDeploy the sensors", e);
+        }
+        return true;
     }
 
     public void close() {

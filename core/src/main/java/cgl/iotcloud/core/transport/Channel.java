@@ -100,16 +100,13 @@ public class Channel {
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }
             }
-            String message = "Unexpected notification type";
-            LOG.error(message);
-            throw new RuntimeException(message);
         }
     }
 
