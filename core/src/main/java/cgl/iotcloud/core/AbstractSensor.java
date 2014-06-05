@@ -19,8 +19,8 @@ public abstract class AbstractSensor implements ISensor {
         t.start();
     }
 
-    public void startSend(Channel channel, MessageSender sender, BlockingQueue messages) {
-        QueueProducer producer = new QueueProducer(channel.getInQueue(), sender, messages);
+    public void startSend(Channel channel, BlockingQueue messages) {
+        QueueProducer producer = new QueueProducer(channel.getInQueue(), messages);
         producers.put(channel.getName(), producer);
 
         Thread t = new Thread(producer);
@@ -65,9 +65,8 @@ public abstract class AbstractSensor implements ISensor {
             this.interval = interval;
         }
 
-        public QueueProducer(BlockingQueue queue, MessageSender messageSender, BlockingQueue messages) {
+        public QueueProducer(BlockingQueue queue, BlockingQueue messages) {
             this.queue = queue;
-            this.messageSender = messageSender;
             this.messages = messages;
         }
 
