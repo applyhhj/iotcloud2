@@ -1,8 +1,27 @@
 package cgl.iotcloud.transport.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class KafkaMessage {
-    private Map<String, String> properties = new HashMap<String, String>();
+    private String topic;
+
+    private int partition;
+
+    private byte[] data;
+
+    public KafkaMessage(String topic, int partition, byte[] data) {
+        this.topic = topic;
+        this.partition = partition;
+        this.data = data;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public int getPartition() {
+        return partition;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
 }

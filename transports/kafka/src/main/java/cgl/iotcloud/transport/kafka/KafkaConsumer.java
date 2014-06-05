@@ -20,11 +20,17 @@ public class KafkaConsumer {
     private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
 
     private String topic;
+
     private int partition;
+
     private Map<String, Integer> seedBrokers;
-    private Map<String, Integer> m_replicaBrokers = new HashMap<String, Integer>();
+
+    private Map<String, Integer> replicaBrokers = new HashMap<String, Integer>();
+
     private int soTimeout = 30000;
+
     private int bufferSize = 64 * 1024;
+
     private int fetchSize = 10000;
 
     private int pollingInterval = 10;
@@ -32,6 +38,8 @@ public class KafkaConsumer {
     private MessageConverter converter;
 
     private BlockingQueue inQueue;
+
+    private boolean run = true;
 
     public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, String topic,
                          int partition, Map<String, Integer> seedBrokers) {
@@ -51,13 +59,21 @@ public class KafkaConsumer {
         this.bufferSize = bufferSize;
     }
 
+    public void setFetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
+    }
+
+    public void setPollingInterval(int pollingInterval) {
+        this.pollingInterval = pollingInterval;
+    }
+
     public void start() {
         Thread t = new Thread(new Worker());
         t.start();
     }
 
     public void stop() {
-
+        run = false;
     }
 
     private class Worker implements Runnable {
@@ -81,7 +97,7 @@ public class KafkaConsumer {
             long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
 
             int numErrors = 0;
-            while (true) {
+            while (run) {
                 if (consumer == null) {
                     consumer = new SimpleConsumer(leadBroker, leadPort, soTimeout, bufferSize, clientName);
                 }
@@ -113,7 +129,7 @@ public class KafkaConsumer {
                 for (MessageAndOffset messageAndOffset : fetchResponse.messageSet(topic, partition)) {
                     long currentOffset = messageAndOffset.offset();
                     if (currentOffset < readOffset) {
-                        System.out.println("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
+                        LOG.warn("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
                         continue;
                     }
                     readOffset = messageAndOffset.nextOffset();
@@ -123,11 +139,12 @@ public class KafkaConsumer {
                     payload.get(bytes);
                     numRead++;
 
-                    Object converted = converter.convert(bytes, null);
-
+                    KafkaMessage message = new KafkaMessage(topic, partition, bytes);
+                    Object converted = converter.convert(message, null);
                     try {
                         inQueue.put(converted);
                     } catch (InterruptedException e) {
+                        LOG.warn("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
                     }
                 }
 
@@ -138,7 +155,9 @@ public class KafkaConsumer {
                     }
                 }
             }
-            if (consumer != null) consumer.close();
+            if (consumer != null) {
+                consumer.close();
+            }
         }
     }
 
@@ -160,7 +179,7 @@ public class KafkaConsumer {
 
     private String findNewLeader(String a_oldLeader, String a_topic, int a_partition, int a_port) {
         for (int i = 0; i < 3; i++) {
-            PartitionMetadata metadata = findLeader(m_replicaBrokers, a_topic, a_partition);
+            PartitionMetadata metadata = findLeader(replicaBrokers, a_topic, a_partition);
             if (metadata == null) {
             } else if (metadata.leader() == null) {
             } else if (a_oldLeader.equalsIgnoreCase(metadata.leader().host()) && i == 0) {
@@ -207,9 +226,9 @@ public class KafkaConsumer {
             }
         }
         if (returnMetaData != null) {
-            m_replicaBrokers.clear();
+            replicaBrokers.clear();
             for (kafka.cluster.Broker replica : returnMetaData.replicas()) {
-                m_replicaBrokers.put(replica.host(), replica.port());
+                replicaBrokers.put(replica.host(), replica.port());
             }
         }
         return returnMetaData;
