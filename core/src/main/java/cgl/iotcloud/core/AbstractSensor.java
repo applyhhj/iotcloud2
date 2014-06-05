@@ -19,6 +19,14 @@ public abstract class AbstractSensor implements ISensor {
         t.start();
     }
 
+    public void startSend(Channel channel, MessageSender sender, BlockingQueue messages) {
+        QueueProducer producer = new QueueProducer(channel.getInQueue(), sender, messages);
+        producers.put(channel.getName(), producer);
+
+        Thread t = new Thread(producer);
+        t.start();
+    }
+
     public void startListen(Channel channel, MessageReceiver receiver) {
         QueueListener listener = new QueueListener(channel.getOutQueue(), receiver);
 
@@ -49,14 +57,30 @@ public abstract class AbstractSensor implements ISensor {
 
         private boolean pause = false;
 
+        private BlockingQueue messages;
+
         private QueueProducer(BlockingQueue queue, MessageSender handler, int interval) {
             this.queue = queue;
             this.messageSender = handler;
             this.interval = interval;
         }
 
+        public QueueProducer(BlockingQueue queue, MessageSender messageSender, BlockingQueue messages) {
+            this.queue = queue;
+            this.messageSender = messageSender;
+            this.messages = messages;
+        }
+
         @Override
         public void run() {
+            if (messages == null) {
+                runFixedInterval();
+            } else {
+                runFromQueue();
+            }
+        }
+
+        private void runFixedInterval() {
             while (run) {
                 synchronized (this){
                     while (pause) {
@@ -68,6 +92,32 @@ public abstract class AbstractSensor implements ISensor {
                     }
                 }
                 messageSender.loop(queue);
+
+                try {
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        private void runFromQueue() {
+            while (run) {
+                synchronized (this){
+                    while (pause) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                try {
+                    Object message = messages.take();
+                    queue.put(message);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
                 try {
                     Thread.sleep(interval);

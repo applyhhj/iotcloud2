@@ -30,6 +30,7 @@
         <commons.cli.version>1.2</commons.cli.version>
         <mqtt.version>1.10</mqtt.version>
         <gauva.version>12.0</gauva.version>
+        <rabitmq.verion>3.2.4</rabitmq.verion>
     </properties>
 
     <dependencyManagement>
@@ -112,6 +113,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${gauva.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabitmq.verion}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
