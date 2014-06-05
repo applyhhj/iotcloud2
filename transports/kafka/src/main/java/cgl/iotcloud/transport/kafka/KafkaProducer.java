@@ -29,6 +29,8 @@ public class KafkaProducer {
 
     private String requestRequiredAcks;
 
+    private boolean run = true;
+
     public KafkaProducer(MessageConverter converter, BlockingQueue outQueue,
                          String topic, String brokerList, String serializerClass,
                          String partitionClass, String requestRequiredAcks) {
@@ -61,23 +63,25 @@ public class KafkaProducer {
     }
 
     public void stop() {
-
+        run = false;
     }
 
     private class Worker implements Runnable {
         @Override
         public void run() {
-            boolean run = true;
             int errorCount = 0;
             while (run) {
                 try {
                     try {
                         Object input = outQueue.take();
                         Object converted = converter.convert(input, null);
-
-                        KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic, "key".getBytes(), (byte []) converted);
-
-                        producer.send(data);
+                        if (converted instanceof KafkaMessage) {
+                            KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic,
+                                    ((KafkaMessage) converted).getKey().getBytes(), ((KafkaMessage) converted).getData());
+                            producer.send(data);
+                        } else {
+                            LOG.error("Unexpected message type");
+                        }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }
@@ -91,9 +95,6 @@ public class KafkaProducer {
                     }
                 }
             }
-            String message = "Unexpected notification type";
-            LOG.error(message);
-            throw new RuntimeException(message);
         }
     }
 }

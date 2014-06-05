@@ -7,10 +7,20 @@ public class KafkaMessage {
 
     private byte[] data;
 
+    private String key;
+
     public KafkaMessage(String topic, int partition, byte[] data) {
         this.topic = topic;
         this.partition = partition;
         this.data = data;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public String getTopic() {
