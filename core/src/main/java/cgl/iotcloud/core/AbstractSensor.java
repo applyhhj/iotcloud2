@@ -193,6 +193,11 @@ public abstract class AbstractSensor implements ISensor {
     }
 
     @Override
+    public void close() {
+        // do nothing
+    }
+
+    @Override
     public void activate() {
         for (QueueProducer p : producers.values()) {
             p.activate();
