@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.transport.MessageConverter;
+import kafka.admin.AdminUtils;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
