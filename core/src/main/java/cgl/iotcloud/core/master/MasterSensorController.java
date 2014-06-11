@@ -72,6 +72,7 @@ public class MasterSensorController {
 
         for (String site : sites) {
             try {
+                LOG.info("Requesting sensor site {} to stop the sensor {} ", site, stopEvent.getId());
                 SiteClient client = clientCache.getSiteClient(site);
                 if (client != null) {
                     client.stopSensor(stopEvent.getId());
@@ -89,6 +90,7 @@ public class MasterSensorController {
 
         for (String site : sites) {
             try {
+                LOG.info("Requesting sensor site {} to start the sensor {} ", site, startEvent.getId());
                 SiteClient client = clientCache.getSiteClient(site);
                 if (client != null) {
                     client.startSensor(startEvent.getId());
@@ -106,6 +108,7 @@ public class MasterSensorController {
 
         for (String site : sites) {
             try {
+                LOG.info("Requesting sensor site {} to start the sensor {} ", site, stopEvent.getId());
                 SiteClient client = clientCache.getSiteClient(site);
                 if (client != null) {
                     client.unDeploySensor(stopEvent.getId());
