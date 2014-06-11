@@ -59,9 +59,10 @@ public class SiteController {
                             SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         } else if (event.getStatus() == SiteEvent.State.ADDED) {
-                            LOG.info("A new site added {}", event.getSiteId());
-
                             SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+                            LOG.info("A new site added {} with host {} and port {}", event.getSiteId(), descriptor.getHost(), descriptor.getPort());
+
+
                             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
                         }
                     } catch (InterruptedException e) {
