@@ -41,10 +41,12 @@ public class MasterSensorController {
 
     private void deploySensor(MSensorClientEvent deployEvent) {
         List<String> sites = getSites(deployEvent);
-
+        LOG.info("Request received for deploying sensor " + deployEvent.getDeployDescriptor());
         for (String site : sites) {
+
             SiteClient client;
             try {
+                LOG.info("Requesting sensor site {} to deploy the sensor {} " + deployEvent.getDeployDescriptor());
                 client = clientCache.getSiteClient(site);
                 if (client != null) {
                     client.deploySensor(deployEvent.getDeployDescriptor());
