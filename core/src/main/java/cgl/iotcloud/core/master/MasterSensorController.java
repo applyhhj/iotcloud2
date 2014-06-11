@@ -46,10 +46,12 @@ public class MasterSensorController {
 
             SiteClient client;
             try {
-                LOG.info("Requesting sensor site {} to deploy the sensor {} " + deployEvent.getDeployDescriptor());
                 client = clientCache.getSiteClient(site);
                 if (client != null) {
+                    LOG.info("Requesting sensor site {} to deploy the sensor {} ", site, deployEvent.getDeployDescriptor());
                     client.deploySensor(deployEvent.getDeployDescriptor());
+                } else {
+                    LOG.error("Requesting the sensor {} to be deployed in no-exsisting site {}", deployEvent.getDeployDescriptor(), site);
                 }
             } catch (Exception e) {
                 // we should report these kind of errors to some listening service or zookeeper in the future
