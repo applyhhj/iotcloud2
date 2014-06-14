@@ -70,7 +70,7 @@ public class SensorSite {
 
                 Transport t = loadTransport((Map) tConf);
                 // configure the transport, this doesn't start the transport
-                t.configure((Map) tConf);
+                t.configure(siteId, (Map) tConf);
                 siteContext.addTransport((String) tName, t);
             }
         }

@@ -35,8 +35,11 @@ public class KestrelTransport implements Transport {
 
     private Map<String, Server> urls = new HashMap<String, Server>();
 
+    private String siteId;
+
     @Override
-    public void configure(Map properties) {
+    public void configure(String siteId, Map properties) {
+        this.siteId = siteId;
         try {
             Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
             Object urlProp = params.get(PROP_URLS);

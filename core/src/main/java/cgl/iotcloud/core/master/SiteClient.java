@@ -10,7 +10,6 @@ import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
