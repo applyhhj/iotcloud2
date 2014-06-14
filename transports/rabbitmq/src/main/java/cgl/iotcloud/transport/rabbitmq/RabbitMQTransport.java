@@ -38,8 +38,11 @@ public class RabbitMQTransport implements Transport {
 
     private String url;
 
+    private String siteId;
+
     @Override
-    public void configure(Map properties) {
+    public void configure(String siteId, Map properties) {
+        this.siteId = siteId;
         try {
             Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
             Object urlProp = params.get(URL_PROPERTY);

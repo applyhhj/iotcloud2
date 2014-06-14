@@ -27,9 +27,12 @@ public class JMSTransport implements Transport {
     private Map<ChannelName, JMSSender> senders = new HashMap<ChannelName, JMSSender>();
     private Map<ChannelName, JMSListener> listeners = new HashMap<ChannelName, JMSListener>();
 
+    private String siteId;
+
     @Override
-    public void configure(Map properties) {
+    public void configure(String siteId, Map properties) {
         try {
+            this.siteId = siteId;
             Hashtable<String, String> params = new Hashtable<String, String>();
             params.putAll((Map)properties.get(Configuration.TRANSPORT_PROPERTIES));
 
@@ -65,11 +68,11 @@ public class JMSTransport implements Transport {
 
         try {
             if (channel.getDirection() == Direction.OUT) {
-                JMSSender sender = new JMSSender(conFactory, destination, topic, channel.getOutQueue(), channel.getConverter());
+                JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, channel.getOutQueue(), channel.getConverter());
                 sender.start();
                 senders.put(name, sender);
             } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(conFactory, destination, topic, channel.getInQueue(), channel.getConverter());
+                JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, channel.getInQueue(), channel.getConverter());
                 listener.start();
                 listeners.put(name, listener);
             }

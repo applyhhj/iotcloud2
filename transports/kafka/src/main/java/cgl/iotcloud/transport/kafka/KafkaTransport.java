@@ -35,8 +35,12 @@ public class KafkaTransport implements Transport {
     private Map<ChannelName, KafkaProducer> producers = new HashMap<ChannelName, KafkaProducer>();
     private Map<ChannelName, KafkaConsumer> consumers = new HashMap<ChannelName, KafkaConsumer>();
 
+
+    private String siteId;
+
     @Override
-    public void configure(Map properties) {
+    public void configure(String siteId, Map properties) {
+        this.siteId = siteId;
         Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
         Object urlProp = params.get(PROP_URLS);
         if (urlProp == null || !(urlProp instanceof List)) {

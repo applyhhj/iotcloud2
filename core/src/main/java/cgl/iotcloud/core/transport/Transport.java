@@ -3,7 +3,7 @@ package cgl.iotcloud.core.transport;
 import java.util.Map;
 
 public interface Transport {
-    void configure(Map properties);
+    void configure(String siteId, Map properties);
 
     void registerChannel(ChannelName name, Channel channel);
 
