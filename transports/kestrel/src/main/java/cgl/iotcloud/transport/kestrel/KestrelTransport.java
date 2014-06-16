@@ -97,7 +97,7 @@ public class KestrelTransport implements Transport {
         }
 
         if (channel.getDirection() == Direction.OUT) {
-            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getOutQueue(), channel.getConverter());
+            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), siteId + "." + queueName), channel.getOutQueue(), channel.getConverter());
             if (blackListProp != null) {
                 long blackListTime = Long.parseLong(blackListProp);
                 sender.setBlackListTime(blackListTime);
@@ -109,7 +109,7 @@ public class KestrelTransport implements Transport {
             sender.open();
             senders.put(name, sender);
         } else if (channel.getDirection() == Direction.IN) {
-            KestrelConsumer listener = new KestrelConsumer(new KestrelDestination(s.getHost(), s.getPort(), queueName), channel.getInQueue());
+            KestrelConsumer listener = new KestrelConsumer(new KestrelDestination(s.getHost(), s.getPort(), siteId + "." + queueName), channel.getInQueue());
             if (blackListProp != null) {
                 long blackListTime = Long.parseLong(blackListProp);
                 listener.setBlackListTime(blackListTime);

@@ -82,11 +82,11 @@ public class MQTTTransport implements Transport {
         }
 
         if (channel.getDirection() == Direction.OUT) {
-            MQTTProducer sender = new MQTTProducer(host, port, channel.getOutQueue(), queueName, channel.getConverter(), qoS);
+            MQTTProducer sender = new MQTTProducer(host, port, channel.getOutQueue(), siteId + "." + queueName, channel.getConverter(), qoS);
             senders.put(name, sender);
             sender.open();
         } else if (channel.getDirection() == Direction.IN) {
-            MQTTConsumer listener = new MQTTConsumer(host, port, channel.getInQueue(), queueName, channel.getConverter(), qoS);
+            MQTTConsumer listener = new MQTTConsumer(host, port, channel.getInQueue(), siteId + "." + queueName, channel.getConverter(), qoS);
             receivers.put(name, listener);
             listener.open();
         }
