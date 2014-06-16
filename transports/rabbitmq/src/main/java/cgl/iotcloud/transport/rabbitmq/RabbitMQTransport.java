@@ -88,7 +88,7 @@ public class RabbitMQTransport implements Transport {
             String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
             String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
-            RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, routingKey, siteId + "." + queueName, executorService, addresses, url);
+            RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, siteId + "." + routingKey, siteId + "." + queueName, executorService, addresses, url);
             sender.start();
             senders.put(name, sender);
         } else if (channel.getDirection() == Direction.IN) {
@@ -98,7 +98,7 @@ public class RabbitMQTransport implements Transport {
 
             RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), siteId + "." + queueName, executorService, addresses, url);
             listener.setExchangeName(exchangeName);
-            listener.setRoutingKey(routingKey);
+            listener.setRoutingKey(siteId + "." + routingKey);
             listener.start();
             receivers.put(name, listener);
         }
