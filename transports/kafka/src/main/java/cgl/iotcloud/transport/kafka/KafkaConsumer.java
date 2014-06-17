@@ -94,7 +94,7 @@ public class KafkaConsumer {
             String clientName = "Client_" + topic + "_" + partition;
 
             SimpleConsumer consumer = new SimpleConsumer(leadBroker, leadPort, soTimeout, bufferSize, clientName);
-            long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.LatestTime(), clientName);
+            long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
 
             int numErrors = 0;
             while (run) {
