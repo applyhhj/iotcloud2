@@ -31,7 +31,7 @@ public class KafkaConsumer {
 
     private int bufferSize = 64 * 1024;
 
-    private int fetchSize = 10000;
+    private int fetchSize = 10000000;
 
     private int pollingInterval = 10;
 
@@ -94,7 +94,7 @@ public class KafkaConsumer {
             String clientName = "Client_" + topic + "_" + partition;
 
             SimpleConsumer consumer = new SimpleConsumer(leadBroker, leadPort, soTimeout, bufferSize, clientName);
-            long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
+            long readOffset = getLastOffset(consumer, topic, partition, kafka.api.OffsetRequest.LatestTime(), clientName);
 
             int numErrors = 0;
             while (run) {
