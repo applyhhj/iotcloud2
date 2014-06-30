@@ -24,6 +24,8 @@ public class Channel {
 
     private String name;
 
+    private String group;
+
     private MessageConverter converter;
 
     private boolean run = true;
@@ -35,6 +37,16 @@ public class Channel {
         this.outQueue = outQueue;
         this.direction = direction;
         this.converter = converter;
+    }
+
+    public Channel(String name, String group, Direction direction,
+                   BlockingQueue inQueue, BlockingQueue outQueue, MessageConverter converter) {
+        this.name = name;
+        this.inQueue = inQueue;
+        this.outQueue = outQueue;
+        this.direction = direction;
+        this.converter = converter;
+        this.group = group;
     }
 
     public String getName() {
@@ -59,6 +71,10 @@ public class Channel {
 
     public Map getProperties() {
         return properties;
+    }
+
+    public String getGroup() {
+        return group;
     }
 
     public void open() {

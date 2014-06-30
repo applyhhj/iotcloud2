@@ -1,3 +1,48 @@
-iot.master.host: "localhost"
-
+# the sensor site id, change this to a unique value when deploying multiple sites
 iot.sensorsite.id: "local"
+
+iot.master.host: "localhost"
+iot.master.server.port: 12903
+iot.master.server.threads: 4
+
+iot.master.api.port: 12904
+iot.master.api.threads: 4
+
+iot.sensorsite.host: "localhost"
+iot.sensorsite.port: 12905
+iot.sensorsite.threads: 4
+
+# if the absolute path of a sensor is not given this is the place to look
+iot.sensorsite.repository: "repository/sensors"
+
+iot.sensorsite.transports:
+    jms:
+      class: "cgl.iotcloud.core.transport.jms.JMSTransport"
+      properties:
+            java.naming.factory.initial: "org.apache.activemq.jndi.ActiveMQInitialContextFactory"
+            java.naming.provider.url: "tcp://localhost:61616"
+            jms.ConnectionFactoryJNDIName: "TopicConnectionFactory"
+    rabbitmq:
+      class: "cgl.iotcloud.transport.rabbitmq.RabbitMQTransport"
+      properties:
+            url: "amqp://localhost:5672"
+            threads:
+                max: 10
+                core: 4
+    kafka:
+      class: "cgl.iotcloud.transport.kafka.KafkaTransport"
+      properties:
+            urls: ["localhost:9092"]
+    mqtt:
+          class: "cgl.iotcloud.transport.mqtt.MQTTTransport"
+          properties:
+                url: "localhost:1883"
+    kestrel:
+          class: "cgl.iotcloud.transport.kestrel.KestrelTransport"
+          properties:
+                servers:
+                    s1: "localhost:2229"
+
+iot.sensorsites.max: 1024
+
+iot.sensorsite.max.sensorevents: 1024

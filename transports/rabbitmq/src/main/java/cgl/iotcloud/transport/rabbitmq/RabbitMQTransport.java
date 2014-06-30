@@ -1,10 +1,7 @@
 package cgl.iotcloud.transport.rabbitmq;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.ChannelName;
-import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.Transport;
+import cgl.iotcloud.core.transport.*;
 
 import com.rabbitmq.client.Address;
 import org.slf4j.Logger;
@@ -16,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class RabbitMQTransport implements Transport {
+public class RabbitMQTransport extends AbstractTransport {
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQTransport.class);
 
     public static final String URL_PROPERTY = "url";

@@ -25,14 +25,18 @@ public abstract class AbstractTransport implements Transport {
      * Every transport has a list of applications. A group has specific channels registers to
      * it by the sensors
      */
-    protected Map<String, Group> groups = new ConcurrentHashMap<String, Group>();
+    protected Map<String, ChannelGroup> groups = new ConcurrentHashMap<String, ChannelGroup>();
 
+    /**
+     * The transport specific configurations
+     */
+    protected Map transportConfiguration;
 
     @Override
     public void configure(String siteId, Map properties) {
         this.siteId = siteId;
-        Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
-        Object urlProp = params.get(TransportConstants.PROP_URLS);
+        this.transportConfiguration = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
+        Object urlProp = transportConfiguration.get(TransportConstants.PROP_URLS);
         if (urlProp == null || !(urlProp instanceof List)) {
             String message = "Url is required by the Transport";
             LOG.error(message);
@@ -51,27 +55,33 @@ public abstract class AbstractTransport implements Transport {
                 }
             }
         }
+
+        configureTransport();
+    }
+
+    public void configureTransport() {
+
     }
 
     @Override
     public void registerChannel(ChannelName name, Channel channel) {
         // check to see if we already have a group for this channel
-        Group group = groups.get(channel.getGroup());
+        ChannelGroup group = groups.get(channel.getGroup());
         if (group == null) {
-            group = new Group(channel.getName());
+            group = new ChannelGroup(channel.getName(), brokerHosts);
             groups.put(channel.getGroup(), group);
         }
 
+        BrokerHost host = group.addChannel(channel);
 
+        if (channel.getDirection() == Direction.OUT) {
+            registerProducer(host, channel);
+        } else if (channel.getDirection() == Direction.IN) {
+            registerConsumer(host, channel);
+        }
     }
 
-    @Override
-    public void start() {
+    public abstract void registerProducer(BrokerHost host, Channel channel);
 
-    }
-
-    @Override
-    public void stop() {
-
-    }
+    public abstract void registerConsumer(BrokerHost host, Channel channel);
 }
