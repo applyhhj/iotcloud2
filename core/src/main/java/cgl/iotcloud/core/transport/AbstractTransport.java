@@ -4,10 +4,8 @@ import cgl.iotcloud.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractTransport implements Transport {
@@ -49,16 +47,12 @@ public abstract class AbstractTransport implements Transport {
         for (Object o : (List)urlProp) {
             if (o instanceof String) {
                 String url = (String) o;
-                String tokens[] = url.split(":");
-
-                if (tokens.length == 2) {
-                    brokerHosts.add(new BrokerHost(tokens[0], Integer.parseInt(tokens[1])));
-                } else {
-                    throw new RuntimeException("Each broker URL should be of the format host:port");
-                }
+                brokerHosts.add(new BrokerHost(url));
+            } else {
+                LOG.error("Each broker URL should be a string");
+                throw new RuntimeException("Each broker URL should be a string");
             }
         }
-
         configureTransport();
     }
 

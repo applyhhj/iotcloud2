@@ -1,21 +1,10 @@
 package cgl.iotcloud.core.transport;
 
 public class BrokerHost {
-    private final String host;
+    private String url;
 
-    private final int port;
-
-    public BrokerHost(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
+    public BrokerHost(String url) {
+        this.url = url;
     }
 
     @Override
@@ -25,16 +14,13 @@ public class BrokerHost {
 
         BrokerHost that = (BrokerHost) o;
 
-        if (port != that.port) return false;
-        if (host != null ? !host.equals(that.host) : that.host != null) return false;
+        if (url != null ? !url.equals(that.url) : that.url != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = host != null ? host.hashCode() : 0;
-        result = 31 * result + port;
-        return result;
+        return url != null ? url.hashCode() : 0;
     }
 }

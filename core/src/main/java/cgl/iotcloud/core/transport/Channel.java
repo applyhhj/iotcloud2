@@ -103,6 +103,25 @@ public class Channel {
         this.properties.putAll(properties);
     }
 
+    public BlockingQueue getUserQueue() {
+        if (direction == Direction.OUT) {
+            return this.inQueue;
+        } else if (direction == Direction.IN) {
+            return this.outQueue;
+        }
+        return null;
+    }
+
+    public BlockingQueue getTransportQueue() {
+        if (direction == Direction.OUT) {
+            return this.outQueue;
+        } else if (direction == Direction.IN) {
+            return this.inQueue;
+        }
+
+        return null;
+    }
+
     private class Worker implements Runnable {
         @Override
         public void run() {
