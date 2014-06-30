@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,12 +34,19 @@ public class ChannelGroup {
 
     private Lock lock = new ReentrantLock();
 
+    /**
+     * These are the queues we put the messages coming from the channels. The actual message consumers or
+     * senders use these queues
+     */
+    protected List<BlockingQueue> messageQueues =  new ArrayList<BlockingQueue>();
+
     public ChannelGroup(String name, List<BrokerHost> brokerHosts) {
         this.name = name;
         this.brokerHosts = brokerHosts;
 
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToChannelMap.put(brokerHost, new ArrayList<Channel>());
+            messageQueues.add(new ArrayBlockingQueue(1024));
         }
     }
 
@@ -48,6 +57,9 @@ public class ChannelGroup {
             BrokerHost host = brokerHosts.get(currentIndex);
             List<Channel> channels = brokerHostToChannelMap.get(host);
             channels.add(channel);
+
+            // set the transport queue of the channel as the group queue
+            channel.setTransportQueue(messageQueues.get(currentIndex));
 
             LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
 
@@ -60,7 +72,7 @@ public class ChannelGroup {
     }
 
     private void incrementIndex() {
-        if (currentIndex <= brokerHosts.size() - 1) {
+        if (currentIndex == brokerHosts.size() - 1) {
             currentIndex = 0;
         } else {
             currentIndex++;

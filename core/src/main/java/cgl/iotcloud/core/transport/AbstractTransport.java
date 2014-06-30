@@ -4,8 +4,10 @@ import cgl.iotcloud.core.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractTransport implements Transport {
@@ -37,6 +39,7 @@ public abstract class AbstractTransport implements Transport {
         this.siteId = siteId;
         this.transportConfiguration = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
         Object urlProp = transportConfiguration.get(TransportConstants.PROP_URLS);
+
         if (urlProp == null || !(urlProp instanceof List)) {
             String message = "Url is required by the Transport";
             LOG.error(message);
@@ -59,9 +62,7 @@ public abstract class AbstractTransport implements Transport {
         configureTransport();
     }
 
-    public void configureTransport() {
-
-    }
+    public abstract void configureTransport();
 
     @Override
     public void registerChannel(ChannelName name, Channel channel) {

@@ -33,72 +33,47 @@ public class RabbitMQTransport extends AbstractTransport {
 
     private Address[] addresses;
 
-    private String url;
-
-    private String siteId;
-
     @Override
-    public void configure(String siteId, Map properties) {
-        this.siteId = siteId;
-        try {
-            Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
-            Object urlProp = params.get(URL_PROPERTY);
-            if (urlProp == null) {
-                String message = "Url is required by the RabbitMQTransport";
-                LOG.error(message);
-                throw new RuntimeException(message);
-            }
-
-            if (urlProp instanceof String) {
-                this.url = (String) urlProp;
-            } else if (urlProp instanceof List) {
-                Address urls[];
-                int len = ((List) urlProp).size();
-                urls = new Address[len];
-                for (int i = 0; i < len; i++) {
-                    urls[i] = new Address ((String) ((List) urlProp).get(i));
-                }
-                this.addresses = urls;
-            }
-
-            Map threads = (Map) params.get(THREAD_PROPERTY);
-            if (threads != null) {
-                int core = (Integer) threads.get(CORE_PROPERTY);
-                executorService = Executors.newScheduledThreadPool(core);
-            }
-        } catch (Exception e) {
-            String msg = "Error in key management for rabbitMQ";
-            LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
+    public void configureTransport() {
+        Map threads = (Map) transportConfiguration.get(THREAD_PROPERTY);
+        if (threads != null) {
+            int core = (Integer) threads.get(CORE_PROPERTY);
+            executorService = Executors.newScheduledThreadPool(core);
         }
     }
 
     @Override
-    public void registerChannel(ChannelName name, Channel channel) {
+    public void registerProducer(BrokerHost host, Channel channel) {
         Map channelConf = channel.getProperties();
         if (channelConf == null) {
             throw new IllegalArgumentException("Channel properties must be specified");
         }
 
-        if (channel.getDirection() == Direction.OUT) {
-            String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
-            String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
-            String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+        String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
+        String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
+        String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
-            RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, siteId + "." + routingKey, siteId + "." + queueName, executorService, addresses, url);
-            sender.start();
-            senders.put(name, sender);
-        } else if (channel.getDirection() == Direction.IN) {
-            String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
-            String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
-            String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+        RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, siteId + "." + routingKey, siteId + "." + queueName, executorService, addresses, url);
+        sender.start();
+        senders.put(name, sender);
+    }
 
-            RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), siteId + "." + queueName, executorService, addresses, url);
-            listener.setExchangeName(exchangeName);
-            listener.setRoutingKey(siteId + "." + routingKey);
-            listener.start();
-            receivers.put(name, listener);
+    @Override
+    public void registerConsumer(BrokerHost host, Channel channel) {
+        Map channelConf = channel.getProperties();
+        if (channelConf == null) {
+            throw new IllegalArgumentException("Channel properties must be specified");
         }
+
+        String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
+        String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
+        String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+
+        RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), siteId + "." + queueName, executorService, addresses, url);
+        listener.setExchangeName(exchangeName);
+        listener.setRoutingKey(siteId + "." + routingKey);
+        listener.start();
+        receivers.put(channel.getName(), listener);
     }
 
     @Override

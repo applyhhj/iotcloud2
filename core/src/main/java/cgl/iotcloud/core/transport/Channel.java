@@ -40,10 +40,13 @@ public class Channel {
     }
 
     public Channel(String name, String group, Direction direction,
-                   BlockingQueue inQueue, BlockingQueue outQueue, MessageConverter converter) {
+                   BlockingQueue userQueue, MessageConverter converter) {
         this.name = name;
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
+        if (direction == Direction.OUT) {
+            this.inQueue = userQueue;
+        } else if (direction == Direction.IN) {
+            this.outQueue = userQueue;
+        }
         this.direction = direction;
         this.converter = converter;
         this.group = group;
@@ -85,6 +88,14 @@ public class Channel {
 
     public MessageConverter getConverter() {
         return converter;
+    }
+
+    public void setTransportQueue(BlockingQueue transportQueue) {
+        if (direction == Direction.OUT) {
+            this.outQueue = transportQueue;
+        } else if (direction == Direction.IN) {
+            this.inQueue = transportQueue;
+        }
     }
 
     @SuppressWarnings("unchecked")
