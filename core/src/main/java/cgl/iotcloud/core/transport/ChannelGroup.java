@@ -28,8 +28,14 @@ public class ChannelGroup {
      */
     protected Map<BrokerHost, List<Channel>> brokerHostToChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
 
+    /**
+     * The available brokers
+     */
     private List<BrokerHost> brokerHosts;
 
+    /**
+     * The index is used to pick the next broker available
+     */
     private int currentIndex = 0;
 
     private Lock lock = new ReentrantLock();
