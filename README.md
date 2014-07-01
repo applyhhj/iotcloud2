@@ -1,3 +1,5 @@
+IoTCloud is a distributed software to bring Sensor Data to a cloud environment for processing.
+
 How to install
 ==============
 
