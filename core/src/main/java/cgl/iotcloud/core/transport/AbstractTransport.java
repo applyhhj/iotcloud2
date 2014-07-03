@@ -71,7 +71,7 @@ public abstract class AbstractTransport implements Transport {
     @Override
     public void registerChannel(ChannelName name, Channel channel) {
         // check to see if we already have a group for this channel
-        ChannelGroupName groupName = getGroupName(channel);
+        ChannelGroupName groupName = getGroupName(channel, name);
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
             group = new ChannelGroup(groupName, brokerHosts);
@@ -94,8 +94,8 @@ public abstract class AbstractTransport implements Transport {
         }
     }
 
-    private ChannelGroupName getGroupName(Channel channel) {
-        return new ChannelGroupName(channel.getName(), channel.getGroup());
+    private ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {
+        return new ChannelGroupName(channel.getName(), channelName.getId().getGroup());
     }
 
     public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue queue);

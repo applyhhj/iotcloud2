@@ -26,8 +26,6 @@ public class Channel {
 
     private String sensorID;
 
-    private String group;
-
     private MessageConverter converter;
 
     private boolean run = true;
@@ -41,7 +39,7 @@ public class Channel {
         this.converter = converter;
     }
 
-    public Channel(String name, String group, String sensorID, Direction direction,
+    public Channel(String name, String sensorID, Direction direction,
                    BlockingQueue userQueue, MessageConverter converter) {
         this.name = name;
         if (direction == Direction.OUT) {
@@ -51,7 +49,6 @@ public class Channel {
         }
         this.direction = direction;
         this.converter = converter;
-        this.group = group;
         this.sensorID = sensorID;
     }
 
@@ -125,9 +122,7 @@ public class Channel {
         return null;
     }
 
-    public String getGroup() {
-        return group;
-    }
+
 
     private class Worker implements Runnable {
         @Override
