@@ -1,5 +1,6 @@
 package cgl.iotcloud.transport.rabbitmq;
 
+import cgl.iotcloud.core.transport.Manageable;
 import cgl.iotcloud.core.transport.MessageConverter;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
@@ -9,22 +10,18 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
-public class RabbitMQReceiver {
+public class RabbitMQReceiver implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQReceiver.class);
 
     private Channel channel;
 
     private Connection conn;
 
-    private MessageConverter converter;
-
     private BlockingQueue inQueue;
 
     private String queueName;
 
     private boolean autoAck = false;
-
-    private Address []addresses;
 
     private String url;
 
@@ -34,36 +31,26 @@ public class RabbitMQReceiver {
 
     private String routingKey;
 
-    public RabbitMQReceiver(MessageConverter converter,
-                            BlockingQueue inQueue,
+    public RabbitMQReceiver(BlockingQueue inQueue,
                             String queueName,
-                            ExecutorService executorService,
-                            Address []addresses,
                             String url) {
-        this.converter = converter;
         this.inQueue = inQueue;
-        this.executorService = executorService;
         this.queueName = queueName;
-        this.addresses = addresses;
         this.url = url;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public void start() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            if (addresses == null) {
-                factory.setUri(url);
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService);
-                } else {
-                    conn = factory.newConnection();
-                }
+            factory.setUri(url);
+            if (executorService != null) {
+                conn = factory.newConnection(executorService);
             } else {
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService, addresses);
-                } else {
-                    conn = factory.newConnection(addresses);
-                }
+                conn = factory.newConnection();
             }
 
             channel = conn.createChannel();
@@ -85,8 +72,7 @@ public class RabbitMQReceiver {
                             long deliveryTag = envelope.getDeliveryTag();
                             RabbitMQMessage message = new RabbitMQMessage(properties, body);
                             try {
-                                Object o = converter.convert(message, null);
-                                inQueue.put(o);
+                                inQueue.put(message);
                             } catch (InterruptedException e) {
                                 LOG.error("Failed to put the object to the queue");
                             }

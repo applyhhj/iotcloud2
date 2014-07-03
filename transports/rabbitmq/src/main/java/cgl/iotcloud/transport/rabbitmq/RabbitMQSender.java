@@ -1,7 +1,6 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.transport.MessageConverter;
-import com.rabbitmq.client.Address;
+import cgl.iotcloud.core.transport.Manageable;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -12,14 +11,12 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
-public class RabbitMQSender {
+public class RabbitMQSender implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQSender.class);
 
     private Channel channel;
 
     private Connection conn;
-
-    private MessageConverter converter;
 
     private BlockingQueue outQueue;
 
@@ -29,46 +26,34 @@ public class RabbitMQSender {
 
     private String queueName;
 
-    private Address []addresses;
-
     private String url;
 
     private ExecutorService executorService;
 
-    public RabbitMQSender(MessageConverter converter,
-                          BlockingQueue outQueue,
+    public RabbitMQSender(BlockingQueue outQueue,
                           String exchangeName,
                           String routingKey,
                           String queueName,
-                          ExecutorService executorService,
-                          Address []addresses,
                           String url) {
-        this.executorService = executorService;
-        this.converter = converter;
         this.outQueue = outQueue;
         this.exchangeName = exchangeName;
         this.routingKey = routingKey;
-        this.addresses = addresses;
         this.url = url;
         this.queueName = queueName;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public void start() {
         ConnectionFactory factory = new ConnectionFactory();
         try {
-            if (addresses == null) {
-                factory.setUri(url);
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService);
-                } else {
-                    conn = factory.newConnection();
-                }
+            factory.setUri(url);
+            if (executorService != null) {
+                conn = factory.newConnection(executorService);
             } else {
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService, addresses);
-                } else {
-                    conn = factory.newConnection(addresses);
-                }
+                conn = factory.newConnection();
             }
 
             channel = conn.createChannel();
@@ -107,12 +92,11 @@ public class RabbitMQSender {
                 try {
                     try {
                         Object input = outQueue.take();
-                        Object converted = converter.convert(input, null);
-                        if (converted instanceof byte []) {
-                            channel.basicPublish(exchangeName, routingKey, null, (byte[]) converted);
-                        } else if (converted instanceof RabbitMQMessage) {
+                        if (input instanceof byte []) {
+                            channel.basicPublish(exchangeName, routingKey, null, (byte[]) input);
+                        } else if (input instanceof RabbitMQMessage) {
                             channel.basicPublish(exchangeName, routingKey,
-                                    ((RabbitMQMessage) converted).getBasicProperties(), ((RabbitMQMessage) converted).getBody());
+                                    ((RabbitMQMessage) input).getBasicProperties(), ((RabbitMQMessage) input).getBody());
                         } else {
                             throw new RuntimeException("Expepected byte array after conversion");
                         }
