@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public abstract class AbstractTransport implements Transport {
     private static Logger LOG = LoggerFactory.getLogger(AbstractTransport.class);
@@ -28,7 +25,7 @@ public abstract class AbstractTransport implements Transport {
      * Every transport has a list of applications. A group has specific channels registers to
      * it by the sensors
      */
-    protected Map<String, ChannelGroup> groups = new ConcurrentHashMap<String, ChannelGroup>();
+    protected Map<ChannelGroupName, ChannelGroup> groups = new ConcurrentHashMap<ChannelGroupName, ChannelGroup>();
 
     /**
      * The transport specific configurations
@@ -62,7 +59,8 @@ public abstract class AbstractTransport implements Transport {
         Map threads = (Map) transportConfiguration.get(TransportConstants.THREAD_PROPERTY);
         if (threads != null) {
             int core = (Integer) threads.get(TransportConstants.CORE_PROPERTY);
-            executorService = Executors.newScheduledThreadPool(core);
+            int max = (Integer) threads.get(TransportConstants.MAX_PROPERTY);
+            executorService = new ThreadPoolExecutor(core, max, 5000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(1024));
         }
 
         configureTransport();
@@ -73,10 +71,11 @@ public abstract class AbstractTransport implements Transport {
     @Override
     public void registerChannel(ChannelName name, Channel channel) {
         // check to see if we already have a group for this channel
-        ChannelGroup group = groups.get(channel.getGroup());
+        ChannelGroupName groupName = getGroupName(channel);
+        ChannelGroup group = groups.get(groupName);
         if (group == null) {
-            group = new ChannelGroup(channel.getName(), brokerHosts);
-            groups.put(channel.getGroup(), group);
+            group = new ChannelGroup(groupName, brokerHosts);
+            groups.put(groupName, group);
         }
 
         BrokerHost host = group.addChannel(channel);
@@ -93,6 +92,10 @@ public abstract class AbstractTransport implements Transport {
         } else if (channel.getDirection() == Direction.IN) {
             registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
         }
+    }
+
+    private ChannelGroupName getGroupName(Channel channel) {
+        return new ChannelGroupName(channel.getName(), channel.getGroup());
     }
 
     public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue queue);

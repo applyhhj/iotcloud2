@@ -4,7 +4,6 @@ import cgl.iotcloud.core.transport.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.html.ObjectView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,11 +90,11 @@ public class SensorContext {
 
         SensorContext that = (SensorContext) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 }

@@ -2,8 +2,10 @@ package cgl.iotcloud.core.transport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.org.mozilla.javascript.internal.ast.Block;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -14,14 +16,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Contains a set of channels belonging to a particular group. The channels are
- * distributed across the available brokers.
+ * distributed across the available brokers. A Channel group consumes or produces messages from or
+ * to a single logical queue.
  */
 public class ChannelGroup {
     private static Logger LOG = LoggerFactory.getLogger(ChannelGroup.class);
     /**
-     * Name of the group
+     * Name of the group, this name is a unique combination of sensor group and channel name
      */
-    private String name;
+    private ChannelGroupName name;
 
     /**
      * Keep track of the channels for a broker host
@@ -46,7 +49,7 @@ public class ChannelGroup {
      */
     protected List<BlockingQueue> messageQueues =  new ArrayList<BlockingQueue>();
 
-    public ChannelGroup(String name, List<BrokerHost> brokerHosts) {
+    public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts) {
         this.name = name;
         this.brokerHosts = brokerHosts;
 
@@ -58,7 +61,7 @@ public class ChannelGroup {
 
     public BrokerHost addChannel(Channel channel) {
         lock.lock();
-            try {
+        try {
             // add the channel and return the broker host
             BrokerHost host = brokerHosts.get(currentIndex);
             List<Channel> channels = brokerHostToChannelMap.get(host);
@@ -66,6 +69,7 @@ public class ChannelGroup {
 
             // set the transport queue of the channel as the group queue
             channel.setTransportQueue(messageQueues.get(currentIndex));
+
 
             LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
 
@@ -82,6 +86,27 @@ public class ChannelGroup {
             currentIndex = 0;
         } else {
             currentIndex++;
+        }
+    }
+
+    private class ProducingWorker implements Runnable {
+        private Channel channel;
+
+        private ProducingWorker(BlockingQueue queue) {
+            this.queue = queue;
+        }
+
+        @Override
+        public void run() {
+        }
+    }
+
+    private class ConsumingWorker implements Runnable {
+        private BlockingQueue queue;
+
+        @Override
+        public void run() {
+
         }
     }
 }
