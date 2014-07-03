@@ -116,6 +116,9 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(consumerIndex);
 
                 if (!consumers.containsKey(host)) {
+                    // set the transport queue of the channel as the group queue
+                    channel.setTransportQueue(consumerQueues.get(host));
+
                     manageable = transport.registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
                     consumers.put(host, manageable);
 
@@ -132,9 +135,6 @@ public class ChannelGroup {
                 // check weather you have a sender consumer for this host
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 channels.add(channel);
-
-                // set the transport queue of the channel as the group queue
-                channel.setTransportQueue(consumerQueues.get(host));
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementConsumerIndex();
@@ -170,6 +170,7 @@ public class ChannelGroup {
 
         @Override
         public void run() {
+
         }
     }
 
