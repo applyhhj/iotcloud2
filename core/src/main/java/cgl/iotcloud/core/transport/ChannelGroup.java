@@ -93,7 +93,7 @@ public class ChannelGroup {
         private Channel channel;
 
         private ProducingWorker(BlockingQueue queue) {
-            this.queue = queue;
+            //this.queue = queue;
         }
 
         @Override
