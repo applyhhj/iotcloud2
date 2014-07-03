@@ -76,7 +76,7 @@ public abstract class AbstractTransport implements Transport {
 
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
-            group = new ChannelGroup(groupName, brokerHosts);
+            group = new ChannelGroup(groupName, brokerHosts, this);
             groups.put(groupName, group);
         }
 

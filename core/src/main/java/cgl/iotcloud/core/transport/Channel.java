@@ -82,8 +82,8 @@ public class Channel {
 
     public void open() {
         run = true;
-        Thread t = new Thread(new Worker());
-        t.start();
+//        Thread t = new Thread(new Worker());
+//        t.start();
     }
 
     public MessageConverter getConverter() {

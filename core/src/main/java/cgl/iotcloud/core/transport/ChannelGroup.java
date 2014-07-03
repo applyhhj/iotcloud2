@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.transport;
 
+import org.apache.activemq.broker.Broker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,9 @@ public class ChannelGroup {
     /**
      * Keep track of the channels for a broker host
      */
-    protected Map<BrokerHost, List<Channel>> brokerHostToChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
+    protected Map<BrokerHost, List<Channel>> brokerHostToProducerChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
+
+    protected Map<BrokerHost, List<Channel>> brokerHostToConsumerChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
 
     /**
      * The available brokers
@@ -38,7 +41,9 @@ public class ChannelGroup {
     /**
      * The index is used to pick the next broker available
      */
-    private int currentIndex = 0;
+    private int consumerIndex = 0;
+
+    private int producerIndex = 0;
 
     private Lock lock = new ReentrantLock();
 
@@ -46,7 +51,9 @@ public class ChannelGroup {
      * These are the queues we put the messages coming from the channels. The actual message consumers or
      * senders use these queues
      */
-    protected List<BlockingQueue> messageQueues =  new ArrayList<BlockingQueue>();
+    protected Map<BrokerHost, BlockingQueue> consumerQueues =  new HashMap<BrokerHost, BlockingQueue>();
+
+    protected Map<BrokerHost, BlockingQueue> producerQueues =  new HashMap<BrokerHost, BlockingQueue>();
 
     protected AbstractTransport transport;
 
@@ -54,14 +61,20 @@ public class ChannelGroup {
 
     protected Map<BrokerHost, Manageable> producers = new HashMap<BrokerHost, Manageable>();
 
+    protected Map<BrokerHost, ProducingWorker> producingWorkers = new HashMap<BrokerHost, ProducingWorker>();
+
+    protected Map<BrokerHost, ConsumingWorker> consumingWorkers = new HashMap<BrokerHost, ConsumingWorker>();
+
     public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
         this.transport = transport;
 
         for (BrokerHost brokerHost : brokerHosts) {
-            brokerHostToChannelMap.put(brokerHost, new ArrayList<Channel>());
-            messageQueues.add(new ArrayBlockingQueue(1024));
+            brokerHostToConsumerChannelMap.put(brokerHost, new ArrayList<Channel>());
+            brokerHostToProducerChannelMap.put(brokerHost, new ArrayList<Channel>());
+            consumerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
+            producerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
         }
     }
 
@@ -69,47 +82,90 @@ public class ChannelGroup {
         lock.lock();
         try {
             // add the channel and return the broker host
-            BrokerHost host = brokerHosts.get(currentIndex);
-
-            Manageable manageable = null;
+            Manageable manageable;
             if (channel.getDirection() == Direction.OUT) {
-                manageable = transport.registerProducer(host, channel.getProperties(), channel.getTransportQueue());
-                producers.put(host, manageable);
+                BrokerHost host = brokerHosts.get(producerIndex);
+
+                if (!producers.containsKey(host)) {
+                    manageable = transport.registerProducer(host, channel.getProperties(), channel.getTransportQueue());
+                    producers.put(host, manageable);
+
+                    ProducingWorker worker = new ProducingWorker(host);
+                    producingWorkers.put(host, worker);
+
+                    Thread thread = new Thread(worker);
+                    thread.start();
+
+                    manageable.start();
+                }
+
+                // now register the channel with the brokers map
+                // check weather you have a sender consumer for this host
+                List<Channel> channels = brokerHostToProducerChannelMap.get(host);
+                channels.add(channel);
+
+                // set the transport queue of the channel as the group queue
+                channel.setTransportQueue(producerQueues.get(host));
+
+                LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
+                incrementProducerIndex();
+
+                return host;
+
             } else if (channel.getDirection() == Direction.IN) {
-                manageable = transport.registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
-                consumers.put(host, manageable);
+                BrokerHost host = brokerHosts.get(consumerIndex);
+
+                if (!consumers.containsKey(host)) {
+                    manageable = transport.registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
+                    consumers.put(host, manageable);
+
+                    ConsumingWorker worker = new ConsumingWorker(host);
+                    consumingWorkers.put(host, worker);
+
+                    Thread thread = new Thread(worker);
+                    thread.start();
+
+                    manageable.start();
+                }
+
+                // now register the channel with the brokers map
+                // check weather you have a sender consumer for this host
+                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
+                channels.add(channel);
+
+                // set the transport queue of the channel as the group queue
+                channel.setTransportQueue(consumerQueues.get(host));
+
+                LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
+                incrementConsumerIndex();
+
+                return host;
             }
-
-            // check weather you have a sender consumer for this host
-            List<Channel> channels = brokerHostToChannelMap.get(host);
-            channels.add(channel);
-
-            // set the transport queue of the channel as the group queue
-            channel.setTransportQueue(messageQueues.get(currentIndex));
-
-            LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
-
-            incrementIndex();
-
-            return host;
         } finally {
             lock.unlock();
         }
+        return null;
     }
 
-    private void incrementIndex() {
-        if (currentIndex == brokerHosts.size() - 1) {
-            currentIndex = 0;
+    private void incrementConsumerIndex() {
+        if (consumerIndex == brokerHosts.size() - 1) {
+            consumerIndex = 0;
         } else {
-            currentIndex++;
+            consumerIndex++;
+        }
+    }
+
+    private void incrementProducerIndex() {
+        if (producerIndex == brokerHosts.size() - 1) {
+            producerIndex = 0;
+        } else {
+            producerIndex++;
         }
     }
 
     private class ProducingWorker implements Runnable {
-        private Channel channel;
+        public ProducingWorker(BrokerHost host) {
 
-        private ProducingWorker(BlockingQueue queue) {
-            //this.queue = queue;
         }
 
         @Override
@@ -118,7 +174,9 @@ public class ChannelGroup {
     }
 
     private class ConsumingWorker implements Runnable {
-        private BlockingQueue queue;
+        private ConsumingWorker(BrokerHost host) {
+
+        }
 
         @Override
         public void run() {
