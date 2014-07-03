@@ -2,7 +2,6 @@ package cgl.iotcloud.core.transport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.org.mozilla.javascript.internal.ast.Block;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,9 +48,16 @@ public class ChannelGroup {
      */
     protected List<BlockingQueue> messageQueues =  new ArrayList<BlockingQueue>();
 
-    public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts) {
+    protected AbstractTransport transport;
+
+    protected Map<BrokerHost, Manageable> consumers = new HashMap<BrokerHost, Manageable>();
+
+    protected Map<BrokerHost, Manageable> producers = new HashMap<BrokerHost, Manageable>();
+
+    public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
+        this.transport = transport;
 
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToChannelMap.put(brokerHost, new ArrayList<Channel>());
@@ -64,12 +70,22 @@ public class ChannelGroup {
         try {
             // add the channel and return the broker host
             BrokerHost host = brokerHosts.get(currentIndex);
+
+            Manageable manageable = null;
+            if (channel.getDirection() == Direction.OUT) {
+                manageable = transport.registerProducer(host, channel.getProperties(), channel.getTransportQueue());
+                producers.put(host, manageable);
+            } else if (channel.getDirection() == Direction.IN) {
+                manageable = transport.registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
+                consumers.put(host, manageable);
+            }
+
+            // check weather you have a sender consumer for this host
             List<Channel> channels = brokerHostToChannelMap.get(host);
             channels.add(channel);
 
             // set the transport queue of the channel as the group queue
             channel.setTransportQueue(messageQueues.get(currentIndex));
-
 
             LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
 
