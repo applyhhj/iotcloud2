@@ -1,5 +1,7 @@
 package cgl.iotcloud.core.transport;
 
+import cgl.iotcloud.core.MessageReceiver;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,8 @@ public class Channel {
     private String sensorID;
 
     private MessageConverter converter;
+
+    private MessageReceiver receiver;
 
     public Channel(String name, String sensorID, Direction direction,
                    BlockingQueue userQueue, MessageConverter converter) {
@@ -61,6 +65,22 @@ public class Channel {
 
     public BlockingQueue getUserQueue() {
         return userQueue;
+    }
+
+    public void publish(byte []message, Map<String, String> properties) {
+
+    }
+
+    public void subscribe(MessageReceiver receiver) {
+        this.receiver = receiver;
+    }
+
+    public void close() {
+
+    }
+
+    public void open() {
+
     }
 
     @Override
