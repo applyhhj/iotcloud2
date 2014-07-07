@@ -72,31 +72,12 @@ public abstract class AbstractTransport implements Transport {
     public void registerChannel(ChannelName name, Channel channel) {
         // check to see if we already have a group for this channel
         ChannelGroupName groupName = getGroupName(channel, name);
-        boolean groupExists = groups.containsKey(groupName);
-
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
             group = new ChannelGroup(groupName, brokerHosts, this);
             groups.put(groupName, group);
         }
-
-        if (groupExists) {
-            group.addChannel(channel);
-        } else {
-            BrokerHost host = group.addChannel(channel);
-            Map channelConf = channel.getProperties();
-            if (channelConf == null) {
-                String msg = "Channel properties must be specified";
-                LOG.error(msg);
-                throw new IllegalArgumentException(msg);
-            }
-
-            if (channel.getDirection() == Direction.OUT) {
-                registerProducer(host, channel.getProperties(), channel.getTransportQueue());
-            } else if (channel.getDirection() == Direction.IN) {
-                registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
-            }
-        }
+        group.addChannel(channel);
     }
 
     private ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {

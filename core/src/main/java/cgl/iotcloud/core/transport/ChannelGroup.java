@@ -65,6 +65,8 @@ public class ChannelGroup {
 
     protected Map<BrokerHost, ConsumingWorker> consumingWorkers = new HashMap<BrokerHost, ConsumingWorker>();
 
+    protected boolean run;
+
     public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
@@ -76,6 +78,8 @@ public class ChannelGroup {
             consumerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
             producerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
         }
+
+        this.run = true;
     }
 
     public BrokerHost addChannel(Channel channel) {
@@ -87,10 +91,10 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(producerIndex);
 
                 if (!producers.containsKey(host)) {
-                    manageable = transport.registerProducer(host, channel.getProperties(), channel.getTransportQueue());
+                    manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
                     producers.put(host, manageable);
 
-                    ProducingWorker worker = new ProducingWorker(host);
+                    ProducingWorker worker = new ProducingWorker(host, channel);
                     producingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);
@@ -104,9 +108,6 @@ public class ChannelGroup {
                 List<Channel> channels = brokerHostToProducerChannelMap.get(host);
                 channels.add(channel);
 
-                // set the transport queue of the channel as the group queue
-                channel.setTransportQueue(producerQueues.get(host));
-
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementProducerIndex();
 
@@ -116,13 +117,10 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(consumerIndex);
 
                 if (!consumers.containsKey(host)) {
-                    // set the transport queue of the channel as the group queue
-                    channel.setTransportQueue(consumerQueues.get(host));
-
-                    manageable = transport.registerConsumer(host, channel.getProperties(), channel.getTransportQueue());
+                    manageable = transport.registerConsumer(host, channel.getProperties(), consumerQueues.get(host));
                     consumers.put(host, manageable);
 
-                    ConsumingWorker worker = new ConsumingWorker(host);
+                    ConsumingWorker worker = new ConsumingWorker(host, channel);
                     consumingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);
@@ -164,24 +162,40 @@ public class ChannelGroup {
     }
 
     private class ProducingWorker implements Runnable {
-        public ProducingWorker(BrokerHost host) {
+        private BrokerHost host;
 
+        private Channel channel;
+
+        public ProducingWorker(BrokerHost host, Channel channel) {
+            this.host = host;
+            this.channel = channel;
         }
 
         @Override
         public void run() {
+            while (run) {
+                BlockingQueue transportQueue = producerQueues.get(host);
 
+
+            }
         }
     }
 
     private class ConsumingWorker implements Runnable {
-        private ConsumingWorker(BrokerHost host) {
+        private BrokerHost host;
 
+        private Channel channel;
+
+        private ConsumingWorker(BrokerHost host, Channel channel) {
+            this.host = host;
+            this.channel = channel;
         }
 
         @Override
         public void run() {
+            while (run) {
 
+            }
         }
     }
 }
