@@ -5,6 +5,7 @@ import cgl.iotcloud.core.msg.TransportMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -20,7 +21,7 @@ public abstract class AbstractTransport implements Transport {
     /**
      * This gateway is connected to these brokers
      */
-    protected List<BrokerHost> brokerHosts;
+    protected List<BrokerHost> brokerHosts = new ArrayList<BrokerHost>();
 
     /**
      * Every transport has a list of applications. A group has specific channels registers to
