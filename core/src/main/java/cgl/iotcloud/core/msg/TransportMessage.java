@@ -16,8 +16,18 @@ public class TransportMessage {
     }
 
     public TransportMessage(String sensorId, byte[] body, Map<String, String> properties) {
+        if (sensorId == null) {
+            throw new IllegalArgumentException("SensorID should be present");
+        }
+
+        if (body == null) {
+            throw new IllegalArgumentException("The body should be present");
+        }
+
         this.sensorId = sensorId;
-        this.properties = properties;
+        if (properties != null) {
+            this.properties = properties;
+        }
         this.body = body;
     }
 

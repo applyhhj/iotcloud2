@@ -1,5 +1,6 @@
 package cgl.iotcloud.transport.kafka;
 
+import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.MessageConverter;
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
@@ -35,19 +36,16 @@ public class KafkaConsumer {
 
     private int pollingInterval = 10;
 
-    private MessageConverter converter;
-
     private BlockingQueue inQueue;
 
     private boolean run = true;
 
-    public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, String topic,
+    public KafkaConsumer(BlockingQueue inQueue, String topic,
                          int partition, Map<String, Integer> seedBrokers) {
         this.topic = topic;
         this.partition = partition;
         this.seedBrokers = seedBrokers;
 
-        this.converter = converter;
         this.inQueue = inQueue;
     }
 
@@ -139,10 +137,10 @@ public class KafkaConsumer {
                     payload.get(bytes);
                     numRead++;
 
-                    KafkaMessage message = new KafkaMessage(topic, partition, bytes);
-                    Object converted = converter.convert(message, null);
+                    // todo: we need to set the sensorID
+                    TransportMessage message = new TransportMessage(topic, bytes);
                     try {
-                        inQueue.put(converted);
+                        inQueue.put(message);
                     } catch (InterruptedException e) {
                         LOG.warn("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
                     }

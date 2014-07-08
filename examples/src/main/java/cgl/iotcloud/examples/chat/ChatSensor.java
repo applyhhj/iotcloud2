@@ -98,7 +98,7 @@ public class ChatSensor implements ISensor {
             Map properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
-            Channel receiveChannel = new Channel("receiver", Direction.IN, new JMSToTextMessageConverter());
+            Channel receiveChannel = new Channel("receiver", Direction.IN);
             receiveChannel.addProperties(properties);
             context.addChannel("jms", receiveChannel);
 
@@ -107,7 +107,7 @@ public class ChatSensor implements ISensor {
             properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
-            Channel sendChannel = new Channel("sender", Direction.OUT, new TextToJMSMessageConverter());
+            Channel sendChannel = new Channel("sender", Direction.OUT);
             sendChannel.addProperties(properties);
             context.addChannel("jms", sendChannel);
 

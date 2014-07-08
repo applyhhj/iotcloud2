@@ -6,7 +6,6 @@ import cgl.iotcloud.core.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -16,10 +15,6 @@ public class RabbitMQTransport extends AbstractTransport {
     public static final String EXCHANGE_NAME_PROPERTY = "exchange";
     public static final String ROUTING_KEY_PROPERTY = "routingKey";
     public static final String QUEUE_NAME_PROPERTY = "queueName";
-
-    private Map<ChannelName, RabbitMQReceiver> receivers = new HashMap<ChannelName, RabbitMQReceiver>();
-
-    private Map<ChannelName, RabbitMQSender> senders = new HashMap<ChannelName, RabbitMQSender>();
 
     @Override
     public void configureTransport() {

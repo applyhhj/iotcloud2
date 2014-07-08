@@ -1,6 +1,5 @@
 package cgl.iotcloud.transport.mqtt;
 
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.fusesource.mqtt.client.*;
 import org.fusesource.mqtt.codec.MQTTFrame;
 import org.slf4j.Logger;
@@ -26,20 +25,17 @@ public class MQTTProducer {
 
     private QoS qoS;
 
-    private MessageConverter converter;
-
     private boolean run = true;
 
-    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter) {
-        this(url, port, messages, queueName, converter, QoS.AT_MOST_ONCE);
+    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName) {
+        this(url, port, messages, queueName, QoS.AT_MOST_ONCE);
     }
 
-    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
+    public MQTTProducer(String url, int port, BlockingQueue messages, String queueName, QoS qoS) {
         this.url = url;
         this.messages = messages;
         this.queueName = queueName;
         this.qoS = qoS;
-        this.converter = converter;
         this.port = port;
     }
 
@@ -148,12 +144,11 @@ public class MQTTProducer {
                     if (state == State.CONNECTED) {
                         try {
                             final Object input = messages.take();
-                            final Object converted = converter.convert(input, null);
                             connection.getDispatchQueue().execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (converted instanceof byte []) {
-                                        connection.publish(queueName, (byte [])converted, qoS, false, null);
+                                    if (input instanceof byte []) {
+                                        connection.publish(queueName, (byte []) input, qoS, false, null);
                                     } else {
                                         throw new RuntimeException("Expepected byte array after conversion");
                                     }

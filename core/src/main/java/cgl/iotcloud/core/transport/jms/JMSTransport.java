@@ -68,11 +68,11 @@ public class JMSTransport implements Transport {
 
         try {
             if (channel.getDirection() == Direction.OUT) {
-                JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, channel.getOutQueue(), channel.getConverter());
+                JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, channel.getOutQueue());
                 sender.start();
                 senders.put(name, sender);
             } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, channel.getInQueue(), channel.getConverter());
+                JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, channel.getInQueue());
                 listener.start();
                 listeners.put(name, listener);
             }

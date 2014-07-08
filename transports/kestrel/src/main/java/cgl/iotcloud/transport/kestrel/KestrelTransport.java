@@ -97,7 +97,7 @@ public class KestrelTransport implements Transport {
         }
 
         if (channel.getDirection() == Direction.OUT) {
-            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), siteId + "." + queueName), channel.getOutQueue(), channel.getConverter());
+            KestrelProducer sender = new KestrelProducer(new KestrelDestination(s.getHost(), s.getPort(), siteId + "." + queueName), channel.getOutQueue());
             if (blackListProp != null) {
                 long blackListTime = Long.parseLong(blackListProp);
                 sender.setBlackListTime(blackListTime);

@@ -10,13 +10,12 @@ import java.util.concurrent.BlockingQueue;
 
 public abstract class AbstractConfigurator implements Configurator {
     protected Channel createChannel(String name, Map properties,
-                                    Direction direction, int queueSize,
-                                    MessageConverter converter) {
+                                    Direction direction, int queueSize) {
 
         BlockingQueue inMassages = new ArrayBlockingQueue(queueSize);
         BlockingQueue outMassages = new ArrayBlockingQueue(queueSize);
 
-        Channel channel = new Channel(name, direction, converter);
+        Channel channel = new Channel(name, direction);
         channel.setInQueue(inMassages);
         channel.setOutQueue(outMassages);
 

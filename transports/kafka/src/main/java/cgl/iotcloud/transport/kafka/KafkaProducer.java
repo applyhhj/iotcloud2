@@ -1,5 +1,6 @@
 package cgl.iotcloud.transport.kafka;
 
+import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.MessageConverter;
 import kafka.admin.AdminUtils;
 import kafka.javaapi.producer.Producer;
@@ -16,8 +17,6 @@ public class KafkaProducer {
 
     private Producer<byte[], byte []> producer;
 
-    private MessageConverter converter;
-
     private BlockingQueue outQueue;
 
     private String topic;
@@ -32,10 +31,9 @@ public class KafkaProducer {
 
     private boolean run = true;
 
-    public KafkaProducer(MessageConverter converter, BlockingQueue outQueue,
+    public KafkaProducer(BlockingQueue outQueue,
                          String topic, String brokerList, String serializerClass,
                          String partitionClass, String requestRequiredAcks) {
-        this.converter = converter;
         this.outQueue = outQueue;
         this.topic = topic;
         this.brokerList = brokerList;
@@ -75,10 +73,11 @@ public class KafkaProducer {
                 try {
                     try {
                         Object input = outQueue.take();
-                        Object converted = converter.convert(input, null);
-                        if (converted instanceof KafkaMessage) {
+                        if (input instanceof TransportMessage) {
+                            String key = ((TransportMessage) input).getProperties().get("key");
+
                             KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic,
-                                    ((KafkaMessage) converted).getKey().getBytes(), ((KafkaMessage) converted).getData());
+                                    key.getBytes(), ((TransportMessage) input).getBody());
                             producer.send(data);
                         } else {
                             LOG.error("Unexpected message type");

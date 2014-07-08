@@ -2,17 +2,14 @@ package cgl.iotcloud.examples.chat;
 
 import cgl.iotcloud.core.*;
 import cgl.iotcloud.core.client.SensorClient;
-import cgl.iotcloud.core.msg.SensorTextMessage;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +32,7 @@ public class RabbitMQSensor extends AbstractSensor {
             @Override
             public boolean loop(BlockingQueue queue) {
                 try {
-                    queue.put(new SensorTextMessage("Hello"));
+                    queue.put("Hello".getBytes());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -46,8 +43,8 @@ public class RabbitMQSensor extends AbstractSensor {
         startListen(receiveChannel, new MessageReceiver() {
             @Override
             public void onMessage(Object message) {
-                if (message instanceof SensorTextMessage) {
-                    System.out.println(((SensorTextMessage) message).getText());
+                if (message instanceof byte[]) {
+                    System.out.println(new String((byte[]) message));
                 } else {
                     System.out.println("Unexpected message");
                 }
@@ -64,63 +61,16 @@ public class RabbitMQSensor extends AbstractSensor {
             sendProps.put("exchange", "test");
             sendProps.put("routingKey", "test1");
             sendProps.put("queueName", "test");
-            Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024, new TextToByteConverter());
+            Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024);
 
             Map receiveProps = new HashMap();
             receiveProps.put("queueName", "test");
-            Channel receiveChannel = createChannel("receiver", receiveProps, Direction.IN, 1024, new ByteToTextConverter());
+            Channel receiveChannel = createChannel("receiver", receiveProps, Direction.IN, 1024);
 
             context.addChannel("rabbitmq", sendChannel);
             context.addChannel("rabbitmq", receiveChannel);
 
             return context;
-        }
-    }
-
-    private class ByteToTextConverter implements MessageConverter {
-        @Override
-        public Object convert(Object input, Object context) {
-            if (input instanceof byte[]) {
-                ByteArrayInputStream in = new ByteArrayInputStream((byte[]) input);
-                ObjectInputStream is = null;
-                try {
-                    is = new ObjectInputStream(in);
-                    return is.readObject();
-                } catch (Exception e) {
-                    LOG.error("E");
-                }
-            }
-            return null;
-        }
-    }
-
-    private class TextToByteConverter implements MessageConverter {
-
-        @Override
-        public Object convert(Object input, Object context) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutput out = null;
-            try {
-                out = new ObjectOutputStream(bos);
-                out.writeObject(input);
-                return bos.toByteArray();
-            } catch (IOException e) {
-                LOG.error("Error", e);
-            } finally {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException ignore) {
-                    // ignore close exception
-                }
-                try {
-                    bos.close();
-                } catch (IOException ignore) {
-                    // ignore close exception
-                }
-            }
-            return null;
         }
     }
 

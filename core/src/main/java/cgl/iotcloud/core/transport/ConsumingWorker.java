@@ -44,12 +44,6 @@ public class ConsumingWorker implements Runnable {
                 }
 
                 if (matchingChannel != null) {
-                    MessageConverter converter = matchingChannel.getConverter();
-                    Object convertedMessage = message;
-                    if (converter != null) {
-                        convertedMessage = converter.convert(transportMessages, null);
-                    }
-
                     BlockingQueue receiver = matchingChannel.getOutQueue();
                     if (receiver == null) {
                         String msg = "A receiving channel should specify a MessageReceiver";
@@ -57,7 +51,7 @@ public class ConsumingWorker implements Runnable {
                         throw new RuntimeException(msg);
                     }
 
-                    receiver.put(convertedMessage);
+                    receiver.put(message);
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException("Failed to get the message from queue");

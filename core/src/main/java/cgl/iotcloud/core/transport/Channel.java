@@ -17,22 +17,17 @@ public class Channel {
 
     private BlockingQueue<TransportMessage> outQueue;
 
-    private List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
-
     private Map properties = new HashMap();
 
     private Direction direction;
 
     private String name;
 
-    private MessageConverter converter;
-
     private String sensorID;
 
-    public Channel(String name, Direction direction, MessageConverter converter) {
+    public Channel(String name, Direction direction) {
         this.name = name;
         this.direction = direction;
-        this.converter = converter;
     }
 
     public void setInQueue(BlockingQueue inQueue) {
@@ -55,10 +50,6 @@ public class Channel {
         return name;
     }
 
-    public void addMessageProcessor(MessageProcessor messageProcessor) {
-        this.messageProcessors.add(messageProcessor);
-    }
-
     public BlockingQueue getInQueue() {
         return inQueue;
     }
@@ -79,13 +70,22 @@ public class Channel {
 
     }
 
-    public MessageConverter getConverter() {
-        return converter;
-    }
-
     @SuppressWarnings("unchecked")
     public void addProperties(Map properties) {
         this.properties.putAll(properties);
+    }
+
+    public void publish(byte []message) {
+        TransportMessage transportMessage = new TransportMessage(sensorID, message);
+        if (outQueue == null) {
+            throw new RuntimeException("The channel must be bound to a transport");
+        }
+
+        try {
+            outQueue.put(transportMessage);
+        } catch (InterruptedException e) {
+            LOG.error("Failed to put the message to queue", e);
+        }
     }
 
     public void publish(byte []message, Map<String, String> properties) {

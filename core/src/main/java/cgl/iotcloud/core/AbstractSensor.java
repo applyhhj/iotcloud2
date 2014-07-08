@@ -95,10 +95,10 @@ public abstract class AbstractSensor implements ISensor {
                 }
                 messageSender.loop(queue);
 
-                while (queue.isEmpty()) {
+                while (!queue.isEmpty()) {
                     try {
                         Object data = queue.take();
-                        channel.publish((byte [])data, null);
+                        channel.publish((byte [])data);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -125,7 +125,7 @@ public abstract class AbstractSensor implements ISensor {
                 }
                 try {
                     Object message = messages.take();
-                    channel.publish((byte [])message, null);
+                    channel.publish((byte [])message);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

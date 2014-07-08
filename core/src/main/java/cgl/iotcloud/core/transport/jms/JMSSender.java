@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.transport.jms;
 
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +19,6 @@ public class JMSSender {
 
     private MessageProducer producer;
 
-    private MessageConverter converter;
-
     private ConnectionFactory conFactory;
 
     boolean topic;
@@ -29,14 +26,13 @@ public class JMSSender {
     String destination;
 
     public JMSSender(ConnectionFactory conFactory, String destination, boolean topic,
-                     BlockingQueue outQueue, MessageConverter converter) {
-        if (conFactory == null || destination == null || outQueue == null || converter == null) {
+                     BlockingQueue outQueue) {
+        if (conFactory == null || destination == null || outQueue == null) {
             throw new IllegalArgumentException("All the parameters are mandatory");
         }
         this.conFactory = conFactory;
         this.topic = topic;
         this.outQueue  = outQueue;
-        this.converter = converter;
         this.destination = destination;
     }
 
@@ -82,9 +78,8 @@ public class JMSSender {
                 try {
                     try {
                         Object input = outQueue.take();
-                        Object converted = converter.convert(input, session);
-                        if (converted instanceof Message) {
-                            producer.send(dest, (Message) converted);
+                        if (input instanceof Message) {
+                            producer.send(dest, (Message) input);
                         }
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
