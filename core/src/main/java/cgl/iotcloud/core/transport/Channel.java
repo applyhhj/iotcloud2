@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class Channel {
-    private Logger LOG = LoggerFactory.getLogger(Channel.class);
+    private static Logger LOG = LoggerFactory.getLogger(Channel.class);
 
-    private BlockingQueue userQueue;
+    private BlockingQueue inQueue;
+
+    private BlockingQueue outQueue;
 
     private List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
 
@@ -24,22 +26,42 @@ public class Channel {
 
     private String name;
 
-    private String sensorID;
-
     private MessageConverter converter;
 
-    private MessageReceiver receiver;
+    private boolean run = true;
 
-    private BlockingQueue transportQueue;
+    private String sensorID;
 
-    public Channel(String name, String sensorID, Direction direction) {
+    public Channel(String name, Direction direction,
+                   BlockingQueue inQueue, BlockingQueue outQueue, MessageConverter converter) {
         this.name = name;
+        this.inQueue = inQueue;
+        this.outQueue = outQueue;
         this.direction = direction;
-        this.sensorID = sensorID;
+        this.converter = converter;
     }
 
-    public void setTransportQueue(BlockingQueue transportQueue) {
-        this.transportQueue = transportQueue;
+    public Channel(String name, String sensorID, Direction direction, MessageConverter converter) {
+        this.name = name;
+        this.sensorID = sensorID;
+        this.direction = direction;
+        this.converter = converter;
+    }
+
+    public void setInQueue(BlockingQueue inQueue) {
+        this.inQueue = inQueue;
+    }
+
+    public void setOutQueue(BlockingQueue outQueue) {
+        this.outQueue = outQueue;
+    }
+
+    public String getSensorID() {
+        return sensorID;
+    }
+
+    public void setSensorID(String sensorID) {
+        this.sensorID = sensorID;
     }
 
     public String getName() {
@@ -50,6 +72,14 @@ public class Channel {
         this.messageProcessors.add(messageProcessor);
     }
 
+    public BlockingQueue getInQueue() {
+        return inQueue;
+    }
+
+    public BlockingQueue getOutQueue() {
+        return outQueue;
+    }
+
     public Direction getDirection() {
         return direction;
     }
@@ -58,8 +88,10 @@ public class Channel {
         return properties;
     }
 
-    public String getSensorID() {
-        return sensorID;
+    public void open() {
+        run = true;
+        Thread t = new Thread(new Worker());
+        t.start();
     }
 
     public MessageConverter getConverter() {
@@ -71,29 +103,42 @@ public class Channel {
         this.properties.putAll(properties);
     }
 
-    public BlockingQueue getUserQueue() {
-        return userQueue;
-    }
-
-    public void publish(byte []message, Map<String, String> properties) {
-        if (transportQueue != null) {
-            TransportMessage transportMessage = new TransportMessage(sensorID, message, properties);
-            try {
-                transportQueue.put(transportMessage);
-            } catch (InterruptedException e) {
-                LOG.error("Error putting message to transport queue", e);
+    private class Worker implements Runnable {
+        @Override
+        public void run() {
+            int errorCount = 0;
+            while (run) {
+                try {
+                    try {
+                        Object input = inQueue.take();
+                        Object out = null;
+                        if (!messageProcessors.isEmpty()) {
+                            for (MessageProcessor mp : messageProcessors) {
+                                out = mp.process(input);
+                                input = out;
+                            }
+                        } else {
+                            out = input;
+                        }
+                        outQueue.put(out);
+                    } catch (InterruptedException e) {
+                        LOG.error("Exception occurred in the worker listening for consumer changes", e);
+                    }
+                } catch (Throwable t) {
+                    errorCount++;
+                    if (errorCount <= 3) {
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
+                    } else {
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
+                        run = false;
+                    }
+                }
             }
-        } else {
-            throw new RuntimeException("The channel must be bound to a transport");
         }
     }
 
     public void close() {
-
-    }
-
-    public void open() {
-
+        run = false;
     }
 
     @Override

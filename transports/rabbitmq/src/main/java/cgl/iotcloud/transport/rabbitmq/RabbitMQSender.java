@@ -1,6 +1,9 @@
 package cgl.iotcloud.transport.rabbitmq;
 
+import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.Manageable;
+import cgl.iotcloud.core.transport.TransportConstants;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -8,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
@@ -18,7 +23,7 @@ public class RabbitMQSender implements Manageable {
 
     private Connection conn;
 
-    private BlockingQueue outQueue;
+    private BlockingQueue<TransportMessage> outQueue;
 
     private String exchangeName;
 
@@ -30,7 +35,7 @@ public class RabbitMQSender implements Manageable {
 
     private ExecutorService executorService;
 
-    public RabbitMQSender(BlockingQueue outQueue,
+    public RabbitMQSender(BlockingQueue<TransportMessage> outQueue,
                           String exchangeName,
                           String routingKey,
                           String queueName,
@@ -91,15 +96,16 @@ public class RabbitMQSender implements Manageable {
             while (run) {
                 try {
                     try {
-                        Object input = outQueue.take();
-                        if (input instanceof byte []) {
-                            channel.basicPublish(exchangeName, routingKey, null, (byte[]) input);
-                        } else if (input instanceof RabbitMQMessage) {
-                            channel.basicPublish(exchangeName, routingKey,
-                                    ((RabbitMQMessage) input).getBasicProperties(), ((RabbitMQMessage) input).getBody());
-                        } else {
-                            throw new RuntimeException("Expepected byte array after conversion");
+                        TransportMessage input = outQueue.take();
+
+                        Map<String, Object> props = new HashMap<String, Object>();
+                        props.put(TransportConstants.SENSOR_ID, input.getSensorId());
+
+                        for (Map.Entry<String, String> e : input.getProperties().entrySet()) {
+                            props.put(e.getKey(), e.getValue());
                         }
+                        channel.basicPublish(exchangeName, routingKey,
+                                new AMQP.BasicProperties.Builder().headers(props).build(), input.getBody());
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }

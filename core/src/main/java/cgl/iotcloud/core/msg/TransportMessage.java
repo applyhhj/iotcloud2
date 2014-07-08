@@ -12,11 +12,13 @@ public class TransportMessage {
 
     public TransportMessage(String sensorId, byte []body) {
         this.sensorId = sensorId;
+        this.body = body;
     }
 
     public TransportMessage(String sensorId, byte[] body, Map<String, String> properties) {
         this.sensorId = sensorId;
         this.properties = properties;
+        this.body = body;
     }
 
     public String getSensorId() {
@@ -25,5 +27,9 @@ public class TransportMessage {
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    public byte[] getBody() {
+        return body;
     }
 }

@@ -24,6 +24,8 @@ public class RabbitMQTransport extends AbstractTransport {
 
 
 
+
+
     private Map<ChannelName, RabbitMQReceiver> receivers = new HashMap<ChannelName, RabbitMQReceiver>();
 
     private Map<ChannelName, RabbitMQSender> senders = new HashMap<ChannelName, RabbitMQSender>();

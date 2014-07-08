@@ -1,12 +1,14 @@
 package cgl.iotcloud.transport.rabbitmq;
 
+import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.Manageable;
-import cgl.iotcloud.core.transport.MessageConverter;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
@@ -17,11 +19,9 @@ public class RabbitMQReceiver implements Manageable {
 
     private Connection conn;
 
-    private BlockingQueue inQueue;
+    private BlockingQueue<TransportMessage> inQueue;
 
     private String queueName;
-
-    private boolean autoAck = false;
 
     private String url;
 
@@ -31,7 +31,7 @@ public class RabbitMQReceiver implements Manageable {
 
     private String routingKey;
 
-    public RabbitMQReceiver(BlockingQueue inQueue,
+    public RabbitMQReceiver(BlockingQueue<TransportMessage> inQueue,
                             String queueName,
                             String url) {
         this.inQueue = inQueue;
@@ -61,7 +61,8 @@ public class RabbitMQReceiver implements Manageable {
                 channel.queueBind(queueName, exchangeName, routingKey);
             }
 
-            channel.basicConsume(queueName, autoAck, "myConsumerTag",
+            boolean autoAck = false;
+            channel.basicConsume(queueName, false, "myConsumerTag",
                     new DefaultConsumer(channel) {
                         @Override
                         public void handleDelivery(String consumerTag,
@@ -70,7 +71,17 @@ public class RabbitMQReceiver implements Manageable {
                                                    byte[] body)
                                 throws IOException {
                             long deliveryTag = envelope.getDeliveryTag();
-                            RabbitMQMessage message = new RabbitMQMessage(properties, body);
+                            // RabbitMQMessage message = new RabbitMQMessage(properties, body);
+                            // get the sensor id from the properties
+                            String sensorId = null;
+                            Map<String, String> props = new HashMap<String, String>();
+                            if (properties != null && properties.getHeaders() != null) {
+                                sensorId = (String) properties.getHeaders().get("sensorID");
+                                for (Map.Entry<String, Object> e : properties.getHeaders().entrySet()) {
+                                    props.put(e.getKey(), e.getValue().toString());
+                                }
+                            }
+                            TransportMessage message = new TransportMessage(sensorId, body, props);
                             try {
                                 inQueue.put(message);
                             } catch (InterruptedException e) {

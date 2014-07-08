@@ -49,9 +49,9 @@ public class ChannelGroup {
      * These are the queues we put the messages coming from the channels. The actual message consumers or
      * senders use these queues
      */
-    protected Map<BrokerHost, BlockingQueue> consumerQueues =  new HashMap<BrokerHost, BlockingQueue>();
+    protected Map<BrokerHost, BlockingQueue<TransportMessage>> consumerQueues =  new HashMap<BrokerHost, BlockingQueue<TransportMessage>>();
 
-    protected Map<BrokerHost, BlockingQueue> producerQueues =  new HashMap<BrokerHost, BlockingQueue>();
+    protected Map<BrokerHost, BlockingQueue<TransportMessage>> producerQueues =  new HashMap<BrokerHost, BlockingQueue<TransportMessage>>();
 
     protected AbstractTransport transport;
 
@@ -73,8 +73,8 @@ public class ChannelGroup {
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToConsumerChannelMap.put(brokerHost, new ArrayList<Channel>());
             brokerHostToProducerChannelMap.put(brokerHost, new ArrayList<Channel>());
-            consumerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
-            producerQueues.put(brokerHost, new ArrayBlockingQueue(1024));
+            consumerQueues.put(brokerHost, new ArrayBlockingQueue<TransportMessage>(1024));
+            producerQueues.put(brokerHost, new ArrayBlockingQueue<TransportMessage>(1024));
         }
 
         this.run = true;
@@ -87,6 +87,8 @@ public class ChannelGroup {
             Manageable manageable;
             if (channel.getDirection() == Direction.OUT) {
                 BrokerHost host = brokerHosts.get(producerIndex);
+                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
+                BlockingQueue<TransportMessage> transportMessages = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {
                     manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
@@ -103,7 +105,7 @@ public class ChannelGroup {
 
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
-                List<Channel> channels = brokerHostToProducerChannelMap.get(host);
+                channel.setOutQueue(transportMessages);
                 channels.add(channel);
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
@@ -113,13 +115,11 @@ public class ChannelGroup {
 
             } else if (channel.getDirection() == Direction.IN) {
                 BrokerHost host = brokerHosts.get(consumerIndex);
-
+                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
                     BlockingQueue<TransportMessage> transportMessages = consumerQueues.get(host);
                     manageable = transport.registerConsumer(host, channel.getProperties(), transportMessages);
                     consumers.put(host, manageable);
-
-                    List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
 
                     ConsumingWorker worker = new ConsumingWorker(channels, transportMessages);
                     consumingWorkers.put(host, worker);
@@ -132,8 +132,8 @@ public class ChannelGroup {
 
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
-                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 channels.add(channel);
+
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementConsumerIndex();
