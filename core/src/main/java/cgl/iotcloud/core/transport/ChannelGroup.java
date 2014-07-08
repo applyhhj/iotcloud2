@@ -94,11 +94,11 @@ public class ChannelGroup {
                     manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
                     producers.put(host, manageable);
 
-                    ProducingWorker worker = new ProducingWorker(host, channel);
-                    producingWorkers.put(host, worker);
-
-                    Thread thread = new Thread(worker);
-                    thread.start();
+//                    ProducingWorker worker = new ProducingWorker(host, channel);
+//                    producingWorkers.put(host, worker);
+//
+//                    Thread thread = new Thread(worker);
+//                    thread.start();
 
                     manageable.start();
                 }

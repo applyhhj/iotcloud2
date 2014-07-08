@@ -50,7 +50,7 @@ public class ConsumingWorker implements Runnable {
                         convertedMessage = converter.convert(transportMessages, null);
                     }
 
-                    BlockingQueue receiver = matchingChannel.getInQueue();
+                    BlockingQueue receiver = matchingChannel.getOutQueue();
                     if (receiver == null) {
                         String msg = "A receiving channel should specify a MessageReceiver";
                         LOG.error(msg);

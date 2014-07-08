@@ -21,13 +21,26 @@ public class ProducingWorker implements Runnable {
 
     @Override
     public void run() {
+        int errorCount = 0;
         while (run) {
             try {
-                TransportMessage transportMessage = transportMessages.take();
+                try {
+                    Object input = channel.getInQueue().take();
 
 
-            } catch (InterruptedException e) {
-                LOG.error("Failed to get the message from the queue");
+
+                    channel.getOutQueue().put(input);
+                } catch (InterruptedException e) {
+                    LOG.error("Exception occurred in the worker listening for consumer changes", e);
+                }
+            } catch (Throwable t) {
+                errorCount++;
+                if (errorCount <= 3) {
+                    LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
+                } else {
+                    LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
+                    run = false;
+                }
             }
         }
     }
