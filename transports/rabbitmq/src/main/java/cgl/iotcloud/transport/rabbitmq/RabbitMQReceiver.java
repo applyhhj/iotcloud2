@@ -76,7 +76,7 @@ public class RabbitMQReceiver implements Manageable {
                             String sensorId = null;
                             Map<String, String> props = new HashMap<String, String>();
                             if (properties != null && properties.getHeaders() != null) {
-                                sensorId = (String) properties.getHeaders().get("sensorID");
+                                sensorId = new String((ByteArrayLongString)properties.getHeaders().get("sensorID"));
                                 for (Map.Entry<String, Object> e : properties.getHeaders().entrySet()) {
                                     props.put(e.getKey(), e.getValue().toString());
                                 }
