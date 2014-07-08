@@ -65,8 +65,6 @@ public class ChannelGroup {
 
     protected boolean run;
 
-    private ExecutorService executorService;
-
     public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
@@ -123,7 +121,7 @@ public class ChannelGroup {
 
                     List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
 
-                    ConsumingWorker worker = new ConsumingWorker(executorService, channels, transportMessages);
+                    ConsumingWorker worker = new ConsumingWorker(channels, transportMessages);
                     consumingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);
@@ -161,6 +159,26 @@ public class ChannelGroup {
             producerIndex = 0;
         } else {
             producerIndex++;
+        }
+    }
+
+    public void start() {
+        for (Manageable manageable : consumers.values()) {
+            manageable.start();
+        }
+
+        for (Manageable manageable : producers.values()) {
+            manageable.start();
+        }
+    }
+
+    public void stop() {
+        for (Manageable manageable : consumers.values()) {
+            manageable.stop();
+        }
+
+        for (Manageable manageable : producers.values()) {
+            manageable.stop();
         }
     }
 }

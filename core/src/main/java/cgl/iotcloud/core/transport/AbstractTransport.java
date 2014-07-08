@@ -87,4 +87,18 @@ public abstract class AbstractTransport implements Transport {
     public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue queue);
 
     public abstract Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue queue);
+
+    @Override
+    public void start() {
+        for (ChannelGroup group : groups.values()) {
+            group.start();
+        }
+    }
+
+    @Override
+    public void stop() {
+        for (ChannelGroup group : groups.values()) {
+            group.stop();
+        }
+    }
 }

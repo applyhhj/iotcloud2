@@ -88,14 +88,6 @@ public class Channel {
         }
     }
 
-    public void subscribe(MessageReceiver receiver) {
-        this.receiver = receiver;
-    }
-
-    public MessageReceiver getReceiver() {
-        return receiver;
-    }
-
     public void close() {
 
     }

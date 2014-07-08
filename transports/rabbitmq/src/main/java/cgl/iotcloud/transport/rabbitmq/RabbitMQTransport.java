@@ -62,27 +62,4 @@ public class RabbitMQTransport extends AbstractTransport {
 
         return listener;
     }
-
-    @Override
-    public void start() {
-        for (RabbitMQReceiver receiver : receivers.values()) {
-            receiver.start();
-        }
-
-        for (RabbitMQSender sender : senders.values()) {
-            sender.start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (RabbitMQReceiver receiver : receivers.values()) {
-            receiver.stop();
-        }
-
-        for (RabbitMQSender sender : senders.values()) {
-            sender.stop();
-        }
-        executorService.shutdown();
-    }
 }
