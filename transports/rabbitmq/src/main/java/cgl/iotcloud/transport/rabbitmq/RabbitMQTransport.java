@@ -1,6 +1,6 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.Configuration;
+import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.*;
 
 import org.slf4j.Logger;
@@ -9,22 +9,13 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class RabbitMQTransport extends AbstractTransport {
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQTransport.class);
 
-    public static final String URL_PROPERTY = "url";
-
-
     public static final String EXCHANGE_NAME_PROPERTY = "exchange";
     public static final String ROUTING_KEY_PROPERTY = "routingKey";
     public static final String QUEUE_NAME_PROPERTY = "queueName";
-
-
-
-
 
     private Map<ChannelName, RabbitMQReceiver> receivers = new HashMap<ChannelName, RabbitMQReceiver>();
 
@@ -36,7 +27,8 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue queue) {
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue) {
+        LOG.info("Registering producer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
@@ -49,7 +41,8 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue queue) {
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue) {
+        LOG.info("Registering consumer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);

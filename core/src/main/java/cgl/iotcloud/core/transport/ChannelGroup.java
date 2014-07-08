@@ -134,7 +134,6 @@ public class ChannelGroup {
                 // check weather you have a sender consumer for this host
                 channels.add(channel);
 
-
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementConsumerIndex();
 

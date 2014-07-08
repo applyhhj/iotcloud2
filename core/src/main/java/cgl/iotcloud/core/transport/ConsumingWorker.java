@@ -30,7 +30,9 @@ public class ConsumingWorker implements Runnable {
                 // find the channel responsible for this message
                 String sensorId = message.getSensorId();
                 if (sensorId == null) {
-                    throw new IllegalStateException("The message id of a transport message should be present");
+                    String s = "The sensor id of a transport message should be present, discarding the message";
+                    LOG.warn(s);
+                    continue;
                 }
 
                 Channel matchingChannel = null;
