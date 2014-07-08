@@ -3,6 +3,7 @@ package cgl.iotcloud.transport.rabbitmq;
 import cgl.iotcloud.core.msg.TransportMessage;
 import cgl.iotcloud.core.transport.Manageable;
 import com.rabbitmq.client.*;
+import com.rabbitmq.client.impl.LongStringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,15 +74,15 @@ public class RabbitMQReceiver implements Manageable {
                             long deliveryTag = envelope.getDeliveryTag();
                             // RabbitMQMessage message = new RabbitMQMessage(properties, body);
                             // get the sensor id from the properties
-                            String sensorId = null;
+                            Object sensorId = null;
                             Map<String, String> props = new HashMap<String, String>();
                             if (properties != null && properties.getHeaders() != null) {
-                                sensorId = new String((ByteArrayLongString)properties.getHeaders().get("sensorID"));
+                                sensorId = properties.getHeaders().get("sensorID");
                                 for (Map.Entry<String, Object> e : properties.getHeaders().entrySet()) {
                                     props.put(e.getKey(), e.getValue().toString());
                                 }
                             }
-                            TransportMessage message = new TransportMessage(sensorId, body, props);
+                            TransportMessage message = new TransportMessage(sensorId.toString(), body, props);
                             try {
                                 inQueue.put(message);
                             } catch (InterruptedException e) {
