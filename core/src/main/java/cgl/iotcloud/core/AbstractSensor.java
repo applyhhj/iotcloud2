@@ -4,6 +4,7 @@ import cgl.iotcloud.core.transport.Channel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public abstract class AbstractSensor implements ISensor {
@@ -12,7 +13,7 @@ public abstract class AbstractSensor implements ISensor {
     private Map<String, QueueListener> listeners = new HashMap<String, QueueListener>();
 
     public void startSend(Channel channel, MessageSender sender, int interval) {
-        QueueProducer producer = new QueueProducer(channel.getInQueue(), sender, interval);
+        QueueProducer producer = new QueueProducer(sender, interval, channel);
         producers.put(channel.getName(), producer);
 
         Thread t = new Thread(producer);
@@ -20,7 +21,7 @@ public abstract class AbstractSensor implements ISensor {
     }
 
     public void startSend(Channel channel, BlockingQueue messages) {
-        QueueProducer producer = new QueueProducer(channel.getInQueue(), messages);
+        QueueProducer producer = new QueueProducer(messages, channel);
         producers.put(channel.getName(), producer);
 
         Thread t = new Thread(producer);
@@ -47,7 +48,7 @@ public abstract class AbstractSensor implements ISensor {
     }
 
     protected class QueueProducer implements Runnable {
-        private BlockingQueue queue;
+        private BlockingQueue queue = new ArrayBlockingQueue(1024);
 
         private MessageSender messageSender;
 
@@ -59,15 +60,17 @@ public abstract class AbstractSensor implements ISensor {
 
         private BlockingQueue messages;
 
-        private QueueProducer(BlockingQueue queue, MessageSender handler, int interval) {
-            this.queue = queue;
+        private Channel channel;
+
+        private QueueProducer(MessageSender handler, int interval, Channel channel) {
             this.messageSender = handler;
             this.interval = interval;
+            this.channel = channel;
         }
 
-        public QueueProducer(BlockingQueue queue, BlockingQueue messages) {
-            this.queue = queue;
+        public QueueProducer(BlockingQueue messages, Channel channel) {
             this.messages = messages;
+            this.channel = channel;
         }
 
         @Override
@@ -92,6 +95,15 @@ public abstract class AbstractSensor implements ISensor {
                 }
                 messageSender.loop(queue);
 
+                while (queue.isEmpty()) {
+                    try {
+                        Object data = queue.take();
+                        channel.publish((byte [])data, null);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 try {
                     Thread.sleep(interval);
                 } catch (InterruptedException e) {
@@ -113,7 +125,7 @@ public abstract class AbstractSensor implements ISensor {
                 }
                 try {
                     Object message = messages.take();
-                    queue.put(message);
+                    channel.publish((byte [])message, null);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

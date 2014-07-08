@@ -15,7 +15,7 @@ public class SensorContext {
     // the list of channels registered in this sensor
     private Map<String, List<Channel>> channels = new HashMap<String, List<Channel>>();
 
-    // the sensor id
+    // the sensor name, this is used to identify sensor logically
     private final SensorId id;
 
     // the metadata about the sensor
@@ -24,6 +24,9 @@ public class SensorContext {
     // a generic property holder to pass information from the
     // configuration to sensor
     private Map properties = new HashMap();
+
+    // a unique id to the sensor, this is used to identify the sensor uniquely
+    private String sensorID;
 
     public SensorContext(SensorId id) {
         if (id == null) {
@@ -53,6 +56,14 @@ public class SensorContext {
             }
         }
         return null;
+    }
+
+    public String getSensorID() {
+        return sensorID;
+    }
+
+    public void setSensorID(String sensorID) {
+        this.sensorID = sensorID;
     }
 
     public void setMetadata(Object metadata) {

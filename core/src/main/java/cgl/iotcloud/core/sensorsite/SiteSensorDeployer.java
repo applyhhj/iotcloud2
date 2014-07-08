@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class SiteSensorDeployer {
@@ -144,10 +145,16 @@ public class SiteSensorDeployer {
             ISensor sensor = Utils.loadSensor(new URL(url),
                     deployDescriptor.getClassName(), this.getClass().getClassLoader());
 
+            // generate a unique id for the sensor
+            final String sensorID = UUID.randomUUID().toString().replaceAll("-", "");
+
             // get the sensor specific configurations
             Configurator configurator = sensor.getConfigurator(conf);
             Map<String, String> config = new HashMap<String, String>(deployDescriptor.getProperties());
             SensorContext sensorContext = configurator.configure(siteContext, config);
+
+            // set the sensor id
+            sensorContext.setSensorID(sensorID);
 
             // add the sensor to the site
             siteContext.addSensor(sensorContext, sensor);
@@ -159,6 +166,9 @@ public class SiteSensorDeployer {
                 Transport t = siteContext.getTransport(entry.getKey());
                 if (t != null) {
                     for (Channel c : entry.getValue()) {
+                        // set the sensor id to channels
+                        c.setSensorID(sensorID);
+                        // register with the transport
                         t.registerChannel(new ChannelName(sensorContext.getId(), c.getName()), c);
                         c.open();
                     }

@@ -17,6 +17,9 @@ public abstract class AbstractConfigurator implements Configurator {
         BlockingQueue outMassages = new ArrayBlockingQueue(queueSize);
 
         Channel channel = new Channel(name, direction, converter);
+        channel.setInQueue(inMassages);
+        channel.setOutQueue(outMassages);
+
         channel.addProperties(properties);
 
         return channel;
