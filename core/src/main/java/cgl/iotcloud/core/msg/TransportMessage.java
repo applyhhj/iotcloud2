@@ -8,11 +8,13 @@ public class TransportMessage {
 
     private Map<String, String> properties = new HashMap<String, String>();
 
-    public TransportMessage(String sensorId) {
+    private byte[] body;
+
+    public TransportMessage(String sensorId, byte []body) {
         this.sensorId = sensorId;
     }
 
-    public TransportMessage(String sensorId, Map<String, String> properties) {
+    public TransportMessage(String sensorId, byte[] body, Map<String, String> properties) {
         this.sensorId = sensorId;
         this.properties = properties;
     }

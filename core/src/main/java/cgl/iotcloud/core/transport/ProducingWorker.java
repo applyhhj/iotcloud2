@@ -17,7 +17,6 @@ public class ProducingWorker implements Runnable {
     @Override
     public void run() {
         while (run) {
-            BlockingQueue transportQueue = producerQueues.get(host);
         }
     }
 }

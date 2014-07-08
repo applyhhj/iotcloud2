@@ -1,6 +1,9 @@
 package cgl.iotcloud.core.transport;
 
 import cgl.iotcloud.core.MessageReceiver;
+import cgl.iotcloud.core.msg.TransportMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +12,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class Channel {
+    private Logger LOG = LoggerFactory.getLogger(Channel.class);
+
     private BlockingQueue userQueue;
 
     private List<MessageProcessor> messageProcessors = new ArrayList<MessageProcessor>();
@@ -25,13 +30,16 @@ public class Channel {
 
     private MessageReceiver receiver;
 
-    public Channel(String name, String sensorID, Direction direction,
-                   BlockingQueue userQueue, MessageConverter converter) {
+    private BlockingQueue transportQueue;
+
+    public Channel(String name, String sensorID, Direction direction) {
         this.name = name;
-        this.userQueue = userQueue;
         this.direction = direction;
-        this.converter = converter;
         this.sensorID = sensorID;
+    }
+
+    public void setTransportQueue(BlockingQueue transportQueue) {
+        this.transportQueue = transportQueue;
     }
 
     public String getName() {
@@ -68,11 +76,24 @@ public class Channel {
     }
 
     public void publish(byte []message, Map<String, String> properties) {
-
+        if (transportQueue != null) {
+            TransportMessage transportMessage = new TransportMessage(sensorID, message, properties);
+            try {
+                transportQueue.put(transportMessage);
+            } catch (InterruptedException e) {
+                LOG.error("Error putting message to transport queue", e);
+            }
+        } else {
+            throw new RuntimeException("The channel must be bound to a transport");
+        }
     }
 
     public void subscribe(MessageReceiver receiver) {
         this.receiver = receiver;
+    }
+
+    public MessageReceiver getReceiver() {
+        return receiver;
     }
 
     public void close() {

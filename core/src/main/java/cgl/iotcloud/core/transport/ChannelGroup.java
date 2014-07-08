@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.transport;
 
-import org.apache.activemq.broker.Broker;
+import cgl.iotcloud.core.msg.TransportMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -67,6 +65,8 @@ public class ChannelGroup {
 
     protected boolean run;
 
+    private ExecutorService executorService;
+
     public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
@@ -117,10 +117,13 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(consumerIndex);
 
                 if (!consumers.containsKey(host)) {
-                    manageable = transport.registerConsumer(host, channel.getProperties(), consumerQueues.get(host));
+                    BlockingQueue<TransportMessage> transportMessages = consumerQueues.get(host);
+                    manageable = transport.registerConsumer(host, channel.getProperties(), transportMessages);
                     consumers.put(host, manageable);
 
-                    ConsumingWorker worker = new ConsumingWorker(host, channel);
+                    List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
+
+                    ConsumingWorker worker = new ConsumingWorker(executorService, channels, transportMessages);
                     consumingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);
@@ -158,44 +161,6 @@ public class ChannelGroup {
             producerIndex = 0;
         } else {
             producerIndex++;
-        }
-    }
-
-    private class ProducingWorker implements Runnable {
-        private BrokerHost host;
-
-        private Channel channel;
-
-        public ProducingWorker(BrokerHost host, Channel channel) {
-            this.host = host;
-            this.channel = channel;
-        }
-
-        @Override
-        public void run() {
-            while (run) {
-                BlockingQueue transportQueue = producerQueues.get(host);
-
-
-            }
-        }
-    }
-
-    private class ConsumingWorker implements Runnable {
-        private BrokerHost host;
-
-        private Channel channel;
-
-        private ConsumingWorker(BrokerHost host, Channel channel) {
-            this.host = host;
-            this.channel = channel;
-        }
-
-        @Override
-        public void run() {
-            while (run) {
-
-            }
         }
     }
 }
