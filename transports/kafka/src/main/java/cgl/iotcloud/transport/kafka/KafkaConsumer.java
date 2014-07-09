@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
 import kafka.api.PartitionOffsetRequestInfo;
@@ -16,7 +17,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
-public class KafkaConsumer {
+public class KafkaConsumer implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
 
     private String topic;

@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
-public class KafkaProducer {
+public class KafkaProducer implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(KafkaProducer.class);
 
     private Producer<byte[], byte []> producer;

@@ -1,18 +1,17 @@
 package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.ChannelName;
-import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.Transport;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
-public class KafkaTransport implements Transport {
+public class KafkaTransport extends AbstractTransport {
     private static Logger LOG = LoggerFactory.getLogger(KafkaTransport.class);
 
     public static final int KAFKA_DEFAULT_PORT = 2012;
@@ -63,20 +62,12 @@ public class KafkaTransport implements Transport {
     }
 
     @Override
-    public void registerChannel(ChannelName name, Channel channel) {
-        Map channelConf = channel.getProperties();
-        if (channelConf == null) {
-            throw new IllegalArgumentException("Channel properties must be specified");
-        }
+    public void configureTransport() {
 
-        if (channel.getDirection() == Direction.OUT) {
-            createSender(name, channelConf, channel);
-        } else if (channel.getDirection() == Direction.IN) {
-            createReceiver(name, channelConf, channel);
-        }
     }
 
-    private void createSender(ChannelName name, Map channelConf, Channel channel) {
+    @Override
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         String serializerClass = (String) channelConf.get(PROP_SERIALIZER_CLASS);
         String partitionClass = (String) channelConf.get(PROP_PARTITION_CLASS);
@@ -92,40 +83,17 @@ public class KafkaTransport implements Transport {
             }
         }
 
-        KafkaProducer sender = new KafkaProducer(channel.getOutQueue(), siteId + "." +  topic, brokerList.toString(),
+        KafkaProducer sender = new KafkaProducer(queue, siteId + "." +  topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks);
-        producers.put(name, sender);
-        sender.start();
+        return sender;
     }
 
-    private void createReceiver(ChannelName name, Map channelConf, Channel channel) {
+    @Override
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 
-        KafkaConsumer listener = new KafkaConsumer(channel.getInQueue(), siteId + "." + topic, partition, urls);
-        consumers.put(name, listener);
-        listener.start();
-    }
-
-    @Override
-    public void start() {
-        for (KafkaConsumer receiver : consumers.values()) {
-            receiver.start();
-        }
-
-        for (KafkaProducer sender : producers.values()) {
-            sender.start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (KafkaConsumer receiver : consumers.values()) {
-            receiver.stop();
-        }
-
-        for (KafkaProducer sender : producers.values()) {
-            sender.stop();
-        }
+        KafkaConsumer listener = new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
+        return listener;
     }
 }

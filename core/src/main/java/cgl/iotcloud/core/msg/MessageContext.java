@@ -1,9 +1,10 @@
 package cgl.iotcloud.core.msg;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageContext {
+public class MessageContext implements Serializable {
     private String sensorId;
 
     private Map<String, Object> properties = new HashMap<String, Object>();
