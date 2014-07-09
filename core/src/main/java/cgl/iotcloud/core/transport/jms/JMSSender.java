@@ -87,6 +87,8 @@ public class JMSSender implements Manageable {
                         bytesMessage.setStringProperty(TransportConstants.SENSOR_ID, input.getSensorId());
                         setMessageProperties(bytesMessage, input.getProperties());
 
+                        bytesMessage.writeBytes(input.getBody());
+
                         producer.send(dest, bytesMessage);
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
