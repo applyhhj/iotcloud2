@@ -2,7 +2,6 @@ package cgl.iotcloud.core;
 
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.MessageConverter;
 
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
