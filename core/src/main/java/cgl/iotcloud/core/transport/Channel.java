@@ -1,12 +1,10 @@
 package cgl.iotcloud.core.transport;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -15,7 +13,7 @@ public class Channel {
 
     private BlockingQueue inQueue;
 
-    private BlockingQueue<TransportMessage> outQueue;
+    private BlockingQueue<MessageContext> outQueue;
 
     private Map properties = new HashMap();
 
@@ -76,26 +74,26 @@ public class Channel {
     }
 
     public void publish(byte []message) {
-        TransportMessage transportMessage = new TransportMessage(sensorID, message);
+        MessageContext messageContext = new MessageContext(sensorID, message);
         if (outQueue == null) {
             throw new RuntimeException("The channel must be bound to a transport");
         }
 
         try {
-            outQueue.put(transportMessage);
+            outQueue.put(messageContext);
         } catch (InterruptedException e) {
             LOG.error("Failed to put the message to queue", e);
         }
     }
 
     public void publish(byte []message, Map<String, String> properties) {
-        TransportMessage transportMessage = new TransportMessage(sensorID, message, properties);
+        MessageContext messageContext = new MessageContext(sensorID, message, properties);
         if (outQueue == null) {
             throw new RuntimeException("The channel must be bound to a transport");
         }
 
         try {
-            outQueue.put(transportMessage);
+            outQueue.put(messageContext);
         } catch (InterruptedException e) {
             LOG.error("Failed to put the message to queue", e);
         }

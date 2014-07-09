@@ -1,9 +1,8 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.Manageable;
 import com.rabbitmq.client.*;
-import com.rabbitmq.client.impl.LongStringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ public class RabbitMQReceiver implements Manageable {
 
     private Connection conn;
 
-    private BlockingQueue<TransportMessage> inQueue;
+    private BlockingQueue<MessageContext> inQueue;
 
     private String queueName;
 
@@ -32,7 +31,7 @@ public class RabbitMQReceiver implements Manageable {
 
     private String routingKey;
 
-    public RabbitMQReceiver(BlockingQueue<TransportMessage> inQueue,
+    public RabbitMQReceiver(BlockingQueue<MessageContext> inQueue,
                             String queueName,
                             String url) {
         this.inQueue = inQueue;
@@ -82,7 +81,7 @@ public class RabbitMQReceiver implements Manageable {
                                     props.put(e.getKey(), e.getValue().toString());
                                 }
                             }
-                            TransportMessage message = new TransportMessage(sensorId.toString(), body, props);
+                            MessageContext message = new MessageContext(sensorId.toString(), body, props);
                             try {
                                 inQueue.put(message);
                             } catch (InterruptedException e) {

@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.transport;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class ProducingWorker implements Runnable {
 
     private Channel channel;
 
-    private BlockingQueue<TransportMessage> transportMessages;
+    private BlockingQueue<MessageContext> messageContexts;
 
     private boolean run;
 

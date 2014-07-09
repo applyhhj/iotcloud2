@@ -1,6 +1,6 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.*;
 
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue) {
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering producer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
@@ -36,7 +36,7 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue) {
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering consumer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);

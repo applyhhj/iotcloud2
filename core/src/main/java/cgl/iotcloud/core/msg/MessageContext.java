@@ -3,19 +3,19 @@ package cgl.iotcloud.core.msg;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TransportMessage {
+public class MessageContext {
     private String sensorId;
 
     private Map<String, String> properties = new HashMap<String, String>();
 
     private byte[] body;
 
-    public TransportMessage(String sensorId, byte []body) {
+    public MessageContext(String sensorId, byte[] body) {
         this.sensorId = sensorId;
         this.body = body;
     }
 
-    public TransportMessage(String sensorId, byte[] body, Map<String, String> properties) {
+    public MessageContext(String sensorId, byte[] body, Map<String, String> properties) {
         if (sensorId == null) {
             throw new IllegalArgumentException("SensorID should be present");
         }

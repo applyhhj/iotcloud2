@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.transport;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +14,10 @@ public class ConsumingWorker implements Runnable {
 
     private boolean run;
 
-    private BlockingQueue<TransportMessage> transportMessages;
+    private BlockingQueue<MessageContext> messageContexts;
 
-    public ConsumingWorker(List<Channel> channels, BlockingQueue<TransportMessage> transportMessages) {
-        this.transportMessages = transportMessages;
+    public ConsumingWorker(List<Channel> channels, BlockingQueue<MessageContext> messageContexts) {
+        this.messageContexts = messageContexts;
         this.channels = channels;
         this.run = true;
     }
@@ -26,7 +26,7 @@ public class ConsumingWorker implements Runnable {
     public void run() {
         while (run) {
             try {
-                TransportMessage message = transportMessages.take();
+                MessageContext message = messageContexts.take();
                 // find the channel responsible for this message
                 String sensorId = message.getSensorId();
                 if (sensorId == null) {

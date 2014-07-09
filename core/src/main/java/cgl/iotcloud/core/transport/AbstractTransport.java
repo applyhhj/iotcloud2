@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.transport;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,9 +86,9 @@ public abstract class AbstractTransport implements Transport {
         return new ChannelGroupName(channel.getName(), channelName.getId().getGroup());
     }
 
-    public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue);
+    public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue);
 
-    public abstract Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<TransportMessage> queue);
+    public abstract Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue);
 
     @Override
     public void start() {

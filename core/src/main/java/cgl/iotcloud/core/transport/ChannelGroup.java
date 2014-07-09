@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.transport;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +49,9 @@ public class ChannelGroup {
      * These are the queues we put the messages coming from the channels. The actual message consumers or
      * senders use these queues
      */
-    protected Map<BrokerHost, BlockingQueue<TransportMessage>> consumerQueues =  new HashMap<BrokerHost, BlockingQueue<TransportMessage>>();
+    protected Map<BrokerHost, BlockingQueue<MessageContext>> consumerQueues =  new HashMap<BrokerHost, BlockingQueue<MessageContext>>();
 
-    protected Map<BrokerHost, BlockingQueue<TransportMessage>> producerQueues =  new HashMap<BrokerHost, BlockingQueue<TransportMessage>>();
+    protected Map<BrokerHost, BlockingQueue<MessageContext>> producerQueues =  new HashMap<BrokerHost, BlockingQueue<MessageContext>>();
 
     protected AbstractTransport transport;
 
@@ -73,8 +73,8 @@ public class ChannelGroup {
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToConsumerChannelMap.put(brokerHost, new ArrayList<Channel>());
             brokerHostToProducerChannelMap.put(brokerHost, new ArrayList<Channel>());
-            consumerQueues.put(brokerHost, new ArrayBlockingQueue<TransportMessage>(1024));
-            producerQueues.put(brokerHost, new ArrayBlockingQueue<TransportMessage>(1024));
+            consumerQueues.put(brokerHost, new ArrayBlockingQueue<MessageContext>(1024));
+            producerQueues.put(brokerHost, new ArrayBlockingQueue<MessageContext>(1024));
         }
 
         this.run = true;
@@ -88,7 +88,7 @@ public class ChannelGroup {
             if (channel.getDirection() == Direction.OUT) {
                 BrokerHost host = brokerHosts.get(producerIndex);
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
-                BlockingQueue<TransportMessage> transportMessages = producerQueues.get(host);
+                BlockingQueue<MessageContext> messageContexts = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {
                     manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
@@ -99,7 +99,7 @@ public class ChannelGroup {
 
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
-                channel.setOutQueue(transportMessages);
+                channel.setOutQueue(messageContexts);
                 channels.add(channel);
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
@@ -111,11 +111,11 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(consumerIndex);
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
-                    BlockingQueue<TransportMessage> transportMessages = consumerQueues.get(host);
-                    manageable = transport.registerConsumer(host, channel.getProperties(), transportMessages);
+                    BlockingQueue<MessageContext> messageContexts = consumerQueues.get(host);
+                    manageable = transport.registerConsumer(host, channel.getProperties(), messageContexts);
                     consumers.put(host, manageable);
 
-                    ConsumingWorker worker = new ConsumingWorker(channels, transportMessages);
+                    ConsumingWorker worker = new ConsumingWorker(channels, messageContexts);
                     consumingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);

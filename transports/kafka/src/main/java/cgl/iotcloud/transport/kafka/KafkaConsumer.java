@@ -1,7 +1,6 @@
 package cgl.iotcloud.transport.kafka;
 
-import cgl.iotcloud.core.msg.TransportMessage;
-import cgl.iotcloud.core.transport.MessageConverter;
+import cgl.iotcloud.core.msg.MessageContext;
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
 import kafka.api.PartitionOffsetRequestInfo;
@@ -138,7 +137,7 @@ public class KafkaConsumer {
                     numRead++;
 
                     // todo: we need to set the sensorID
-                    TransportMessage message = new TransportMessage(topic, bytes);
+                    MessageContext message = new MessageContext(topic, bytes);
                     try {
                         inQueue.put(message);
                     } catch (InterruptedException e) {

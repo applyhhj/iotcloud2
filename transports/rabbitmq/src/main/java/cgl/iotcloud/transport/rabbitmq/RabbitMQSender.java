@@ -1,6 +1,6 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.msg.TransportMessage;
+import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.Manageable;
 import cgl.iotcloud.core.transport.TransportConstants;
 import com.rabbitmq.client.AMQP;
@@ -23,7 +23,7 @@ public class RabbitMQSender implements Manageable {
 
     private Connection conn;
 
-    private BlockingQueue<TransportMessage> outQueue;
+    private BlockingQueue<MessageContext> outQueue;
 
     private String exchangeName;
 
@@ -35,7 +35,7 @@ public class RabbitMQSender implements Manageable {
 
     private ExecutorService executorService;
 
-    public RabbitMQSender(BlockingQueue<TransportMessage> outQueue,
+    public RabbitMQSender(BlockingQueue<MessageContext> outQueue,
                           String exchangeName,
                           String routingKey,
                           String queueName,
@@ -96,7 +96,7 @@ public class RabbitMQSender implements Manageable {
             while (run) {
                 try {
                     try {
-                        TransportMessage input = outQueue.take();
+                        MessageContext input = outQueue.take();
 
                         Map<String, Object> props = new HashMap<String, Object>();
                         props.put(TransportConstants.SENSOR_ID, input.getSensorId());
