@@ -1,7 +1,9 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.transport.MessageConverter;
-import com.rabbitmq.client.Address;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
+import cgl.iotcloud.core.transport.TransportConstants;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -9,19 +11,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
-public class RabbitMQSender {
+public class RabbitMQSender implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQSender.class);
 
     private Channel channel;
 
     private Connection conn;
 
-    private MessageConverter converter;
-
-    private BlockingQueue outQueue;
+    private BlockingQueue<MessageContext> outQueue;
 
     private String exchangeName;
 
@@ -29,46 +31,34 @@ public class RabbitMQSender {
 
     private String queueName;
 
-    private Address []addresses;
-
     private String url;
 
     private ExecutorService executorService;
 
-    public RabbitMQSender(MessageConverter converter,
-                          BlockingQueue outQueue,
+    public RabbitMQSender(BlockingQueue<MessageContext> outQueue,
                           String exchangeName,
                           String routingKey,
                           String queueName,
-                          ExecutorService executorService,
-                          Address []addresses,
                           String url) {
-        this.executorService = executorService;
-        this.converter = converter;
         this.outQueue = outQueue;
         this.exchangeName = exchangeName;
         this.routingKey = routingKey;
-        this.addresses = addresses;
         this.url = url;
         this.queueName = queueName;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public void start() {
         ConnectionFactory factory = new ConnectionFactory();
         try {
-            if (addresses == null) {
-                factory.setUri(url);
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService);
-                } else {
-                    conn = factory.newConnection();
-                }
+            factory.setUri(url);
+            if (executorService != null) {
+                conn = factory.newConnection(executorService);
             } else {
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService, addresses);
-                } else {
-                    conn = factory.newConnection(addresses);
-                }
+                conn = factory.newConnection();
             }
 
             channel = conn.createChannel();
@@ -106,25 +96,25 @@ public class RabbitMQSender {
             while (run) {
                 try {
                     try {
-                        Object input = outQueue.take();
-                        Object converted = converter.convert(input, null);
-                        if (converted instanceof byte []) {
-                            channel.basicPublish(exchangeName, routingKey, null, (byte[]) converted);
-                        } else if (converted instanceof RabbitMQMessage) {
-                            channel.basicPublish(exchangeName, routingKey,
-                                    ((RabbitMQMessage) converted).getBasicProperties(), ((RabbitMQMessage) converted).getBody());
-                        } else {
-                            throw new RuntimeException("Expepected byte array after conversion");
+                        MessageContext input = outQueue.take();
+
+                        Map<String, Object> props = new HashMap<String, Object>();
+                        props.put(TransportConstants.SENSOR_ID, input.getSensorId());
+
+                        for (Map.Entry<String, Object> e : input.getProperties().entrySet()) {
+                            props.put(e.getKey(), e.getValue());
                         }
+                        channel.basicPublish(exchangeName, routingKey,
+                                new AMQP.BasicProperties.Builder().headers(props).build(), input.getBody());
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }
                 } catch (Throwable t) {
                     errorCount++;
                     if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
                     } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker");
+                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
                         run = false;
                     }
                 }

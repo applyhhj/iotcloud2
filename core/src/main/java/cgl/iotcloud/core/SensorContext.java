@@ -4,7 +4,6 @@ import cgl.iotcloud.core.transport.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.html.ObjectView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,7 @@ public class SensorContext {
     // the list of channels registered in this sensor
     private Map<String, List<Channel>> channels = new HashMap<String, List<Channel>>();
 
-    // the sensor id
+    // the sensor name, this is used to identify sensor logically
     private final SensorId id;
 
     // the metadata about the sensor
@@ -25,6 +24,9 @@ public class SensorContext {
     // a generic property holder to pass information from the
     // configuration to sensor
     private Map properties = new HashMap();
+
+    // a unique id to the sensor, this is used to identify the sensor uniquely
+    private String sensorID;
 
     public SensorContext(SensorId id) {
         if (id == null) {
@@ -54,6 +56,14 @@ public class SensorContext {
             }
         }
         return null;
+    }
+
+    public String getSensorID() {
+        return sensorID;
+    }
+
+    public void setSensorID(String sensorID) {
+        this.sensorID = sensorID;
     }
 
     public void setMetadata(Object metadata) {
@@ -91,11 +101,11 @@ public class SensorContext {
 
         SensorContext that = (SensorContext) o;
 
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 }

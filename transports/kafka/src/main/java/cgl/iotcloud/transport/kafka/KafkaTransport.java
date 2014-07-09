@@ -1,18 +1,15 @@
 package cgl.iotcloud.transport.kafka;
 
-import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.ChannelName;
-import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.Transport;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
-public class KafkaTransport implements Transport {
+public class KafkaTransport extends AbstractTransport {
     private static Logger LOG = LoggerFactory.getLogger(KafkaTransport.class);
 
     public static final int KAFKA_DEFAULT_PORT = 2012;
@@ -32,51 +29,21 @@ public class KafkaTransport implements Transport {
 
     private Map<String, Integer> urls = new HashMap<String, Integer>();
 
-    private Map<ChannelName, KafkaProducer> producers = new HashMap<ChannelName, KafkaProducer>();
-    private Map<ChannelName, KafkaConsumer> consumers = new HashMap<ChannelName, KafkaConsumer>();
-
-
-    private String siteId;
-
     @Override
-    public void configure(String siteId, Map properties) {
-        this.siteId = siteId;
-        Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
-        Object urlProp = params.get(PROP_URLS);
-        if (urlProp == null || !(urlProp instanceof List)) {
-            String message = "Url is required by the Kafka Transport";
-            LOG.error(message);
-            throw new RuntimeException(message);
-        }
-
-        for (Object o : (List)urlProp) {
-            if (o instanceof String) {
-                String url = (String) o;
-                String tokens[] = url.split(":");
-                if (tokens.length == 2) {
-                    urls.put(tokens[0], Integer.parseInt(tokens[1]));
-                } else {
-                    urls.put(tokens[0], KAFKA_DEFAULT_PORT);
-                }
+    public void configureTransport() {
+        for (BrokerHost o : brokerHosts) {
+            String url = o.getUrl();
+            String tokens[] = url.split(":");
+            if (tokens.length == 2) {
+                urls.put(tokens[0], Integer.parseInt(tokens[1]));
+            } else {
+                urls.put(tokens[0], KAFKA_DEFAULT_PORT);
             }
         }
     }
 
     @Override
-    public void registerChannel(ChannelName name, Channel channel) {
-        Map channelConf = channel.getProperties();
-        if (channelConf == null) {
-            throw new IllegalArgumentException("Channel properties must be specified");
-        }
-
-        if (channel.getDirection() == Direction.OUT) {
-            createSender(name, channelConf, channel);
-        } else if (channel.getDirection() == Direction.IN) {
-            createReceiver(name, channelConf, channel);
-        }
-    }
-
-    private void createSender(ChannelName name, Map channelConf, Channel channel) {
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         String serializerClass = (String) channelConf.get(PROP_SERIALIZER_CLASS);
         String partitionClass = (String) channelConf.get(PROP_PARTITION_CLASS);
@@ -92,40 +59,15 @@ public class KafkaTransport implements Transport {
             }
         }
 
-        KafkaProducer sender = new KafkaProducer(channel.getConverter(), channel.getOutQueue(), siteId + "." +  topic, brokerList.toString(),
+        return new KafkaProducer(queue, siteId + "." +  topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks);
-        producers.put(name, sender);
-        sender.start();
     }
 
-    private void createReceiver(ChannelName name, Map channelConf, Channel channel) {
+    @Override
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 
-        KafkaConsumer listener = new KafkaConsumer(channel.getConverter(), channel.getInQueue(), siteId + "." + topic, partition, urls);
-        consumers.put(name, listener);
-        listener.start();
-    }
-
-    @Override
-    public void start() {
-        for (KafkaConsumer receiver : consumers.values()) {
-            receiver.start();
-        }
-
-        for (KafkaProducer sender : producers.values()) {
-            sender.start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (KafkaConsumer receiver : consumers.values()) {
-            receiver.stop();
-        }
-
-        for (KafkaProducer sender : producers.values()) {
-            sender.stop();
-        }
+        return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
     }
 }

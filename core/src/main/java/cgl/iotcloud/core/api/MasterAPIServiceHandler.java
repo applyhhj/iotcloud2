@@ -60,8 +60,10 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
         LOG.info("Request received for deploying a sensor {}", deployDescriptor);
         deployDescriptor.addDeploySites(sites);
 
-        for (Map.Entry<String, String> e : sensor.getProperties().entrySet()) {
-            deployDescriptor.addProperty(e.getKey(), e.getValue());
+        if (sensor.getProperties() != null) {
+            for (Map.Entry<String, String> e : sensor.getProperties().entrySet()) {
+                deployDescriptor.addProperty(e.getKey(), e.getValue());
+            }
         }
 
         MSensorClientEvent deployEvent = new MSensorClientEvent(null, SensorState.DEPLOY, sites);

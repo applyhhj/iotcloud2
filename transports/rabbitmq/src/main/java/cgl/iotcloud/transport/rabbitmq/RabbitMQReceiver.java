@@ -1,30 +1,28 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.transport.MessageConverter;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
+import cgl.iotcloud.core.transport.TransportConstants;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
-public class RabbitMQReceiver {
+public class RabbitMQReceiver implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQReceiver.class);
 
     private Channel channel;
 
     private Connection conn;
 
-    private MessageConverter converter;
-
-    private BlockingQueue inQueue;
+    private BlockingQueue<MessageContext> inQueue;
 
     private String queueName;
-
-    private boolean autoAck = false;
-
-    private Address []addresses;
 
     private String url;
 
@@ -34,36 +32,26 @@ public class RabbitMQReceiver {
 
     private String routingKey;
 
-    public RabbitMQReceiver(MessageConverter converter,
-                            BlockingQueue inQueue,
+    public RabbitMQReceiver(BlockingQueue<MessageContext> inQueue,
                             String queueName,
-                            ExecutorService executorService,
-                            Address []addresses,
                             String url) {
-        this.converter = converter;
         this.inQueue = inQueue;
-        this.executorService = executorService;
         this.queueName = queueName;
-        this.addresses = addresses;
         this.url = url;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public void start() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            if (addresses == null) {
-                factory.setUri(url);
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService);
-                } else {
-                    conn = factory.newConnection();
-                }
+            factory.setUri(url);
+            if (executorService != null) {
+                conn = factory.newConnection(executorService);
             } else {
-                if (executorService != null) {
-                    conn = factory.newConnection(executorService, addresses);
-                } else {
-                    conn = factory.newConnection(addresses);
-                }
+                conn = factory.newConnection();
             }
 
             channel = conn.createChannel();
@@ -74,7 +62,8 @@ public class RabbitMQReceiver {
                 channel.queueBind(queueName, exchangeName, routingKey);
             }
 
-            channel.basicConsume(queueName, autoAck, "myConsumerTag",
+            boolean autoAck = false;
+            channel.basicConsume(queueName, false, "myConsumerTag",
                     new DefaultConsumer(channel) {
                         @Override
                         public void handleDelivery(String consumerTag,
@@ -83,10 +72,23 @@ public class RabbitMQReceiver {
                                                    byte[] body)
                                 throws IOException {
                             long deliveryTag = envelope.getDeliveryTag();
-                            RabbitMQMessage message = new RabbitMQMessage(properties, body);
+                            // RabbitMQMessage message = new RabbitMQMessage(properties, body);
+                            // get the sensor id from the properties
+                            Object sensorId = null;
+                            Map<String, Object> props = new HashMap<String, Object>();
+                            if (properties != null && properties.getHeaders() != null) {
+                                sensorId = properties.getHeaders().get(TransportConstants.SENSOR_ID);
+                                for (Map.Entry<String, Object> e : properties.getHeaders().entrySet()) {
+                                    props.put(e.getKey(), e.getValue().toString());
+                                }
+                            }
+                            if (sensorId == null) {
+                                LOG.warn("Message without sensorId, discarding");
+                                return;
+                            }
+                            MessageContext message = new MessageContext(sensorId.toString(), body, props);
                             try {
-                                Object o = converter.convert(message, null);
-                                inQueue.put(o);
+                                inQueue.put(message);
                             } catch (InterruptedException e) {
                                 LOG.error("Failed to put the object to the queue");
                             }

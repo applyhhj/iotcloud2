@@ -1,130 +1,55 @@
 package cgl.iotcloud.transport.rabbitmq;
 
-import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.ChannelName;
-import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.Transport;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.*;
 
-import com.rabbitmq.client.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.BlockingQueue;
 
-public class RabbitMQTransport implements Transport {
+public class RabbitMQTransport extends AbstractTransport {
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQTransport.class);
-
-    public static final String URL_PROPERTY = "url";
-    public static final String THREAD_PROPERTY = "threads";
-    public static final String CORE_PROPERTY = "core";
-    public static final String MAX_PROPERTY = "max";
 
     public static final String EXCHANGE_NAME_PROPERTY = "exchange";
     public static final String ROUTING_KEY_PROPERTY = "routingKey";
     public static final String QUEUE_NAME_PROPERTY = "queueName";
 
-    private ExecutorService executorService;
-
-    private Map<ChannelName, RabbitMQReceiver> receivers = new HashMap<ChannelName, RabbitMQReceiver>();
-
-    private Map<ChannelName, RabbitMQSender> senders = new HashMap<ChannelName, RabbitMQSender>();
-
-    private Address[] addresses;
-
-    private String url;
-
-    private String siteId;
-
     @Override
-    public void configure(String siteId, Map properties) {
-        this.siteId = siteId;
-        try {
-            Map params = (Map)properties.get(Configuration.TRANSPORT_PROPERTIES);
-            Object urlProp = params.get(URL_PROPERTY);
-            if (urlProp == null) {
-                String message = "Url is required by the RabbitMQTransport";
-                LOG.error(message);
-                throw new RuntimeException(message);
-            }
+    public void configureTransport() {
 
-            if (urlProp instanceof String) {
-                this.url = (String) urlProp;
-            } else if (urlProp instanceof List) {
-                Address urls[];
-                int len = ((List) urlProp).size();
-                urls = new Address[len];
-                for (int i = 0; i < len; i++) {
-                    urls[i] = new Address ((String) ((List) urlProp).get(i));
-                }
-                this.addresses = urls;
-            }
-
-            Map threads = (Map) params.get(THREAD_PROPERTY);
-            if (threads != null) {
-                int core = (Integer) threads.get(CORE_PROPERTY);
-                executorService = Executors.newScheduledThreadPool(core);
-            }
-        } catch (Exception e) {
-            String msg = "Error in key management for rabbitMQ";
-            LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
-        }
     }
 
     @Override
-    public void registerChannel(ChannelName name, Channel channel) {
-        Map channelConf = channel.getProperties();
-        if (channelConf == null) {
-            throw new IllegalArgumentException("Channel properties must be specified");
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering producer to host {}", host);
+        String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
+        String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
+        String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+
+        RabbitMQSender sender = new RabbitMQSender(queue, exchangeName, siteId + "." + routingKey, siteId + "." + queueName, host.getUrl());
+        if (executorService != null) {
+            sender.setExecutorService(executorService);
         }
-
-        if (channel.getDirection() == Direction.OUT) {
-            String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
-            String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
-            String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
-
-            RabbitMQSender sender = new RabbitMQSender(channel.getConverter(), channel.getOutQueue(), exchangeName, siteId + "." + routingKey, siteId + "." + queueName, executorService, addresses, url);
-            sender.start();
-            senders.put(name, sender);
-        } else if (channel.getDirection() == Direction.IN) {
-            String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
-            String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
-            String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
-
-            RabbitMQReceiver listener = new RabbitMQReceiver(channel.getConverter(), channel.getInQueue(), siteId + "." + queueName, executorService, addresses, url);
-            listener.setExchangeName(exchangeName);
-            listener.setRoutingKey(siteId + "." + routingKey);
-            listener.start();
-            receivers.put(name, listener);
-        }
+        return sender;
     }
 
     @Override
-    public void start() {
-        for (RabbitMQReceiver receiver : receivers.values()) {
-            receiver.start();
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering consumer to host {}", host);
+        String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
+        String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
+        String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
+
+        RabbitMQReceiver listener = new RabbitMQReceiver(queue, siteId + "." + queueName, host.getUrl());
+        if (executorService != null) {
+            listener.setExecutorService(executorService);
         }
 
-        for (RabbitMQSender sender : senders.values()) {
-            sender.start();
-        }
-    }
+        listener.setExchangeName(exchangeName);
+        listener.setRoutingKey(siteId + "." + routingKey);
 
-    @Override
-    public void stop() {
-        for (RabbitMQReceiver receiver : receivers.values()) {
-            receiver.stop();
-        }
-
-        for (RabbitMQSender sender : senders.values()) {
-            sender.stop();
-        }
-
-        executorService.shutdown();
+        return listener;
     }
 }

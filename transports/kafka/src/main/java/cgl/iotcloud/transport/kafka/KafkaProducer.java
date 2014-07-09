@@ -1,7 +1,7 @@
 package cgl.iotcloud.transport.kafka;
 
-import cgl.iotcloud.core.transport.MessageConverter;
-import kafka.admin.AdminUtils;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
@@ -11,12 +11,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
-public class KafkaProducer {
+public class KafkaProducer implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(KafkaProducer.class);
 
     private Producer<byte[], byte []> producer;
-
-    private MessageConverter converter;
 
     private BlockingQueue outQueue;
 
@@ -32,10 +30,9 @@ public class KafkaProducer {
 
     private boolean run = true;
 
-    public KafkaProducer(MessageConverter converter, BlockingQueue outQueue,
+    public KafkaProducer(BlockingQueue outQueue,
                          String topic, String brokerList, String serializerClass,
                          String partitionClass, String requestRequiredAcks) {
-        this.converter = converter;
         this.outQueue = outQueue;
         this.topic = topic;
         this.brokerList = brokerList;
@@ -75,10 +72,11 @@ public class KafkaProducer {
                 try {
                     try {
                         Object input = outQueue.take();
-                        Object converted = converter.convert(input, null);
-                        if (converted instanceof KafkaMessage) {
+                        if (input instanceof MessageContext) {
+                            String key = (String) ((MessageContext) input).getProperties().get("key");
+
                             KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic,
-                                    ((KafkaMessage) converted).getKey().getBytes(), ((KafkaMessage) converted).getData());
+                                    key.getBytes(), ((MessageContext) input).getBody());
                             producer.send(data);
                         } else {
                             LOG.error("Unexpected message type");

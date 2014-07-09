@@ -1,6 +1,5 @@
 package cgl.iotcloud.transport.kestrel;
 
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +11,6 @@ import java.util.concurrent.BlockingQueue;
 
 public class KestrelProducer {
     private Logger LOG = LoggerFactory.getLogger(KestrelProducer.class);
-
-    private MessageConverter converter;
 
     private BlockingQueue outQueue;
 
@@ -29,10 +26,9 @@ public class KestrelProducer {
 
     private long sleepTime = 0;
 
-    public KestrelProducer(KestrelDestination destination, BlockingQueue outQueue, MessageConverter converter) {
+    public KestrelProducer(KestrelDestination destination, BlockingQueue outQueue) {
         this.destination = destination;
         this.outQueue = outQueue;
-        this.converter = converter;
     }
 
     public void setExpirationTime(int expirationTime) {
@@ -87,9 +83,8 @@ public class KestrelProducer {
                             if (size > 0) {
                                 for (int i = 0; i < size; i++) {
                                     Object input = outQueue.take();
-                                    Object converted = converter.convert(input, null);
-                                    if (converted instanceof byte []) {
-                                        ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) converted);
+                                    if (input instanceof byte []) {
+                                        ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) input);
                                         messages.add(byteBuffer);
                                     } else {
                                         throw new RuntimeException("Expepected byte array after conversion");
@@ -97,9 +92,8 @@ public class KestrelProducer {
                                 }
                             } else {
                                 Object input = outQueue.take();
-                                Object converted = converter.convert(input, null);
-                                if (converted instanceof byte []) {
-                                    ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) converted);
+                                if (input instanceof byte []) {
+                                    ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) input);
                                     messages.add(byteBuffer);
                                 } else {
                                     throw new RuntimeException("Expepected byte array after conversion");

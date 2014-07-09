@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.kafka;
 
-import cgl.iotcloud.core.transport.MessageConverter;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
 import kafka.api.FetchRequest;
 import kafka.api.FetchRequestBuilder;
 import kafka.api.PartitionOffsetRequestInfo;
@@ -16,7 +17,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
-public class KafkaConsumer {
+public class KafkaConsumer implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(KafkaConsumer.class);
 
     private String topic;
@@ -35,19 +36,16 @@ public class KafkaConsumer {
 
     private int pollingInterval = 10;
 
-    private MessageConverter converter;
-
     private BlockingQueue inQueue;
 
     private boolean run = true;
 
-    public KafkaConsumer(MessageConverter converter, BlockingQueue inQueue, String topic,
+    public KafkaConsumer(BlockingQueue inQueue, String topic,
                          int partition, Map<String, Integer> seedBrokers) {
         this.topic = topic;
         this.partition = partition;
         this.seedBrokers = seedBrokers;
 
-        this.converter = converter;
         this.inQueue = inQueue;
     }
 
@@ -139,10 +137,10 @@ public class KafkaConsumer {
                     payload.get(bytes);
                     numRead++;
 
-                    KafkaMessage message = new KafkaMessage(topic, partition, bytes);
-                    Object converted = converter.convert(message, null);
+                    // todo: we need to set the sensorID
+                    MessageContext message = new MessageContext(topic, bytes);
                     try {
-                        inQueue.put(converted);
+                        inQueue.put(message);
                     } catch (InterruptedException e) {
                         LOG.warn("Found an old offset: " + currentOffset + " Expecting: " + readOffset);
                     }

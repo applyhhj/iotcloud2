@@ -1,6 +1,5 @@
 package cgl.iotcloud.transport.mqtt;
 
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
@@ -29,18 +28,15 @@ public class MQTTConsumer {
 
     private QoS qoS;
 
-    private MessageConverter converter;
-
-    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter) {
-        this(url, port, messages, queueName, converter, QoS.AT_MOST_ONCE);
+    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName) {
+        this(url, port, messages, queueName, QoS.AT_MOST_ONCE);
     }
 
-    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName, MessageConverter converter, QoS qoS) {
+    public MQTTConsumer(String url, int port, BlockingQueue messages, String queueName, QoS qoS) {
         this.url = url;
         this.messages = messages;
         this.queueName = queueName;
         this.qoS = qoS;
-        this.converter = converter;
         this.port = port;
     }
 
@@ -107,8 +103,7 @@ public class MQTTConsumer {
                 final String uuid = UUID.randomUUID().toString();
                 try {
                     MQTTMessage message = new MQTTMessage(payload, topic.toString());
-                    Object converted = converter.convert(message, null);
-                    messages.put(converted);
+                    messages.put(message);
                     onComplete.run();
                 } catch (InterruptedException e) {
                     LOG.error("Failed to put the message to queue", e);
