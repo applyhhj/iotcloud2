@@ -1,12 +1,16 @@
 package cgl.iotcloud.core.transport.jms;
 
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
+import cgl.iotcloud.core.transport.TransportConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-public class JMSSender {
+public class JMSSender implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(JMSSender.class);
 
     private Connection connection;
@@ -15,7 +19,7 @@ public class JMSSender {
 
     private Destination dest;
 
-    private BlockingQueue outQueue;
+    private BlockingQueue<MessageContext> outQueue;
 
     private MessageProducer producer;
 
@@ -26,7 +30,7 @@ public class JMSSender {
     String destination;
 
     public JMSSender(ConnectionFactory conFactory, String destination, boolean topic,
-                     BlockingQueue outQueue) {
+                     BlockingQueue<MessageContext> outQueue) {
         if (conFactory == null || destination == null || outQueue == null) {
             throw new IllegalArgumentException("All the parameters are mandatory");
         }
@@ -77,10 +81,13 @@ public class JMSSender {
             while (run) {
                 try {
                     try {
-                        Object input = outQueue.take();
-                        if (input instanceof Message) {
-                            producer.send(dest, (Message) input);
-                        }
+                        MessageContext input = outQueue.take();
+                        // create a bytemessae
+                        BytesMessage bytesMessage = session.createBytesMessage();
+                        bytesMessage.setStringProperty(TransportConstants.SENSOR_ID, input.getSensorId());
+                        setMessageProperties(bytesMessage, input.getProperties());
+
+                        producer.send(dest, bytesMessage);
                     } catch (InterruptedException e) {
                         LOG.error("Exception occurred in the worker listening for consumer changes", e);
                     }
@@ -97,6 +104,17 @@ public class JMSSender {
             String message = "Unexpected notification type";
             LOG.error(message);
             throw new RuntimeException(message);
+        }
+    }
+
+    private static void setMessageProperties (Message msg, Map<String, Object> properties) throws JMSException {
+        if (properties == null) {
+            return;
+        }
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            String propertyName = entry.getKey ();
+            Object value = entry.getValue ();
+            msg.setObjectProperty(propertyName, value);
         }
     }
 }

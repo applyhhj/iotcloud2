@@ -2,6 +2,7 @@ package cgl.iotcloud.transport.rabbitmq;
 
 import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.Manageable;
+import cgl.iotcloud.core.transport.TransportConstants;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +75,16 @@ public class RabbitMQReceiver implements Manageable {
                             // RabbitMQMessage message = new RabbitMQMessage(properties, body);
                             // get the sensor id from the properties
                             Object sensorId = null;
-                            Map<String, String> props = new HashMap<String, String>();
+                            Map<String, Object> props = new HashMap<String, Object>();
                             if (properties != null && properties.getHeaders() != null) {
-                                sensorId = properties.getHeaders().get("sensorID");
+                                sensorId = properties.getHeaders().get(TransportConstants.SENSOR_ID);
                                 for (Map.Entry<String, Object> e : properties.getHeaders().entrySet()) {
                                     props.put(e.getKey(), e.getValue().toString());
                                 }
+                            }
+                            if (sensorId == null) {
+                                LOG.warn("Message without sensorId, discarding");
+                                return;
                             }
                             MessageContext message = new MessageContext(sensorId.toString(), body, props);
                             try {

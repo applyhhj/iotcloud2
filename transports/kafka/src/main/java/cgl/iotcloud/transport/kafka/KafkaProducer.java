@@ -72,7 +72,7 @@ public class KafkaProducer {
                     try {
                         Object input = outQueue.take();
                         if (input instanceof MessageContext) {
-                            String key = ((MessageContext) input).getProperties().get("key");
+                            String key = (String) ((MessageContext) input).getProperties().get("key");
 
                             KeyedMessage<byte[], byte []> data = new KeyedMessage<byte[], byte []>(topic,
                                     key.getBytes(), ((MessageContext) input).getBody());

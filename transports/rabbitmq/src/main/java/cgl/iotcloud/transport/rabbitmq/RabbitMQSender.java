@@ -101,7 +101,7 @@ public class RabbitMQSender implements Manageable {
                         Map<String, Object> props = new HashMap<String, Object>();
                         props.put(TransportConstants.SENSOR_ID, input.getSensorId());
 
-                        for (Map.Entry<String, String> e : input.getProperties().entrySet()) {
+                        for (Map.Entry<String, Object> e : input.getProperties().entrySet()) {
                             props.put(e.getKey(), e.getValue());
                         }
                         channel.basicPublish(exchangeName, routingKey,

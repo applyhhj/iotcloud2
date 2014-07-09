@@ -6,7 +6,7 @@ import java.util.Map;
 public class MessageContext {
     private String sensorId;
 
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, Object> properties = new HashMap<String, Object>();
 
     private byte[] body;
 
@@ -15,7 +15,7 @@ public class MessageContext {
         this.body = body;
     }
 
-    public MessageContext(String sensorId, byte[] body, Map<String, String> properties) {
+    public MessageContext(String sensorId, byte[] body, Map<String, Object> properties) {
         if (sensorId == null) {
             throw new IllegalArgumentException("SensorID should be present");
         }
@@ -35,7 +35,7 @@ public class MessageContext {
         return sensorId;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 

@@ -1,10 +1,8 @@
 package cgl.iotcloud.core.transport.jms;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.ChannelName;
-import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.Transport;
+import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +14,9 @@ import javax.naming.Reference;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
-public class JMSTransport implements Transport {
+public class JMSTransport extends AbstractTransport {
     private static Logger LOG = LoggerFactory.getLogger(JMSTransport.class);
     /** The JMS ConnectionFactory this definition refers to */
     private ConnectionFactory conFactory = null;
@@ -31,6 +30,7 @@ public class JMSTransport implements Transport {
 
     @Override
     public void configure(String siteId, Map properties) {
+        // we are configuring everything by ourselves, no need to use the super
         try {
             this.siteId = siteId;
             Hashtable<String, String> params = new Hashtable<String, String>();
@@ -53,12 +53,13 @@ public class JMSTransport implements Transport {
         }
     }
 
-    public void registerChannel(ChannelName name, Channel channel) {
-        Map channelConf = channel.getProperties();
-        if (channelConf == null) {
-            throw new IllegalArgumentException("Channel properties must be specified");
-        }
+    @Override
+    public void configureTransport() {
 
+    }
+
+    @Override
+    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
         String destination = Configuration.getChannelJmsDestination(channelConf);
         String isTopic = Configuration.getChannelIsQueue(channelConf);
         boolean topic = true;
@@ -66,47 +67,26 @@ public class JMSTransport implements Transport {
             topic = false;
         }
 
-        try {
-            if (channel.getDirection() == Direction.OUT) {
-                JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, channel.getOutQueue());
-                sender.start();
-                senders.put(name, sender);
-            } else if (channel.getDirection() == Direction.IN) {
-                JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, channel.getInQueue());
-                listener.start();
-                listeners.put(name, listener);
-            }
-        } catch (JMSException e) {
-            String msg = "Failed to create connection";
-            LOG.error(msg, e);
-            throw new RuntimeException(msg, e);
-        }
+        JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, queue);
+        sender.start();
+        return sender;
     }
 
     @Override
-    public void start() {
-        for (Map.Entry<ChannelName, JMSSender> e : senders.entrySet()) {
-            e.getValue().start();
+    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+        String destination = Configuration.getChannelJmsDestination(channelConf);
+        String isTopic = Configuration.getChannelIsQueue(channelConf);
+        boolean topic = true;
+        if (isTopic != null && !Boolean.parseBoolean(isTopic)) {
+            topic = false;
         }
 
-        for (Map.Entry<ChannelName, JMSListener> e : listeners.entrySet()) {
-            e.getValue().start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (Map.Entry<ChannelName, JMSSender> e : senders.entrySet()) {
-            e.getValue().stop();
-        }
-
-        for (Map.Entry<ChannelName, JMSListener> e : listeners.entrySet()) {
-            e.getValue().stop();
-        }
+        JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, queue);
+        listener.start();
+        return listener;
     }
 
     public static <T> T lookup(Context context, Class<T> clazz, String name) throws Exception {
-
         Object object = context.lookup(name);
         try {
             return clazz.cast(object);

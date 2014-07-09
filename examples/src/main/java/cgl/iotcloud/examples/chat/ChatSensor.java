@@ -7,22 +7,17 @@ import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SiteContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.transport.MessageConverter;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class ChatSensor implements ISensor {
+public class ChatSensor extends AbstractSensor {
     private static Logger LOG = LoggerFactory.getLogger(ChatSensor.class);
 
     private SensorContext context;
@@ -39,77 +34,45 @@ public class ChatSensor implements ISensor {
         final Channel sendChannel = context.getChannel("jms", "sender");
         final Channel receiveChannel = context.getChannel("jms", "receiver");
 
-        Thread t1 = new Thread(new Runnable() {
+        startSend(sendChannel, new MessageSender() {
             @Override
-            public void run() {
-                while (true) {
-                    try {
-                        sendChannel.getInQueue().put("Hello".getBytes());
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            public boolean loop(BlockingQueue queue) {
+                try {
+                    queue.put("Hello".getBytes());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                return false;
             }
-        });
-        t1.start();
+        }, 100);
 
-        Thread t2 = new Thread(new Runnable() {
+        startListen(receiveChannel, new MessageReceiver() {
             @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Object o = receiveChannel.getOutQueue().take();
-                        if (o instanceof MessageContext) {
-                            System.out.println(new String(((MessageContext) o).getBody()));
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            public void onMessage(Object message) {
+                if (message instanceof MessageContext) {
+                    System.out.println(new String(((MessageContext) message).getBody()));
                 }
             }
         });
-        t2.start();
 
         LOG.info("Received open request {}", this.context.getId());
     }
 
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public void activate() {
-        LOG.info("Received activation request {}", this.context.getId());
-    }
-
-    @Override
-    public void deactivate() {
-        LOG.info("Received de-activation request {}", this.context.getId());
-    }
-
-    private class ChatConfigurator implements Configurator {
+    private class ChatConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
             SensorContext context = new SensorContext(new SensorId("chat", "general"));
 
-            BlockingQueue inMassages = new ArrayBlockingQueue(1024);
-            BlockingQueue outMassages = new ArrayBlockingQueue(1024);
             Map properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
-            Channel receiveChannel = new Channel("receiver", Direction.IN);
-            receiveChannel.addProperties(properties);
+            Channel receiveChannel = createChannel("receiver", properties, Direction.IN, 1024);
             context.addChannel("jms", receiveChannel);
 
-            inMassages = new ArrayBlockingQueue(1024);
-            outMassages = new ArrayBlockingQueue(1024);
             properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");
             properties.put(Configuration.CHANNEL_JMS_DESTINATION, "chat");
-            Channel sendChannel = new Channel("sender", Direction.OUT);
-            sendChannel.addProperties(properties);
+            Channel sendChannel = createChannel("sender", properties, Direction.OUT, 1024);
             context.addChannel("jms", sendChannel);
 
             return context;
