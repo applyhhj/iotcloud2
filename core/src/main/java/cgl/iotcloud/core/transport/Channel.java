@@ -23,21 +23,27 @@ public class Channel {
 
     private String sensorID;
 
+    private boolean grouped = false;
+
     public Channel(String name, Direction direction) {
         this.name = name;
         this.direction = direction;
     }
 
-    public void setInQueue(BlockingQueue inQueue) {
+    public void setInQueue(BlockingQueue<MessageContext> inQueue) {
         this.inQueue = inQueue;
     }
 
-    public void setOutQueue(BlockingQueue outQueue) {
+    public void setOutQueue(BlockingQueue<MessageContext> outQueue) {
         this.outQueue = outQueue;
     }
 
     public String getSensorID() {
         return sensorID;
+    }
+
+    public void setGrouped(boolean grouped) {
+        this.grouped = grouped;
     }
 
     public void setSensorID(String sensorID) {
@@ -66,6 +72,10 @@ public class Channel {
 
     public void open() {
 
+    }
+
+    public boolean isGrouped() {
+        return grouped;
     }
 
     @SuppressWarnings("unchecked")

@@ -16,10 +16,17 @@ public class ConsumingWorker implements Runnable {
 
     private BlockingQueue<MessageContext> messageContexts;
 
-    public ConsumingWorker(List<Channel> channels, BlockingQueue<MessageContext> messageContexts) {
+    private boolean singleChannel;
+
+    public ConsumingWorker(List<Channel> channels, BlockingQueue<MessageContext> messageContexts, boolean singleChannel) {
         this.messageContexts = messageContexts;
         this.channels = channels;
         this.run = true;
+        this.singleChannel = singleChannel;
+    }
+
+    public ConsumingWorker(List<Channel> channels, BlockingQueue<MessageContext> messageContexts) {
+        this(channels, messageContexts, false);
     }
 
     @Override
@@ -35,12 +42,22 @@ public class ConsumingWorker implements Runnable {
                     continue;
                 }
 
+                if (channels.size() == 0) {
+                    String s = "There must be at least one channel";
+                    LOG.error(s);
+                    throw new RuntimeException(s);
+                }
+
                 Channel matchingChannel = null;
-                for (Channel channel : channels) {
-                    if (channel.getSensorID().equals(sensorId)) {
-                        matchingChannel = channel;
-                        break;
+                if (!singleChannel) {
+                    for (Channel channel : channels) {
+                        if (channel.getSensorID().equals(sensorId)) {
+                            matchingChannel = channel;
+                            break;
+                        }
                     }
+                } else {
+                    matchingChannel = channels.get(0);
                 }
 
                 if (matchingChannel != null) {

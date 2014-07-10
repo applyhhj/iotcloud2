@@ -115,7 +115,12 @@ public class ChannelGroup {
                     manageable = transport.registerConsumer(host, channel.getProperties(), messageContexts);
                     consumers.put(host, manageable);
 
-                    ConsumingWorker worker = new ConsumingWorker(channels, messageContexts);
+                    ConsumingWorker worker;
+                    if (channel.isGrouped()) {
+                        worker = new ConsumingWorker(channels, messageContexts);
+                    } else {
+                        worker = new ConsumingWorker(channels, messageContexts, true);
+                    }
                     consumingWorkers.put(host, worker);
 
                     Thread thread = new Thread(worker);

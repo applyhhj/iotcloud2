@@ -1,5 +1,6 @@
 package cgl.iotcloud.core;
 
+import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 
@@ -11,8 +12,8 @@ public abstract class AbstractConfigurator implements Configurator {
     protected Channel createChannel(String name, Map properties,
                                     Direction direction, int queueSize) {
 
-        BlockingQueue inMassages = new ArrayBlockingQueue(queueSize);
-        BlockingQueue outMassages = new ArrayBlockingQueue(queueSize);
+        BlockingQueue<MessageContext> inMassages = new ArrayBlockingQueue<MessageContext>(queueSize);
+        BlockingQueue<MessageContext> outMassages = new ArrayBlockingQueue<MessageContext>(queueSize);
 
         Channel channel = new Channel(name, direction);
         channel.setInQueue(inMassages);

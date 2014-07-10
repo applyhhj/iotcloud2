@@ -82,8 +82,20 @@ public abstract class AbstractTransport implements Transport {
         group.addChannel(channel);
     }
 
-    private ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {
-        return new ChannelGroupName(channel.getName(), channelName.getId().getGroup());
+    /**
+     * If the channel is grouped we will create a name with Channel name and sensor group
+     * If the channel is not grouped, we will create a name with channel name and sensor ID which is unique,
+     * this group will only have a single channel
+     * @param channel channel
+     * @param channelName channel name
+     * @return a group name
+     */
+    protected ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {
+        if (channel.isGrouped()) {
+            return new ChannelGroupName(channel.getName(), channelName.getId().getGroup());
+        } else {
+            return new ChannelGroupName(channel.getName(), channel.getSensorID());
+        }
     }
 
     public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue);
