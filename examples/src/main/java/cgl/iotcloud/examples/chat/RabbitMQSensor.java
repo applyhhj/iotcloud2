@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
+
 
 public class RabbitMQSensor extends AbstractSensor {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQSensor.class);
@@ -29,17 +29,20 @@ public class RabbitMQSensor extends AbstractSensor {
         final Channel sendChannel = context.getChannel("rabbitmq", "sender");
         final Channel receiveChannel = context.getChannel("rabbitmq", "receiver");
 
-        startSend(sendChannel, new MessageSender() {
+        Thread t = new Thread(new Runnable() {
             @Override
-            public boolean loop(BlockingQueue queue) {
-                try {
-                    queue.put("Hello".getBytes());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            public void run() {
+                while (true) {
+                    sendChannel.publish("Hello".getBytes());
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                return false;
             }
-        }, 100);
+        });
+        t.start();
 
         startListen(receiveChannel, new MessageReceiver() {
             @Override
@@ -51,8 +54,10 @@ public class RabbitMQSensor extends AbstractSensor {
                 }
             }
         });
+        LOG.info("Starting the sensor...");
     }
 
+    @SuppressWarnings("unchecked")
     private class RabbitConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
@@ -90,22 +95,18 @@ public class RabbitMQSensor extends AbstractSensor {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TTransportException {
         // read the configuration file
         Map conf = Utils.readConfig();
         SensorClient client;
-        try {
-            client = new SensorClient(conf);
+        client = new SensorClient(conf);
 
-            List<String> sites = new ArrayList<String>();
-            sites.add("local");
+        List<String> sites = new ArrayList<String>();
+        sites.add("local");
 
-            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.RabbitMQSensor");
-            deployDescriptor.addDeploySites(sites);
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.RabbitMQSensor");
+        deployDescriptor.addDeploySites(sites);
 
-            client.deploySensor(deployDescriptor);
-        } catch (TTransportException e) {
-            e.printStackTrace();
-        }
+        client.deploySensor(deployDescriptor);
     }
 }

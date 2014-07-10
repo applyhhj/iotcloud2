@@ -32,7 +32,7 @@ public class KafkaSensor extends AbstractSensor {
 
         startSend(sendChannel, new MessageSender() {
             @Override
-            public boolean loop(BlockingQueue queue) {
+            public boolean loop(BlockingQueue<byte []> queue) {
                 try {
                     queue.put("Hello".getBytes());
                 } catch (InterruptedException e) {
@@ -54,6 +54,7 @@ public class KafkaSensor extends AbstractSensor {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private class KafkaConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
@@ -93,22 +94,18 @@ public class KafkaSensor extends AbstractSensor {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TTransportException {
         // read the configuration file
         Map conf = Utils.readConfig();
         SensorClient client;
-        try {
-            client = new SensorClient(conf);
+        client = new SensorClient(conf);
 
-            List<String> sites = new ArrayList<String>();
-            sites.add("local");
+        List<String> sites = new ArrayList<String>();
+        sites.add("local");
 
-            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.KafkaSensor");
-            deployDescriptor.addDeploySites(sites);
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.KafkaSensor");
+        deployDescriptor.addDeploySites(sites);
 
-            client.deploySensor(deployDescriptor);
-        } catch (TTransportException e) {
-            e.printStackTrace();
-        }
+        client.deploySensor(deployDescriptor);
     }
 }

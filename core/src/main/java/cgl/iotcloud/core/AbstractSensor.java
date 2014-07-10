@@ -48,7 +48,7 @@ public abstract class AbstractSensor implements ISensor {
     }
 
     protected class QueueProducer implements Runnable {
-        private BlockingQueue queue = new ArrayBlockingQueue(1024);
+        private BlockingQueue<byte[]> queue = new ArrayBlockingQueue<byte[]>(1024);
 
         private MessageSender messageSender;
 
@@ -58,7 +58,7 @@ public abstract class AbstractSensor implements ISensor {
 
         private boolean pause = false;
 
-        private BlockingQueue messages;
+        private BlockingQueue<byte []> messages;
 
         private Channel channel;
 
@@ -68,7 +68,7 @@ public abstract class AbstractSensor implements ISensor {
             this.channel = channel;
         }
 
-        public QueueProducer(BlockingQueue messages, Channel channel) {
+        public QueueProducer(BlockingQueue<byte []> messages, Channel channel) {
             this.messages = messages;
             this.channel = channel;
         }
@@ -97,8 +97,8 @@ public abstract class AbstractSensor implements ISensor {
 
                 while (!queue.isEmpty()) {
                     try {
-                        Object data = queue.take();
-                        channel.publish((byte [])data);
+                        byte[] data = queue.take();
+                        channel.publish(data);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -124,8 +124,8 @@ public abstract class AbstractSensor implements ISensor {
                     }
                 }
                 try {
-                    Object message = messages.take();
-                    channel.publish((byte [])message);
+                    byte[] message = messages.take();
+                    channel.publish(message);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

@@ -20,8 +20,6 @@ import java.util.concurrent.BlockingQueue;
 public class ChatSensor extends AbstractSensor {
     private static Logger LOG = LoggerFactory.getLogger(ChatSensor.class);
 
-    private SensorContext context;
-
     @Override
     public Configurator getConfigurator(Map conf) {
         return new ChatConfigurator();
@@ -29,14 +27,12 @@ public class ChatSensor extends AbstractSensor {
 
     @Override
     public void open(SensorContext context) {
-        this.context = context;
-
         final Channel sendChannel = context.getChannel("jms", "sender");
         final Channel receiveChannel = context.getChannel("jms", "receiver");
 
         startSend(sendChannel, new MessageSender() {
             @Override
-            public boolean loop(BlockingQueue queue) {
+            public boolean loop(BlockingQueue<byte []> queue) {
                 try {
                     queue.put("Hello".getBytes());
                 } catch (InterruptedException e) {
@@ -55,9 +51,10 @@ public class ChatSensor extends AbstractSensor {
             }
         });
 
-        LOG.info("Received open request {}", this.context.getId());
+        LOG.info("Received open request {}", context.getId());
     }
 
+    @SuppressWarnings("unchecked")
     private class ChatConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
@@ -79,22 +76,18 @@ public class ChatSensor extends AbstractSensor {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TTransportException {
         // read the configuration file
         Map conf = Utils.readConfig();
         SensorClient client;
-        try {
-            client = new SensorClient(conf);
+        client = new SensorClient(conf);
 
-            List<String> sites = new ArrayList<String>();
-            sites.add("local");
+        List<String> sites = new ArrayList<String>();
+        sites.add("local");
 
-            SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.ChatSensor");
-            deployDescriptor.addDeploySites(sites);
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.ChatSensor");
+        deployDescriptor.addDeploySites(sites);
 
-            client.deploySensor(deployDescriptor);
-        } catch (TTransportException e) {
-            e.printStackTrace();
-        }
+        client.deploySensor(deployDescriptor);
     }
 }
