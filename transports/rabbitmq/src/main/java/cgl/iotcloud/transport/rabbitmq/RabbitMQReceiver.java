@@ -83,14 +83,19 @@ public class RabbitMQReceiver implements Manageable {
                                 }
                             }
                             if (sensorId == null) {
-                                LOG.warn("Message without sensorId, discarding");
-                                return;
-                            }
-                            MessageContext message = new MessageContext(sensorId.toString(), body, props);
-                            try {
-                                inQueue.put(message);
-                            } catch (InterruptedException e) {
-                                LOG.error("Failed to put the object to the queue");
+                                MessageContext message = new MessageContext("default", body, props);
+                                try {
+                                    inQueue.put(message);
+                                } catch (InterruptedException e) {
+                                    LOG.error("Failed to put the object to the queue");
+                                }
+                            } else {
+                                MessageContext message = new MessageContext(sensorId.toString(), body, props);
+                                try {
+                                    inQueue.put(message);
+                                } catch (InterruptedException e) {
+                                    LOG.error("Failed to put the object to the queue");
+                                }
                             }
                             channel.basicAck(deliveryTag, false);
                         }
