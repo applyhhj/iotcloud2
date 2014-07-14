@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/iotcloud.iml" filepath="$PROJECT_DIR$/iotcloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/distribution/iotcloud-bin.iml" filepath="$PROJECT_DIR$/distribution/iotcloud-bin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/iotcloud-core.iml" filepath="$PROJECT_DIR$/core/iotcloud-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/iotcloud-examples.iml" filepath="$PROJECT_DIR$/examples/iotcloud-examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transports/kafka/iotcloud-kafka.iml" filepath="$PROJECT_DIR$/transports/kafka/iotcloud-kafka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transports/kestrel/iotcloud-kestrel.iml" filepath="$PROJECT_DIR$/transports/kestrel/iotcloud-kestrel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transports/mqtt/iotcloud-mqtt.iml" filepath="$PROJECT_DIR$/transports/mqtt/iotcloud-mqtt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transports/rabbitmq/iotcloud-rabbitmq.iml" filepath="$PROJECT_DIR$/transports/rabbitmq/iotcloud-rabbitmq.iml" />
+      <module fileurl="file://$PROJECT_DIR$/storm/iotcloud-storm.iml" filepath="$PROJECT_DIR$/storm/iotcloud-storm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transports/iotcloud-transports.iml" filepath="$PROJECT_DIR$/transports/iotcloud-transports.iml" />
+    </modules>
+  </component>
+</project>
+
