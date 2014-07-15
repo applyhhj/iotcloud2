@@ -11,6 +11,9 @@ import java.util.List;
 
 /**
  * Subscribe to sensor events and act accordingly
+ * Gets two types of events.
+ * 1. Events from user clients, these events are propagated to sites
+ * 2. Events from sites, results in updating the state locally and in zk
  */
 public class MasterSensorController {
     private static Logger LOG = LoggerFactory.getLogger(MasterSensorController.class);
@@ -36,6 +39,26 @@ public class MasterSensorController {
             undeploySensor(event);
         } else {
             LOG.warn("Unrecognized event type {}", event.getState());
+        }
+    }
+
+    @Subscribe
+    public void updateSensor(MSensorSiteEvent updateEvent) {
+        if (updateEvent.getState() == SensorState.DEPLOY) {
+            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
+        } else if (updateEvent.getState() == SensorState.UN_DEPLOY) {
+            context.removeSensor(updateEvent.getSite(), updateEvent.getId());
+        } else if (updateEvent.getState() == SensorState.ACTIVATE) {
+            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDetails.setState(SensorState.ACTIVATE);
+        } else if (updateEvent.getState() == SensorState.DEACTIVATE) {
+            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDetails.setState(SensorState.DEACTIVATE);
+        } else if (updateEvent.getState() == SensorState.UPDATE) {
+            context.removeSensor(updateEvent.getSite(), updateEvent.getId());
+            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
+        } else {
+            LOG.warn("Unrecognized event type {}", updateEvent.getState());
         }
     }
 
@@ -118,24 +141,6 @@ public class MasterSensorController {
                 // there is nothing much we can do at this point except to log it
                 LOG.error("Failed to deploy the sensor on the site {}", site);
             }
-        }
-    }
-
-    @Subscribe
-    public void updateSensor(MSensorSiteEvent updateEvent) {
-        if (updateEvent.getState() == SensorState.DEPLOY) {
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
-        } else if (updateEvent.getState() == SensorState.UN_DEPLOY) {
-            context.removeSensor(updateEvent.getSite(), updateEvent.getId());
-        } else if (updateEvent.getState() == SensorState.ACTIVATE) {
-            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDetails.setState(SensorState.ACTIVATE);
-        } else if (updateEvent.getState() == SensorState.DEACTIVATE) {
-            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDetails.setState(SensorState.DEACTIVATE);
-        } else if (updateEvent.getState() == SensorState.UPDATE) {
-            context.removeSensor(updateEvent.getSite(), updateEvent.getId());
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
         }
     }
 }

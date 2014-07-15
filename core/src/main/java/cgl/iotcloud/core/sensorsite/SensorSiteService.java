@@ -4,6 +4,7 @@ import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
+import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

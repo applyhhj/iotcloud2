@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
+import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Transport;
@@ -44,8 +45,37 @@ public class SiteSensorDeployer {
             throw new RuntimeException("Failed to create the connection to the master server", e);
         }
 
-        Thread t = new Thread(new Worker());
-        t.start();
+//        Thread t = new Thread(new Worker());
+//        t.start();
+    }
+
+    public void handlerSensorEvent(SensorEvent event) {
+        try {
+            if (event.getState() == SensorState.DEPLOY) {
+                SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
+                deploySensor(deployDescriptor);
+            } else if (event.getState() == SensorState.ACTIVATE) {
+                SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
+                if (descriptor != null) {
+                    ISensor sensor = descriptor.getSensor();
+                    sensor.activate();
+                } else {
+                    LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
+                }
+            } else if (event.getState() == SensorState.DEACTIVATE) {
+                SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
+                if (descriptor != null) {
+                    ISensor sensor = descriptor.getSensor();
+                    sensor.deactivate();
+                } else {
+                    LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorId());
+                }
+            } else if (event.getState() == SensorState.UN_DEPLOY) {
+                unDeploySensor(event);
+            }
+        } catch (Exception e) {
+            LOG.error("Exception occurred in the worker listening for consumer changes", e);
+        }
     }
 
     private class Worker implements Runnable {
@@ -61,16 +91,20 @@ public class SiteSensorDeployer {
                             SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
                             deploySensor(deployDescriptor);
                         } else if (event.getState() == SensorState.ACTIVATE) {
-                            SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
+                            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                             if (descriptor != null) {
                                 ISensor sensor = descriptor.getSensor();
                                 sensor.activate();
+                            } else {
+                                LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
                             }
                         } else if (event.getState() == SensorState.DEACTIVATE) {
-                            SensorDescriptor descriptor = siteContext.getSensor(event.getSensorId());
+                            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                             if (descriptor != null) {
                                 ISensor sensor = descriptor.getSensor();
                                 sensor.deactivate();
+                            } else {
+                                LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorId());
                             }
                         } else if (event.getState() == SensorState.UN_DEPLOY) {
                             unDeploySensor(event);
@@ -179,7 +213,7 @@ public class SiteSensorDeployer {
             sensor.open(sensorContext);
 
             // notify the master about the sensor
-            client.registerSensor(siteContext.getSiteId(), siteContext.getSensor(sensorContext.getId()));
+            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";
             LOG.error(msg);

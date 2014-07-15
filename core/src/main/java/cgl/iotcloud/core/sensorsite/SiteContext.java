@@ -10,13 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Holds information about an active site
+ */
 public class SiteContext {
     // a unique id for the site
     private String siteId;
 
+    // the transports available for this site
     private Map<String, Transport> transports = new HashMap<String, Transport>();
 
+    // static information about the deployed sensors
     private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
+
+    // runtime information about the deployed sensors
+    private Map<SensorId, SensorContext> sensorContexts = new HashMap<SensorId, SensorContext>();
 
     public SiteContext(String siteId) {
         this.siteId = siteId;
@@ -47,7 +55,7 @@ public class SiteContext {
         return new ArrayList<SensorDescriptor>(sensors.values());
     }
 
-    public SensorDescriptor getSensor(SensorId id) {
+    public SensorDescriptor getSensorDescriptor(SensorId id) {
         return sensors.get(id);
     }
 
