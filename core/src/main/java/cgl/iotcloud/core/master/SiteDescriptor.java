@@ -1,9 +1,11 @@
 package cgl.iotcloud.core.master;
 
+import java.io.Serializable;
+
 /**
  * Captures the details about a registered sensor site
  */
-public class SiteDescriptor {
+public class SiteDescriptor implements Serializable {
     // a unique string identifying the sensor site
     private String id;
 

@@ -3,7 +3,9 @@ package cgl.iotcloud.core.sensorsite;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 
-public class SensorDescriptor {
+import java.io.Serializable;
+
+public class SensorDescriptor implements Serializable {
     private SensorContext sensorContext;
 
     private ISensor sensor;

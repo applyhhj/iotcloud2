@@ -12,6 +12,8 @@ iot.sensorsite.threads: 4
 # if the absolute path of a sensor is not given this is the place to look
 iot.sensorsite.repository: "repository/sensors"
 
+iot.zk.servers: ["127.0.0.1"]
+
 iot.sensorsite.transports:
     jms:
       class: "cgl.iotcloud.core.transport.jms.JMSTransport"

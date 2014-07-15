@@ -40,9 +40,6 @@ public class SensorMaster {
     // the events from sites
     private BlockingQueue<SiteEvent> siteEventsQueue;
 
-    // the events from APIs
-    private BlockingQueue<MasterSensorEvent> sensorEvents;
-
     // this event bus carries the events about the sensors
     private EventBus sensorEventBus = new EventBus();
 
@@ -62,7 +59,6 @@ public class SensorMaster {
 
         // the queues for handing the incoming requests
         siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
-        sensorEvents = new ArrayBlockingQueue<MasterSensorEvent>(1024);
 
         // create the site client cache
         siteClientCache = new SiteClientCache(masterContext);

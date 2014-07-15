@@ -1,11 +1,12 @@
 package cgl.iotcloud.core.sensorsite;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SensorDeployDescriptor {
+public class SensorDeployDescriptor implements Serializable {
     private String jarName;
 
     private String className;
