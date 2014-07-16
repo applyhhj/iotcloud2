@@ -157,7 +157,7 @@ public class SiteSensorDeployer {
             siteContext.addSensor(sensorContext, sensor);
 
             // notify the master about the sensor
-            SensorEvent event = new SensorEvent(sensorContext.getId(), SensorState.ACTIVATE);
+            SensorEvent event = new SensorEvent(sensorContext.getId(), SensorState.DEPLOY);
             siteEventBus.post(event);
 
 //            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
