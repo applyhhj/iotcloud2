@@ -1,4 +1,4 @@
-package cgl.iotcloud.core.master;
+package cgl.iotcloud.core.sensor;
 
 import cgl.iotcloud.core.transport.Direction;
 

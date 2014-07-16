@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 
 import java.util.*;

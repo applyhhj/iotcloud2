@@ -116,9 +116,6 @@ public class SensorSite {
     }
 
     public void stop() {
-        // stop the deployer
-        sensorDeployer.close();
-
         // stop the transports
         for (Transport t : siteContext.getTransports().values()) {
             t.stop();

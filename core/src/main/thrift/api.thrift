@@ -15,7 +15,8 @@ enum TSensorState {
     ACTIVE,
     DE_ACTIVATE,
     UN_DEPLOY,
-    UPDATE
+    UPDATE,
+    UNKNOWN
 }
 
 struct TChannel {

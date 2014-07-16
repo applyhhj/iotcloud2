@@ -1,10 +1,15 @@
-package cgl.iotcloud.core.sensorsite;
+package cgl.iotcloud.core.sensor;
 
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
+import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 
 import java.io.Serializable;
 
+/**
+ * Contains static information about the sensor. This information can be
+ * saved in persistant store.
+ */
 public class SensorDescriptor implements Serializable {
     private SensorContext sensorContext;
 

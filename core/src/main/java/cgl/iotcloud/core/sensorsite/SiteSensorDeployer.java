@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
+import cgl.iotcloud.core.sensor.SensorDescriptor;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
@@ -74,60 +75,6 @@ public class SiteSensorDeployer {
         }
     }
 
-    private class Worker implements Runnable {
-        @Override
-        public void run() {
-
-            int errorCount = 0;
-            while (run) {
-                try {
-                    try {
-                        SensorEvent event = events.take();
-                        if (event.getState() == SensorState.DEPLOY) {
-                            SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
-                            deploySensor(deployDescriptor);
-                        } else if (event.getState() == SensorState.ACTIVATE) {
-                            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
-                            if (descriptor != null) {
-                                ISensor sensor = descriptor.getSensor();
-                                sensor.activate();
-                            } else {
-                                LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
-                            }
-                        } else if (event.getState() == SensorState.DEACTIVATE) {
-                            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
-                            if (descriptor != null) {
-                                ISensor sensor = descriptor.getSensor();
-                                sensor.deactivate();
-                            } else {
-                                LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorId());
-                            }
-                        } else if (event.getState() == SensorState.UN_DEPLOY) {
-                            unDeploySensor(event);
-                        }
-                    } catch (Exception e) {
-                        LOG.error("Exception occurred in the worker listening for consumer changes", e);
-                    }
-                } catch (Throwable t) {
-                    errorCount++;
-                    if (errorCount <= 3) {
-                        LOG.error("Error occurred " + errorCount + " times.. trying to continue the worker", t);
-                    } else {
-                        LOG.error("Error occurred " + errorCount + " times.. terminating the worker", t);
-                        run = false;
-                    }
-                }
-            }
-            String message = "Unexpected notification type";
-            LOG.error(message);
-            throw new RuntimeException(message);
-        }
-    }
-
-    public void close() {
-        run = false;
-    }
-
     public void unDeploySensor(SensorEvent event) {
         try {
             SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
@@ -186,9 +133,6 @@ public class SiteSensorDeployer {
             // set the sensor id
             sensorContext.setSensorID(sensorID);
 
-            // add the sensor to the site
-            siteContext.addSensor(sensorContext, sensor);
-
             // get the channels registered for this sensor
             Map<String, List<Channel>> channels = sensorContext.getChannels();
 
@@ -210,6 +154,9 @@ public class SiteSensorDeployer {
 
             // notify the master about the sensor
             client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
+
+            // add the sensor to the site
+            siteContext.addSensor(sensorContext, sensor);
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";
             LOG.error(msg);

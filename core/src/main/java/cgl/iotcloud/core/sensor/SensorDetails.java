@@ -1,4 +1,4 @@
-package cgl.iotcloud.core.master;
+package cgl.iotcloud.core.sensor;
 
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorState;
@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains static information about the sensor. This information can be
+ * saved in persistant store.
+ */
 public class SensorDetails {
     private final SensorId sensorId;
 

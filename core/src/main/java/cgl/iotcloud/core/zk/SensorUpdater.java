@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.zk;
 
 import cgl.iotcloud.core.master.SiteDescriptor;
-import cgl.iotcloud.core.sensorsite.SensorDescriptor;
+import cgl.iotcloud.core.sensor.SensorDescriptor;
 import cgl.iotcloud.core.utils.SerializationUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;

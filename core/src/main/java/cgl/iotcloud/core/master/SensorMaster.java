@@ -5,6 +5,7 @@ import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.api.MasterAPIServiceHandler;
 import cgl.iotcloud.core.api.thrift.TMasterAPIService;
 import cgl.iotcloud.core.master.thrift.TMasterService;
+import cgl.iotcloud.core.utils.SiteClientCache;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;

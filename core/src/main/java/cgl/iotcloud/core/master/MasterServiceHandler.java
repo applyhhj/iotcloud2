@@ -5,6 +5,8 @@ import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
+import cgl.iotcloud.core.sensor.ChannelDetails;
+import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.transport.Direction;
 import com.google.common.eventbus.EventBus;

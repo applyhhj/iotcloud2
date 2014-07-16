@@ -1,5 +1,8 @@
-package cgl.iotcloud.core.master;
+package cgl.iotcloud.core.utils;
 
+import cgl.iotcloud.core.master.MasterContext;
+import cgl.iotcloud.core.master.SiteClient;
+import cgl.iotcloud.core.master.SiteDescriptor;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +26,6 @@ public class SiteClientCache {
 
     public SiteClient getSiteClient(String siteId) throws Exception {
         if (siteClients.containsKey(siteId)) {
-            SiteClient client = siteClients.get(siteId);
             return siteClients.get(siteId);
         } else {
             SiteDescriptor descriptor = context.getSensorSite(siteId);

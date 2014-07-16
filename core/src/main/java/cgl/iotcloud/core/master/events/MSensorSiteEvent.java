@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.master.events;
 
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.master.SensorDetails;
+import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
 /**

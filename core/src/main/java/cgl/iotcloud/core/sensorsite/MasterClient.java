@@ -4,11 +4,14 @@ import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
+import cgl.iotcloud.core.sensor.ChannelDetails;
+import cgl.iotcloud.core.sensor.SensorDescriptor;
+import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
+import cgl.iotcloud.core.utils.SensorUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
@@ -67,7 +70,29 @@ public class MasterClient {
         client.unRegisterSensor(siteId, tSensorId);
     }
 
+    public void updateSensor(String siteId, SensorDetails sensor) throws TException {
+        TSensorId tSensorId = new TSensorId(sensor.getSensorId().getName(), sensor.getSensorId().getName());
+        TSensor tSensor = new TSensor();
+        tSensor.setId(tSensorId);
+        tSensor.setState(SensorUtils.getSensorState(sensor.getState()));
+
+        for (Map.Entry<String, List<ChannelDetails>> e: sensor.getChannels().entrySet()) {
+            List<ChannelDetails> channels = e.getValue();
+            String transport = e.getKey();
+
+            for (ChannelDetails c : channels) {
+                if (c.getDirection() == Direction.IN) {
+                    TChannel tChannel = new TChannel(transport, TDirection.IN);
+                    tSensor.addToChannels(tChannel);
+                }
+            }
+        }
+
+        client.updateSensor(siteId, tSensor);
+    }
+
     public void close() {
         transport.close();
     }
+
 }
