@@ -60,8 +60,11 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
     @Override
     public TResponse registerSensor(String siteId, TSensor sensor) throws TException {
+
         TSensorId id = sensor.getId();
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+
+        LOG.info("Request received for registering a sensor from site {} with sensor id {}", siteId, sensorID);
 
         SensorDetails sensorDetails = new SensorDetails(sensorID);
         if (sensor.getChannels() != null) {
@@ -89,6 +92,9 @@ public class MasterServiceHandler implements TMasterService.Iface {
     @Override
     public TResponse unRegisterSensor(String siteId, TSensorId id) throws TException {
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+
+        LOG.info("Request received for un-registering a sensor from site {} with sensor id {}", siteId, sensorID);
+
         MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.UN_DEPLOY, siteId);
         sensorEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");
@@ -98,6 +104,9 @@ public class MasterServiceHandler implements TMasterService.Iface {
     public TResponse updateSensor(String siteId, TSensor sensor) throws TException {
         TSensorId id = sensor.getId();
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+
+        LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, sensorID);
+
         SensorDetails sensorDetails = new SensorDetails(sensorID);
 
         if (sensor.getChannels() != null) {

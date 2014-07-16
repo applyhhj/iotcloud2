@@ -43,3 +43,10 @@ then use the command
 Running the examples
 ====================
 
+To run the rabbitmq example
+
+First start a RabbitMQ server on the local machine
+
+After starting the master and site servers run the following command
+
+./bin/iotcloud jar 

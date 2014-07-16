@@ -30,11 +30,12 @@ public class SiteSensorDeployer {
 
     private MasterClient client;
 
-    private EventBus eventBus;
+    private EventBus siteEventBus;
 
     public SiteSensorDeployer(Map conf, SiteContext siteContext, EventBus eventBus) {
         this.conf = conf;
         this.siteContext = siteContext;
+        this.siteEventBus = eventBus;
 
         try {
             client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
@@ -74,7 +75,7 @@ public class SiteSensorDeployer {
     }
 
     public void unDeploySensor(SensorEvent event) {
-        try {
+//        try {
             SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
             if (descriptor == null) {
                 LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
@@ -93,12 +94,14 @@ public class SiteSensorDeployer {
                 }
             }
             // notify the master about the undeployment sensor
-            client.unRegisterSensor(siteContext.getSiteId(), descriptor);
-        } catch (TException e) {
-            String msg = "Failed to add the sensor to master";
-            LOG.error(msg);
-            throw new RuntimeException(msg, e);
-        }
+            // client.unRegisterSensor(siteContext.getSiteId(), descriptor);
+            SensorEvent sensorEvent = new SensorEvent(event.getSensorId(), SensorState.UN_DEPLOY);
+            siteEventBus.post(sensorEvent);
+//        } catch (TException e) {
+//            String msg = "Failed to add the sensor to master";
+//            LOG.error(msg);
+//            throw new RuntimeException(msg, e);
+//        }
     }
 
     public void deploySensor(SensorDeployDescriptor deployDescriptor) {
@@ -154,15 +157,18 @@ public class SiteSensorDeployer {
             siteContext.addSensor(sensorContext, sensor);
 
             // notify the master about the sensor
-            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
+            SensorEvent event = new SensorEvent(sensorContext.getId(), SensorState.ACTIVATE);
+            siteEventBus.post(event);
+
+//            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";
             LOG.error(msg);
             throw new RuntimeException(msg, e);
-        } catch (TException e) {
+        } /*catch (TException e) {
             String msg = "Failed to add the sensor to master";
             LOG.error(msg);
             throw new RuntimeException(msg, e);
-        }
+        }*/
     }
 }
