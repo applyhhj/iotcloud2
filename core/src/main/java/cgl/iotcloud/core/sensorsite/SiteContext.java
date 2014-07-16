@@ -4,6 +4,7 @@ import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.transport.Transport;
+import com.google.common.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;

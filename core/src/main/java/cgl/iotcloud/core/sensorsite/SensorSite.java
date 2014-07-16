@@ -5,6 +5,7 @@ import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
+import com.google.common.eventbus.EventBus;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TNonblockingServerTransport;
@@ -31,7 +32,7 @@ public class SensorSite {
 
     private Map conf;
 
-    private BlockingQueue<SensorEvent> sensorEvents;
+    private EventBus sensorEventBus = new EventBus();
 
     public void start() {
         // read the configuration file
@@ -81,10 +82,8 @@ public class SensorSite {
             t.start();
         }
 
-        sensorEvents = new ArrayBlockingQueue<SensorEvent>(Configuration.getSiteMaxSensorEvents(conf));
-
-        sensorDeployer = new SiteSensorDeployer(conf, siteContext, sensorEvents);
-        sensorDeployer.start();
+        sensorDeployer = new SiteSensorDeployer(conf, siteContext);
+        sensorEventBus.register(sensorDeployer);
 
         Thread t = new Thread(new Runnable() {
             @Override
@@ -99,7 +98,7 @@ public class SensorSite {
                     server = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TSensorSiteService.Processor <SensorSiteService>(
-                                            new SensorSiteService(siteContext, sensorEvents))).executorService(
+                                            new SensorSiteService(siteContext, sensorEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getSensorSiteThreads(conf))));
                     LOG.info("Starting the SensorSite server on host: {} and port: {}", host, port);
                     server.serve();

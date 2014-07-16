@@ -5,6 +5,7 @@ import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Transport;
+import com.google.common.eventbus.Subscribe;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
@@ -22,8 +23,6 @@ import java.util.concurrent.BlockingQueue;
 public class SiteSensorDeployer {
     private Logger LOG = LoggerFactory.getLogger(SiteSensorDeployer.class);
 
-    private BlockingQueue<SensorEvent> events;
-
     private SiteContext siteContext;
 
     private Map conf;
@@ -32,23 +31,20 @@ public class SiteSensorDeployer {
 
     private boolean run = true;
 
-    public SiteSensorDeployer(Map conf, SiteContext siteContext, BlockingQueue<SensorEvent> events) {
+    private BlockingQueue<SensorEvent> events;
+
+    public SiteSensorDeployer(Map conf, SiteContext siteContext) {
         this.conf = conf;
         this.siteContext = siteContext;
-        this.events = events;
-    }
 
-    public void start() {
         try {
             client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
         } catch (TTransportException e) {
             throw new RuntimeException("Failed to create the connection to the master server", e);
         }
-
-//        Thread t = new Thread(new Worker());
-//        t.start();
     }
 
+    @Subscribe
     public void handlerSensorEvent(SensorEvent event) {
         try {
             if (event.getState() == SensorState.DEPLOY) {

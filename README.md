@@ -39,3 +39,7 @@ The sensor has to be built as a jar including all the dependencies. You need to 
 then use the command
 
 ./bin/iotcloud jar {jar_file_location} {main_class_for_sensor} {arguments_for_the sensor}
+
+Running the examples
+====================
+

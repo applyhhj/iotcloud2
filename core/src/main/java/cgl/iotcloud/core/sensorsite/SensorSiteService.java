@@ -6,23 +6,23 @@ import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
+import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 public class SensorSiteService implements TSensorSiteService.Iface {
     private Logger LOG = LoggerFactory.getLogger(SensorSiteService.class);
 
     private SiteContext siteContext;
 
-    private BlockingQueue<SensorEvent> sensorEvents;
+    private EventBus sensorEvents;
 
-    public SensorSiteService(SiteContext siteContext, BlockingQueue<SensorEvent> sensorEvents) {
+    public SensorSiteService(SiteContext siteContext, EventBus sensorEventBus) {
         this.siteContext = siteContext;
-        this.sensorEvents = sensorEvents;
+        this.sensorEvents = sensorEventBus;
     }
 
     @Override
@@ -47,12 +47,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         }
 
         SensorEvent event = new SensorEvent(deployDescriptor, SensorState.DEPLOY);
-
-        try {
-            sensorEvents.put(event);
-        } catch (InterruptedException e) {
-            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for deployment");
-        }
+        sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to be deployed");
     }
 
@@ -61,11 +56,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
         LOG.info("Request received for Un-Deploying a sensor with ID {}" + id);
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()), SensorState.UN_DEPLOY);
 
-        try {
-            sensorEvents.put(event);
-        } catch (InterruptedException e) {
-            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for deployment");
-        }
+        sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to be deployed");
     }
 
@@ -75,11 +66,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
                 SensorState.ACTIVATE);
-        try {
-            sensorEvents.put(event);
-        } catch (InterruptedException e) {
-            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for activation");
-        }
+        sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for activation");
     }
 
@@ -89,11 +76,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
 
         SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
                 SensorState.DEACTIVATE);
-        try {
-            sensorEvents.put(event);
-        } catch (InterruptedException e) {
-            return new TResponse(TResponseState.FAILURE, "sensor cannot be scheduled for de-activation");
-        }
+        sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for de-activation");
     }
 }
