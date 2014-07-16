@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 
 public class SiteSensorDeployer {
     private Logger LOG = LoggerFactory.getLogger(SiteSensorDeployer.class);
@@ -29,10 +28,6 @@ public class SiteSensorDeployer {
     private Map conf;
 
     private MasterClient client;
-
-    private boolean run = true;
-
-    private BlockingQueue<SensorEvent> events;
 
     public SiteSensorDeployer(Map conf, SiteContext siteContext) {
         this.conf = conf;
@@ -152,11 +147,11 @@ public class SiteSensorDeployer {
             // open the sensor
             sensor.open(sensorContext);
 
-            // notify the master about the sensor
-            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
-
             // add the sensor to the site
             siteContext.addSensor(sensorContext, sensor);
+
+            // notify the master about the sensor
+            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";
             LOG.error(msg);
