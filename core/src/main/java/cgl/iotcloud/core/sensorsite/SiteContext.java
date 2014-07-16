@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.sensorsite;
 
+import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
@@ -31,8 +32,11 @@ public class SiteContext {
     // information about the deployed sensors
     private Map<SensorId, SensorDetails> sensorDescriptions = new HashMap<SensorId, SensorDetails>();
 
-    public SiteContext(String siteId) {
+    private Map conf;
+
+    public SiteContext(String siteId, Map conf) {
         this.siteId = siteId;
+        this.conf = conf;
     }
 
     public String getSiteId() {
@@ -72,5 +76,13 @@ public class SiteContext {
 
     public Map<String, Transport> getTransports() {
         return transports;
+    }
+
+    public String getMasterHost() {
+        return Configuration.getMasterHost(conf);
+    }
+
+    public int getMasterPort() {
+        return Configuration.getMasterServerPort(conf);
     }
 }

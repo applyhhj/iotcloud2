@@ -48,7 +48,7 @@ public class SensorSite {
         }
 
         // create the site context
-        siteContext = new SiteContext(siteId);
+        siteContext = new SiteContext(siteId, conf);
 
         // read the available transports and register them
         Map transports = Configuration.getTransports(conf);
