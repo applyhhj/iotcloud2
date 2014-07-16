@@ -3,6 +3,8 @@ package cgl.iotcloud.core.sensorsite;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.sensor.SensorDescriptor;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
+import cgl.iotcloud.core.utils.MasterClientCache;
+import com.google.common.eventbus.Subscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,36 +17,32 @@ public class MasterUpdater {
         this.siteContext = context;
     }
 
+    @Subscribe
     public void updateMaster(SensorEvent event) {
         if (event.getState() == SensorState.DEPLOY) {
-            SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
-            deploySensor(deployDescriptor);
+            deploySensor(event);
         } else if (event.getState() == SensorState.ACTIVATE) {
-            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
-            if (descriptor != null) {
-                ISensor sensor = descriptor.getSensor();
-                sensor.activate();
-            } else {
-                LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
-            }
+            activateSensor(event);
         } else if (event.getState() == SensorState.DEACTIVATE) {
-            SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
-            if (descriptor != null) {
-                ISensor sensor = descriptor.getSensor();
-                sensor.deactivate();
-            } else {
-                LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorId());
-            }
+            deActivateSensor(event);
         } else if (event.getState() == SensorState.UN_DEPLOY) {
             unDeploySensor(event);
         }
     }
 
-    private void deploySensor(SensorDeployDescriptor deployDescriptor) {
-
+    private void deploySensor(SensorEvent event) {
+//        MasterClient client = MasterClientCache.c
     }
 
     private void unDeploySensor(SensorEvent event) {
+
+    }
+
+    private void activateSensor(SensorEvent event) {
+
+    }
+
+    private void deActivateSensor(SensorEvent event) {
 
     }
 }

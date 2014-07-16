@@ -34,6 +34,10 @@ public class SensorSite {
 
     private EventBus sensorEventBus = new EventBus();
 
+    private EventBus masterEventBus = new EventBus();
+
+    private MasterUpdater masterUpdater;
+
     public void start() {
         // read the configuration file
         conf = Utils.readConfig();
@@ -82,8 +86,11 @@ public class SensorSite {
             t.start();
         }
 
-        sensorDeployer = new SiteSensorDeployer(conf, siteContext);
+        sensorDeployer = new SiteSensorDeployer(conf, siteContext, masterEventBus);
         sensorEventBus.register(sensorDeployer);
+
+        masterUpdater = new MasterUpdater(siteContext);
+        masterEventBus.register(masterUpdater);
 
         Thread t = new Thread(new Runnable() {
             @Override

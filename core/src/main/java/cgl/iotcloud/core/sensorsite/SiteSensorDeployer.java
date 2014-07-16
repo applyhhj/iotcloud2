@@ -6,6 +6,7 @@ import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Transport;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
@@ -29,7 +30,9 @@ public class SiteSensorDeployer {
 
     private MasterClient client;
 
-    public SiteSensorDeployer(Map conf, SiteContext siteContext) {
+    private EventBus eventBus;
+
+    public SiteSensorDeployer(Map conf, SiteContext siteContext, EventBus eventBus) {
         this.conf = conf;
         this.siteContext = siteContext;
 
