@@ -24,7 +24,7 @@ public class SensorMaster {
     private static Logger LOG = LoggerFactory.getLogger(SensorMaster.class);
 
     // this class manages the sensors and sites according to the events it receive
-    private SiteController manager;
+//    private SiteController manager;
 
     // the api thrift server
     private THsHaServer apiServer;
@@ -39,7 +39,7 @@ public class SensorMaster {
     private MasterContext masterContext;
 
     // the events from sites
-    private BlockingQueue<SiteEvent> siteEventsQueue;
+//    private BlockingQueue<SiteEvent> siteEventsQueue;
 
     // this event bus carries the events about the sensors
     private EventBus sensorEventBus = new EventBus();
@@ -51,6 +51,8 @@ public class SensorMaster {
 
     private SiteClientCache siteClientCache;
 
+    private MasterSiteController siteController;
+
     public void start() {
         // read the configuration file
         conf = Utils.readConfig();
@@ -59,14 +61,17 @@ public class SensorMaster {
         masterContext = new MasterContext();
 
         // the queues for handing the incoming requests
-        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
+//        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
 
         // create the site client cache
         siteClientCache = new SiteClientCache(masterContext);
 
         // start the thread to manager the sites
-        manager = new SiteController(masterContext, siteEventsQueue);
-        manager.start();
+//        manager = new SiteController(masterContext, siteEventsQueue);
+//        manager.start();
+
+        siteController = new MasterSiteController(masterContext, siteEventBus);
+        siteEventBus.register(siteController);
 
         // start the thread to manage the sensor deployments from clients
         sensorController = new MasterSensorController(siteClientCache, masterContext);
@@ -86,7 +91,7 @@ public class SensorMaster {
                     siteServer = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TMasterService.Processor <MasterServiceHandler>(
-                                            new MasterServiceHandler(masterContext, siteEventsQueue, sensorEventBus))).executorService(
+                                            new MasterServiceHandler(masterContext, siteEventBus, sensorEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
                     LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
                     siteServer.serve();
@@ -133,9 +138,9 @@ public class SensorMaster {
             apiServer.stop();
         }
         // stop handling the controller requests
-        if (manager != null) {
-            manager.stop();
-        }
+//        if (manager != null) {
+//            manager.stop();
+//        }
         // stop receiving requests from sites
         if (siteServer != null) {
             siteServer.stop();

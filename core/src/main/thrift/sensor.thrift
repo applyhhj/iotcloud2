@@ -1,5 +1,9 @@
 namespace java cgl.iotcloud.core.master.thrift
 
+struct TSite {
+    1:required string siteid;
+}
+
 struct TRegisterSiteRequest {
     1:required string siteId
     2:required i32 port

@@ -26,7 +26,7 @@ public class SiteController {
     public void start() {
         LOG.info("Starting the site monitor on master.");
 
-        heartBeats = new HeartBeats(siteEventsQueue);
+        heartBeats = new HeartBeats(null);
         active = true;
 
         SiteEventListener listener = new SiteEventListener();

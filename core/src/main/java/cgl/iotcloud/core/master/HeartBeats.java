@@ -1,5 +1,7 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.master.events.MSiteEvent;
+import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,19 +9,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
 
 public class HeartBeats {
     private static Logger LOG = LoggerFactory.getLogger(HeartBeats.class);
 
     int retries = 1;
 
-    private BlockingQueue<SiteEvent> eventsQueue;
-
     private Map<String, Timer> hearBeatTasks = new HashMap<String, Timer>();
 
-    public HeartBeats(BlockingQueue<SiteEvent> eventsQueue) {
-        this.eventsQueue = eventsQueue;
+    private EventBus siteEvents;
+
+    public HeartBeats(EventBus siteEvents) {
+        this.siteEvents = siteEvents;
     }
 
     public void setRetries(int retries) {
@@ -27,6 +28,7 @@ public class HeartBeats {
     }
 
     public void scheduleForSite(String id, String host, int port) {
+        LOG.info("Heart beats scheduled for site {}", id);
         HearBeatTask task = new HearBeatTask(id, host, port);
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(task, 0, 500);
@@ -44,7 +46,7 @@ public class HeartBeats {
         String host;
         int port;
         String id;
-        SiteEvent.State status = SiteEvent.State.ACTIVE;
+        SiteState status = SiteState.ACTIVE;
 
         private HearBeatTask(String id, String host, int port) {
             this.host = host;
@@ -62,7 +64,7 @@ public class HeartBeats {
                     boolean result = client.sendHearBeat();
                     if (result) success = true;
                 } catch (Exception e) {
-                    LOG.debug("Sensor site not reachable",e);
+                    LOG.debug("Sensor site not reachable", e);
                     success = false;
                 } finally {
                     if (client != null) {
@@ -71,17 +73,17 @@ public class HeartBeats {
                 }
                 tries++;
 
-                if (!success && tries >= retries && status != SiteEvent.State.DEACTIVATED) {
+                if (!success && tries >= retries && status != SiteState.DEACTIVATED) {
                     // remove the site and its sensors from the master context
-                    SiteEvent event = new SiteEvent(id, SiteEvent.State.DEACTIVATED);
-                    status = SiteEvent.State.DEACTIVATED;
-                    eventsQueue.add(event);
+                    MSiteEvent event = new MSiteEvent(id, SiteState.DEACTIVATED);
+                    status = SiteState.DEACTIVATED;
+                    siteEvents.post(event);
 
                     LOG.info("Deactivating the site with host: {} and port: {}", host, port);
-                } else if (success && status == SiteEvent.State.DEACTIVATED) {
+                } else if (success && status == SiteState.DEACTIVATED) {
                     SiteEvent event = new SiteEvent(id, SiteEvent.State.ACTIVE);
-                    status = SiteEvent.State.ACTIVE;
-                    eventsQueue.add(event);
+                    status = SiteState.ACTIVE;
+                    siteEvents.post(event);
                     LOG.info("Activating the site with host: {} and port: {}", host, port);
                 }
             }

@@ -3,8 +3,10 @@ package cgl.iotcloud.core.master;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
+import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
+import cgl.iotcloud.core.master.thrift.TSite;
 import cgl.iotcloud.core.sensor.ChannelDetails;
 import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
@@ -21,15 +23,15 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
     private MasterContext masterContext;
 
-    private BlockingQueue<SiteEvent> siteEventsQueue;
-
     private EventBus sensorEventBus;
 
+    private EventBus siteEventBus;
+
     public MasterServiceHandler(MasterContext masterContext,
-                                BlockingQueue<SiteEvent> siteEventsQueue,
+                                EventBus siteEventBus,
                                 EventBus sensorEventBus) {
         this.masterContext = masterContext;
-        this.siteEventsQueue = siteEventsQueue;
+        this.siteEventBus = siteEventBus;
         this.sensorEventBus = sensorEventBus;
     }
 
@@ -45,13 +47,21 @@ public class MasterServiceHandler implements TMasterService.Iface {
         masterContext.addSensorSite(descriptor);
 
         // notify the monitor about the new site
-        SiteEvent siteEvent = new SiteEvent(id, SiteEvent.State.ADDED);
-        try {
-            siteEventsQueue.put(siteEvent);
-        } catch (InterruptedException e) {
-            masterContext.removeSite(id);
-            LOG.error("Failed to add the new site..");
-        }
+        MSiteEvent siteEvent = new MSiteEvent(id, SiteState.ADDED);
+        siteEventBus.post(siteEvent);
+
+        TResponse registerSiteResponse = new TResponse();
+        registerSiteResponse.setState(TResponseState.SUCCESS);
+        return registerSiteResponse;
+    }
+
+    @Override
+    public TResponse unRegisterSite(TSite site) throws TException {
+        String id = site.getSiteid();
+
+        // notify the monitor about the new site
+        MSiteEvent siteEvent = new MSiteEvent(id, SiteState.REMOVED);
+        siteEventBus.post(siteEvent);
 
         TResponse registerSiteResponse = new TResponse();
         registerSiteResponse.setState(TResponseState.SUCCESS);
