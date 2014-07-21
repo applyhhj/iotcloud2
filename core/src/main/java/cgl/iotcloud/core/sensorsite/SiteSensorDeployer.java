@@ -8,8 +8,6 @@ import cgl.iotcloud.core.transport.ChannelName;
 import cgl.iotcloud.core.transport.Transport;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.apache.thrift.TException;
-import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,20 +26,12 @@ public class SiteSensorDeployer {
 
     private Map conf;
 
-    private MasterClient client;
-
     private EventBus siteEventBus;
 
     public SiteSensorDeployer(Map conf, SiteContext siteContext, EventBus eventBus) {
         this.conf = conf;
         this.siteContext = siteContext;
         this.siteEventBus = eventBus;
-
-        try {
-            client = new MasterClient(Configuration.getMasterHost(conf), Configuration.getMasterServerPort(conf));
-        } catch (TTransportException e) {
-            throw new RuntimeException("Failed to create the connection to the master server", e);
-        }
     }
 
     @Subscribe
@@ -75,33 +65,26 @@ public class SiteSensorDeployer {
     }
 
     public void unDeploySensor(SensorEvent event) {
-//        try {
-            SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
-            if (descriptor == null) {
-                LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
-                return;
+        SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
+        if (descriptor == null) {
+            LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
+            return;
+        }
+
+        LOG.info("Un-Deploying sensor {}", descriptor.getSensorContext().getId());
+
+        ISensor sensor = descriptor.getSensor();
+        sensor.close();
+
+        Map<String, List<Channel>> channels = descriptor.getSensorContext().getChannels();
+        for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
+            for (Channel channel : entry.getValue()) {
+                channel.close();
             }
+        }
 
-            LOG.info("Un-Deploying sensor {}", descriptor.getSensorContext().getId());
-
-            ISensor sensor = descriptor.getSensor();
-            sensor.close();
-
-            Map<String, List<Channel>> channels = descriptor.getSensorContext().getChannels();
-            for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
-                for (Channel channel : entry.getValue()) {
-                    channel.close();
-                }
-            }
-            // notify the master about the undeployment sensor
-            // client.unRegisterSensor(siteContext.getSiteId(), descriptor);
-            SensorEvent sensorEvent = new SensorEvent(event.getSensorId(), SensorState.UN_DEPLOY);
-            siteEventBus.post(sensorEvent);
-//        } catch (TException e) {
-//            String msg = "Failed to add the sensor to master";
-//            LOG.error(msg);
-//            throw new RuntimeException(msg, e);
-//        }
+        SensorEvent sensorEvent = new SensorEvent(event.getSensorId(), SensorState.UN_DEPLOY);
+        siteEventBus.post(sensorEvent);
     }
 
     public void deploySensor(SensorDeployDescriptor deployDescriptor) {
@@ -159,16 +142,10 @@ public class SiteSensorDeployer {
             // notify the master about the sensor
             SensorEvent event = new SensorEvent(sensorContext.getId(), SensorState.DEPLOY);
             siteEventBus.post(event);
-
-//            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(sensorContext.getId()));
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";
             LOG.error(msg);
             throw new RuntimeException(msg, e);
-        } /*catch (TException e) {
-            String msg = "Failed to add the sensor to master";
-            LOG.error(msg);
-            throw new RuntimeException(msg, e);
-        }*/
+        }
     }
 }

@@ -2,7 +2,6 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.Utils;
-import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import cgl.iotcloud.core.transport.Transport;
 import com.google.common.eventbus.EventBus;
@@ -17,8 +16,6 @@ import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 
 public class SensorSite {
