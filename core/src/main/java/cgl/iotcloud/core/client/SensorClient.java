@@ -3,7 +3,7 @@ package cgl.iotcloud.core.client;
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
-import cgl.iotcloud.core.master.SiteDescriptor;
+import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;

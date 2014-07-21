@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

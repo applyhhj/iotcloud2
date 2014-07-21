@@ -2,6 +2,7 @@ package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
+import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
@@ -15,8 +16,6 @@ import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.BlockingQueue;
 
 public class MasterServiceHandler implements TMasterService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterServiceHandler.class);

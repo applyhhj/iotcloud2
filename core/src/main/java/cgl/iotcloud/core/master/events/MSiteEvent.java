@@ -1,6 +1,6 @@
 package cgl.iotcloud.core.master.events;
 
-import cgl.iotcloud.core.master.SiteDescriptor;
+import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.SiteState;
 
 public class MSiteEvent {

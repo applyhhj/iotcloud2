@@ -2,7 +2,7 @@ package cgl.iotcloud.core.utils;
 
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.master.SiteClient;
-import cgl.iotcloud.core.master.SiteDescriptor;
+import cgl.iotcloud.core.desc.SiteDescriptor;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
