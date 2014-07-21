@@ -16,15 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 
 public class SensorMaster {
     private static Logger LOG = LoggerFactory.getLogger(SensorMaster.class);
-
-    // this class manages the sensors and sites according to the events it receive
-//    private SiteController manager;
 
     // the api thrift server
     private THsHaServer apiServer;
@@ -47,10 +42,13 @@ public class SensorMaster {
     // this event bus carries event about the sites
     private EventBus siteEventBus = new EventBus();
 
+    // deploy sensors
     private MasterSensorController sensorController;
 
+    // a factory
     private SiteClientCache siteClientCache;
 
+    // this class manages the sensors and sites according to the events it receive
     private MasterSiteController siteController;
 
     public void start() {
@@ -60,16 +58,10 @@ public class SensorMaster {
         // create the context
         masterContext = new MasterContext();
 
-        // the queues for handing the incoming requests
-//        siteEventsQueue = new ArrayBlockingQueue<SiteEvent>(1024);
-
         // create the site client cache
         siteClientCache = new SiteClientCache(masterContext);
 
         // start the thread to manager the sites
-//        manager = new SiteController(masterContext, siteEventsQueue);
-//        manager.start();
-
         siteController = new MasterSiteController(masterContext, siteEventBus);
         siteEventBus.register(siteController);
 
@@ -132,15 +124,10 @@ public class SensorMaster {
     }
 
     public void stop() {
-
         // stop receiving requests from clients
         if (apiServer != null) {
             apiServer.stop();
         }
-        // stop handling the controller requests
-//        if (manager != null) {
-//            manager.stop();
-//        }
         // stop receiving requests from sites
         if (siteServer != null) {
             siteServer.stop();
