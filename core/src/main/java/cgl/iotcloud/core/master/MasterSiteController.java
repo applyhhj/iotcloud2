@@ -37,4 +37,8 @@ public class MasterSiteController {
             heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
         }
     }
+
+    private void deactivateSite(String siteId) {
+
+    }
 }

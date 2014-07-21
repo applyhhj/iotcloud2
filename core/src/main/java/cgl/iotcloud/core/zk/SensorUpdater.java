@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SensorUpdater {
-    private Logger LOG = LoggerFactory.getLogger(SensorUpdater.class);
+    private static Logger LOG = LoggerFactory.getLogger(SensorUpdater.class);
 
-    public void registerSite(CuratorFramework client, String parent, SiteDescriptor descriptor) {
+    public static void registerSite(CuratorFramework client, String parent, SiteDescriptor descriptor) {
         // this will create the given ZNode with the given data
         try {
             client.create().forPath(parent, SerializationUtils.serializeToBytes(descriptor));
@@ -20,7 +20,7 @@ public class SensorUpdater {
         }
     }
 
-    public void removeSite(CuratorFramework client, String path, SiteDescriptor descriptor) {
+    public static void removeSite(CuratorFramework client, String path, SiteDescriptor descriptor) {
         // this will create the given ZNode with the given data
         try {
             client.delete().forPath(getSitePath(path, descriptor));
@@ -30,7 +30,7 @@ public class SensorUpdater {
         }
     }
 
-    public void registerSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
+    public static void registerSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
         // this will create the given ZNode with the given data
         try {
             client.create().forPath(getSensorPath(parent, descriptor), SerializationUtils.serializeToBytes(descriptor));
@@ -40,7 +40,7 @@ public class SensorUpdater {
         }
     }
 
-    public void removeSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
+    public static void removeSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
         try {
             client.delete().forPath(getSensorPath(parent, descriptor));
         } catch (Exception e) {

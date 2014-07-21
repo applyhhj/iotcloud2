@@ -79,12 +79,12 @@ public class HeartBeats {
                     status = SiteState.DEACTIVATED;
                     siteEvents.post(event);
 
-                    LOG.info("Deactivating the site with host: {} and port: {}", host, port);
+                    LOG.info("Detected that the site with host: {} and port: {} is no longer active", host, port);
                 } else if (success && status == SiteState.DEACTIVATED) {
-                    SiteEvent event = new SiteEvent(id, SiteEvent.State.ACTIVE);
+                    MSiteEvent event = new MSiteEvent(id, SiteState.ACTIVE);
                     status = SiteState.ACTIVE;
                     siteEvents.post(event);
-                    LOG.info("Activating the site with host: {} and port: {}", host, port);
+                    LOG.info("Site with with host: {} and port: {} came online", host, port);
                 }
             }
         }
