@@ -20,16 +20,12 @@ import org.slf4j.LoggerFactory;
 public class MasterServiceHandler implements TMasterService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterServiceHandler.class);
 
-    private MasterContext masterContext;
-
     private EventBus sensorEventBus;
 
     private EventBus siteEventBus;
 
-    public MasterServiceHandler(MasterContext masterContext,
-                                EventBus siteEventBus,
+    public MasterServiceHandler(EventBus siteEventBus,
                                 EventBus sensorEventBus) {
-        this.masterContext = masterContext;
         this.siteEventBus = siteEventBus;
         this.sensorEventBus = sensorEventBus;
     }

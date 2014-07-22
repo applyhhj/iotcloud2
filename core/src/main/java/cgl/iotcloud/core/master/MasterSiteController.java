@@ -37,15 +37,9 @@ public class MasterSiteController {
     @Subscribe
     public void handleEvent(MSiteEvent event) {
         if (event.getState() == SiteState.DEACTIVATED) {
-            LOG.info("Deactivating the site {}", event.getSiteId());
-            context.makeSiteOffline(event.getSiteId());
-            // stop the timers
-            heartBeats.stopForSite(event.getSiteId());
+           deactivateSite(event);
         } else if (event.getState() == SiteState.ACTIVE) {
-            LOG.info("Activating the site {}", event.getSiteId());
-
-            SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
-            heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
+            activateSite(event);
         } else if (event.getState() == SiteState.ADDED) {
             addSite(event);
         }
@@ -60,16 +54,17 @@ public class MasterSiteController {
         LOG.info("A new site added {} with host {} and port {}", event.getSiteId(), descriptor.getHost(), descriptor.getPort());
     }
 
-    /**
-     * Add the site to context
-     * Add the site to zookeeper
-     * @param siteId the site id
-     */
-    private void deactivateSite(String siteId) {
-
+    private void deactivateSite(MSiteEvent event) {
+        context.makeSiteOffline(event.getSiteId());
+        // stop the timers
+        heartBeats.stopForSite(event.getSiteId());
+        LOG.info("Deactivating the site {}", event.getSiteId());
     }
 
-    private void activateSite(String siteId) {
+    private void activateSite(MSiteEvent event) {
+        SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+        heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
 
+        LOG.info("Activating the site {}", event.getSiteId());
     }
 }

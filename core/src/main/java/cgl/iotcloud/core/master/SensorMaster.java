@@ -81,7 +81,7 @@ public class SensorMaster {
                     siteServer = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TMasterService.Processor <MasterServiceHandler>(
-                                            new MasterServiceHandler(masterContext, siteEventBus, sensorEventBus))).executorService(
+                                            new MasterServiceHandler(siteEventBus, sensorEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
                     LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
                     siteServer.serve();
