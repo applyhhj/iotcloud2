@@ -1,6 +1,8 @@
 package cgl.iotcloud.core.desc;
 
-public class TransportDescriptor {
+import java.io.Serializable;
+
+public class TransportDescriptor implements Serializable {
     private String name;
 
     private String url;

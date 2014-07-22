@@ -33,9 +33,6 @@ public class SensorMaster {
     // master keeps all the moving parts here
     private MasterContext masterContext;
 
-    // the events from sites
-//    private BlockingQueue<SiteEvent> siteEventsQueue;
-
     // this event bus carries the events about the sensors
     private EventBus sensorEventBus = new EventBus();
 
@@ -56,13 +53,14 @@ public class SensorMaster {
         conf = Utils.readConfig();
 
         // create the context
-        masterContext = new MasterContext();
+        masterContext = new MasterContext(conf);
 
         // create the site client cache
         siteClientCache = new SiteClientCache(masterContext);
 
         // start the thread to manager the sites
         siteController = new MasterSiteController(masterContext, siteEventBus);
+        siteController.start();
         siteEventBus.register(siteController);
 
         // start the thread to manage the sensor deployments from clients

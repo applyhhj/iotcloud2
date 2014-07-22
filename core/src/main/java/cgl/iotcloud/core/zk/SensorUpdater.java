@@ -13,7 +13,7 @@ public class SensorUpdater {
     public static void registerSite(CuratorFramework client, String parent, SiteDescriptor descriptor) {
         // this will create the given ZNode with the given data
         try {
-            client.create().forPath(parent, SerializationUtils.serializeToBytes(descriptor));
+            client.create().forPath(parent + "/" + descriptor.getId(), SerializationUtils.serializeToBytes(descriptor));
         } catch (Exception e) {
             String msg = "Failed to register the site: " + getSitePath(parent, descriptor) + " in ZK";
             LOG.error(msg, e);

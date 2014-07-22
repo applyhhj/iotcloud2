@@ -43,10 +43,8 @@ public class MasterServiceHandler implements TMasterService.Iface {
         SiteDescriptor descriptor = new SiteDescriptor(id, port, host);
         descriptor.setMetadata(request.getMetadata());
 
-        masterContext.addSensorSite(descriptor);
-
         // notify the monitor about the new site
-        MSiteEvent siteEvent = new MSiteEvent(id, SiteState.ADDED);
+        MSiteEvent siteEvent = new MSiteEvent(id, SiteState.ADDED, descriptor);
         siteEventBus.post(siteEvent);
 
         TResponse registerSiteResponse = new TResponse();

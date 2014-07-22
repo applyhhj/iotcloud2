@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.sensor.SensorDetails;
@@ -14,6 +15,12 @@ public class MasterContext {
     private Map<String, List<SensorDetails>> deactivatedSiteSensors = new HashMap<String, List<SensorDetails>>();
 
     private Map<String, SiteDescriptor> deactivatedSites = new HashMap<String, SiteDescriptor>();
+
+    private Map conf;
+
+    public MasterContext(Map conf) {
+        this.conf = conf;
+    }
 
     public void addSensorSite(SiteDescriptor site) {
         sites.put(site.getId(), site);
@@ -77,5 +84,13 @@ public class MasterContext {
             }
         }
         return null;
+    }
+
+    public Map getConf() {
+        return conf;
+    }
+
+    public String getParentPath() {
+        return Configuration.getZkRoot(conf);
     }
 }

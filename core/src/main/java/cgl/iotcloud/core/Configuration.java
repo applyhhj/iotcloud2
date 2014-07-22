@@ -1,9 +1,14 @@
 package cgl.iotcloud.core;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 import java.util.Map;
 
 public class Configuration {
+    private static Logger LOG = LoggerFactory.getLogger(Configuration.class);
+
     public static final String IOT_HOME ="iot.home";
 
     public static final String IOT_MASTER_SERVER_HOST = "iot.master.host";
@@ -35,6 +40,10 @@ public class Configuration {
     public static final String TRANSPORT_PROPERTIES = "properties";
 
     public static final String CHANNEL_JMS_IS_QUEUE = "isQueue";
+
+    public static final String ZK_SERVERS = "iot.zk.servers";
+
+    public static final String ZK_ROOT = "iot.zk.root";
 
     public static String getMasterHost(Map conf) {
         return (String) conf.get(IOT_MASTER_SERVER_HOST);
@@ -112,5 +121,34 @@ public class Configuration {
 
     public static String getSensorRepositoryPath(Map conf) {
         return (String) conf.get(IOT_SENSORSITE_REPOSITORY);
+    }
+
+    public static String getZkRoot(Map conf) {
+        Object val = conf.get(ZK_ROOT);
+        if (val == null || !(val instanceof String)) {
+            String msg = "ZooKeeper root must be specified";
+            LOG.error(msg);
+            throw new RuntimeException(msg);
+        }
+
+        return val.toString();
+    }
+
+    public static String getZkConnectionString(Map conf) {
+        Object val = conf.get(ZK_SERVERS);
+        if (val == null || !(val instanceof List)) {
+            String message = "The zookeeper server must be specified";
+            LOG.error(message);
+            throw new RuntimeException(message);
+        }
+
+        List servers = (List) val;
+
+        String ret = "";
+        for (Object o : servers) {
+            ret += o.toString();
+        }
+
+        return ret;
     }
 }
