@@ -35,6 +35,7 @@ struct TSensor {
     3:TSensorState state
     4:binary metadata
     5:list<TChannel> channels
+    6:optional string sensorId       # a unique id for the sensor
 }
 
 enum TResponseState {
@@ -52,7 +53,7 @@ struct TSiteDetails {
     2:required i32 port
     3:required string host
     4:optional binary metadata
-    5:list<TBroker> brokers
+    5:optional list<TBroker> brokers
 }
 
 struct TSiteDetailsResponse {

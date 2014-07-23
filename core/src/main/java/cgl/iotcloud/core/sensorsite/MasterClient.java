@@ -5,7 +5,6 @@ import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.desc.ChannelDescriptor;
 import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.thrift.TMasterService;
-import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.utils.SensorUtils;
@@ -35,7 +34,7 @@ public class MasterClient {
     }
 
     public boolean registerSite(String siteId, String siteHost, int sitePort) throws TException {
-        TResponse response = client.registerSite(new TRegisterSiteRequest(siteId, sitePort, siteHost));
+        TResponse response = client.registerSite(new TSiteDetails(siteId, sitePort, siteHost));
         return response.getState() == TResponseState.SUCCESS;
     }
 
@@ -53,7 +52,7 @@ public class MasterClient {
             for (Channel c : channels) {
                 if (c.getDirection() == Direction.IN) {
                     // todo
-                    TChannel tChannel = new TChannel(c.getName(), TDirection.IN, null);
+                    TChannel tChannel = new TChannel(transport, TDirection.IN);
                     tSensor.addToChannels(tChannel);
                 }
             }
@@ -83,7 +82,7 @@ public class MasterClient {
             for (ChannelDescriptor c : channels) {
                 if (c.getDirection() == Direction.IN) {
                     // TODO
-                    TChannel tChannel = new TChannel(transport, TDirection.IN, null);
+                    TChannel tChannel = new TChannel(transport, TDirection.IN);
                     tSensor.addToChannels(tChannel);
                 }
             }

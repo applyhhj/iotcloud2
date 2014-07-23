@@ -8,8 +8,6 @@ import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
-import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
-import cgl.iotcloud.core.master.thrift.TSite;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.transport.Direction;
 import com.google.common.eventbus.EventBus;
@@ -31,7 +29,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TResponse registerSite(TRegisterSiteRequest request) throws TException {
+    public TResponse registerSite(TSiteDetails request) throws TException {
         String id = request.getSiteId();
         String host = request.getHost();
         int port = request.getPort();
@@ -49,8 +47,8 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TResponse unRegisterSite(TSite site) throws TException {
-        String id = site.getSiteid();
+    public TResponse unRegisterSite(TSiteDetails site) throws TException {
+        String id = site.getSiteId();
 
         // notify the monitor about the new site
         MSiteEvent siteEvent = new MSiteEvent(id, SiteState.REMOVED);
@@ -78,7 +76,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
                 } else if (tChannel.getDirection() == TDirection.OUT) {
                     details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDescriptor.addChannel(tChannel.getTransport().getName(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);
@@ -120,7 +118,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
                 } else if (tChannel.getDirection() == TDirection.OUT) {
                     details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDescriptor.addChannel(tChannel.getTransport().getName(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);

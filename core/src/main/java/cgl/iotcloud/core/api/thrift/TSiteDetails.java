@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
   public int port; // required
   public String host; // required
   public ByteBuffer metadata; // optional
-  public List<TBroker> brokers; // required
+  public List<TBroker> brokers; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -140,7 +140,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __PORT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.METADATA};
+  private _Fields optionals[] = {_Fields.METADATA,_Fields.BROKERS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -152,7 +152,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.METADATA, new org.apache.thrift.meta_data.FieldMetaData("metadata", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
-    tmpMap.put(_Fields.BROKERS, new org.apache.thrift.meta_data.FieldMetaData("brokers", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.BROKERS, new org.apache.thrift.meta_data.FieldMetaData("brokers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TBroker.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -165,15 +165,13 @@ import org.slf4j.LoggerFactory;
   public TSiteDetails(
     String siteId,
     int port,
-    String host,
-    List<TBroker> brokers)
+    String host)
   {
     this();
     this.siteId = siteId;
     this.port = port;
     setPortIsSet(true);
     this.host = host;
-    this.brokers = brokers;
   }
 
   /**
@@ -619,14 +617,16 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("brokers:");
-    if (this.brokers == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.brokers);
+    if (isSetBrokers()) {
+      if (!first) sb.append(", ");
+      sb.append("brokers:");
+      if (this.brokers == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.brokers);
+      }
+      first = false;
     }
-    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -769,16 +769,18 @@ import org.slf4j.LoggerFactory;
         }
       }
       if (struct.brokers != null) {
-        oprot.writeFieldBegin(BROKERS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.brokers.size()));
-          for (TBroker _iter21 : struct.brokers)
+        if (struct.isSetBrokers()) {
+          oprot.writeFieldBegin(BROKERS_FIELD_DESC);
           {
-            _iter21.write(oprot);
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.brokers.size()));
+            for (TBroker _iter21 : struct.brokers)
+            {
+              _iter21.write(oprot);
+            }
+            oprot.writeListEnd();
           }
-          oprot.writeListEnd();
+          oprot.writeFieldEnd();
         }
-        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
