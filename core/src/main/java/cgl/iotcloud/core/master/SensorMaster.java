@@ -65,6 +65,7 @@ public class SensorMaster {
 
         // start the thread to manage the sensor deployments from clients
         sensorController = new MasterSensorController(siteClientCache, masterContext);
+        sensorController.start();
         // register this with sensor event bus
         sensorEventBus.register(sensorController);
 

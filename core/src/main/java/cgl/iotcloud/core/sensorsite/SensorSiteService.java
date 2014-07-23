@@ -33,7 +33,7 @@ public class SensorSiteService implements TSensorSiteService.Iface {
     }
 
     @Override
-    public TResponse deploySensor(TSensorDetails sensor) throws TException {
+    public TResponse deploySensor(TSensorDeployDescriptor sensor) throws TException {
         LOG.info("Request received for deploying a sensor {}" + sensor);
 
         String className = sensor.getClassName();

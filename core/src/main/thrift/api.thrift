@@ -61,7 +61,7 @@ struct TSiteDetailsResponse {
     2:required TResponse state
 }
 
-struct TSensorDetails {
+struct TSensorDeployDescriptor {
     1:required string filename
     2:required string className
     3:optional map<string, string> properties

@@ -3,11 +3,10 @@ package cgl.iotcloud.core.master;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.TResponse;
 import cgl.iotcloud.core.api.thrift.TResponseState;
-import cgl.iotcloud.core.api.thrift.TSensorDetails;
+import cgl.iotcloud.core.api.thrift.TSensorDeployDescriptor;
 import cgl.iotcloud.core.api.thrift.TSensorId;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
-import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.thrift.TSensorSiteService;
 import org.apache.thrift.TException;
@@ -52,7 +51,7 @@ public class SiteClient {
     }
 
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {
-        TSensorDetails sensorDetails = new TSensorDetails(deployDescriptor.getJarName(),
+        TSensorDeployDescriptor sensorDetails = new TSensorDeployDescriptor(deployDescriptor.getJarName(),
                 deployDescriptor.getClassName());
 
         for (Map.Entry<String, String> e : deployDescriptor.getProperties().entrySet()) {

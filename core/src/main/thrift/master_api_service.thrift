@@ -8,7 +8,7 @@ service TMasterAPIService {
 
     api.TSiteDetailsResponse getSite(1:string siteId)
 
-    api.TResponse deploySensor(1:list<string> sites, 2:api.TSensorDetails sensor)
+    api.TResponse deploySensor(1:list<string> sites, 2:api.TSensorDeployDescriptor sensor)
     api.TResponse unDeploySensor(1:list<string> sites, 2:api.TSensorId id)
     api.TResponse unDeployAllSensor(1:api.TSensorId id)
     api.TResponse startSensor(1:list<string> sites, 2:api.TSensorId id)
@@ -16,5 +16,5 @@ service TMasterAPIService {
     api.TResponse stopSiteSensors(1:list<string> sites, 2:api.TSensorId id)
     api.TResponse stopAllSensors(1:api.TSensorId id)
 
-    list<api.TSensorDetails> getSensors(1:string siteId)
+    list<api.TSensor> getSensors(1:string siteId)
 }

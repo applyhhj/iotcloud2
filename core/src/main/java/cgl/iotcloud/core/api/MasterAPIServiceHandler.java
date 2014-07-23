@@ -55,7 +55,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
-    public TResponse deploySensor(List<String> sites, TSensorDetails sensor) throws TException {
+    public TResponse deploySensor(List<String> sites, TSensorDeployDescriptor sensor) throws TException {
         SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(sensor.getFilename(), sensor.getClassName());
         LOG.info("Request received for deploying a sensor {}", deployDescriptor);
         deployDescriptor.addDeploySites(sites);
@@ -127,7 +127,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
-    public List<TSensorDetails> getSensors(String siteId) throws TException {
+    public List<TSensor> getSensors(String siteId) throws TException {
         return null;
     }
 }

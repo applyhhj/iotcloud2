@@ -54,9 +54,7 @@ public class SensorClient {
             TSiteDetailsResponse response = this.client.getSite(id);
             if (response.getState().getState() == TResponseState.SUCCESS) {
                 TSiteDetails details = response.getDetails();
-                SiteDescriptor siteDescriptor =
-                        new SiteDescriptor(details.getSiteId(), details.getPort(), details.getHost());
-                return siteDescriptor;
+                return new SiteDescriptor(details.getSiteId(), details.getPort(), details.getHost());
             }
             return null;
         } catch (TException e) {
@@ -65,7 +63,7 @@ public class SensorClient {
     }
 
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {
-        TSensorDetails sensorDetails = new TSensorDetails(deployDescriptor.getJarName(), deployDescriptor.getClassName());
+        TSensorDeployDescriptor sensorDetails = new TSensorDeployDescriptor(deployDescriptor.getJarName(), deployDescriptor.getClassName());
 
         for (Map.Entry<String, String> e : deployDescriptor.getProperties().entrySet()) {
             sensorDetails.putToProperties(e.getKey(), e.getValue());

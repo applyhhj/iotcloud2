@@ -46,8 +46,8 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TSensorDetails implements org.apache.thrift.TBase<TSensorDetails, TSensorDetails._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorDetails> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorDetails");
+@SuppressWarnings("all") public class TSensorDeployDescriptor implements org.apache.thrift.TBase<TSensorDeployDescriptor, TSensorDeployDescriptor._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorDeployDescriptor> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorDeployDescriptor");
 
   private static final org.apache.thrift.protocol.TField FILENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("filename", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CLASS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("className", org.apache.thrift.protocol.TType.STRING, (short)2);
@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TSensorDetailsStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TSensorDetailsTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TSensorDeployDescriptorStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TSensorDeployDescriptorTupleSchemeFactory());
   }
 
   public String filename; // required
@@ -141,13 +141,13 @@ import org.slf4j.LoggerFactory;
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorDetails.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorDeployDescriptor.class, metaDataMap);
   }
 
-  public TSensorDetails() {
+  public TSensorDeployDescriptor() {
   }
 
-  public TSensorDetails(
+  public TSensorDeployDescriptor(
     String filename,
     String className)
   {
@@ -159,7 +159,7 @@ import org.slf4j.LoggerFactory;
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TSensorDetails(TSensorDetails other) {
+  public TSensorDeployDescriptor(TSensorDeployDescriptor other) {
     if (other.isSetFilename()) {
       this.filename = other.filename;
     }
@@ -172,8 +172,8 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public TSensorDetails deepCopy() {
-    return new TSensorDetails(this);
+  public TSensorDeployDescriptor deepCopy() {
+    return new TSensorDeployDescriptor(this);
   }
 
   @Override
@@ -187,7 +187,7 @@ import org.slf4j.LoggerFactory;
     return this.filename;
   }
 
-  public TSensorDetails setFilename(String filename) {
+  public TSensorDeployDescriptor setFilename(String filename) {
     this.filename = filename;
     return this;
   }
@@ -211,7 +211,7 @@ import org.slf4j.LoggerFactory;
     return this.className;
   }
 
-  public TSensorDetails setClassName(String className) {
+  public TSensorDeployDescriptor setClassName(String className) {
     this.className = className;
     return this;
   }
@@ -246,7 +246,7 @@ import org.slf4j.LoggerFactory;
     return this.properties;
   }
 
-  public TSensorDetails setProperties(Map<String,String> properties) {
+  public TSensorDeployDescriptor setProperties(Map<String,String> properties) {
     this.properties = properties;
     return this;
   }
@@ -331,12 +331,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TSensorDetails)
-      return this.equals((TSensorDetails)that);
+    if (that instanceof TSensorDeployDescriptor)
+      return this.equals((TSensorDeployDescriptor)that);
     return false;
   }
 
-  public boolean equals(TSensorDetails that) {
+  public boolean equals(TSensorDeployDescriptor that) {
     if (that == null)
       return false;
 
@@ -376,7 +376,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TSensorDetails other) {
+  public int compareTo(TSensorDeployDescriptor other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -430,7 +430,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TSensorDetails(");
+    StringBuilder sb = new StringBuilder("TSensorDeployDescriptor(");
     boolean first = true;
 
     sb.append("filename:");
@@ -489,15 +489,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TSensorDetailsStandardSchemeFactory implements SchemeFactory {
-    public TSensorDetailsStandardScheme getScheme() {
-      return new TSensorDetailsStandardScheme();
+  private static class TSensorDeployDescriptorStandardSchemeFactory implements SchemeFactory {
+    public TSensorDeployDescriptorStandardScheme getScheme() {
+      return new TSensorDeployDescriptorStandardScheme();
     }
   }
 
-  private static class TSensorDetailsStandardScheme extends StandardScheme<TSensorDetails> {
+  private static class TSensorDeployDescriptorStandardScheme extends StandardScheme<TSensorDeployDescriptor> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -554,7 +554,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -589,16 +589,16 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TSensorDetailsTupleSchemeFactory implements SchemeFactory {
-    public TSensorDetailsTupleScheme getScheme() {
-      return new TSensorDetailsTupleScheme();
+  private static class TSensorDeployDescriptorTupleSchemeFactory implements SchemeFactory {
+    public TSensorDeployDescriptorTupleScheme getScheme() {
+      return new TSensorDeployDescriptorTupleScheme();
     }
   }
 
-  private static class TSensorDetailsTupleScheme extends TupleScheme<TSensorDetails> {
+  private static class TSensorDeployDescriptorTupleScheme extends TupleScheme<TSensorDeployDescriptor> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.filename);
       oprot.writeString(struct.className);
@@ -620,7 +620,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.filename = iprot.readString();
       struct.setFilenameIsSet(true);
