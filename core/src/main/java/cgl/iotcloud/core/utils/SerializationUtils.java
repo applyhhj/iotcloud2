@@ -1,5 +1,10 @@
 package cgl.iotcloud.core.utils;
 
+import org.apache.thrift.TBase;
+import org.apache.thrift.TDeserializer;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
+
 import java.io.*;
 
 public class SerializationUtils {
@@ -46,5 +51,13 @@ public class SerializationUtils {
                 // ignore close exception
             }
         }
+    }
+
+    public static byte[] serializeThriftObject(TBase object) throws TException {
+        return new TSerializer().serialize(object);
+    }
+
+    public static void createThriftFromBytes(byte []bytes, TBase object) throws TException {
+        new TDeserializer().deserialize(object, bytes);
     }
 }
