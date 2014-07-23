@@ -48,7 +48,7 @@ struct TResponse {
     2:string statusMessage
 }
 
-struct TSiteDetails {
+struct TSite {
     1:required string siteId
     2:required i32 port
     3:required string host
@@ -57,7 +57,7 @@ struct TSiteDetails {
 }
 
 struct TSiteDetailsResponse {
-    1:optional TSiteDetails details
+    1:optional TSite details
     2:required TResponse state
 }
 

@@ -34,7 +34,7 @@ public class MasterClient {
     }
 
     public boolean registerSite(String siteId, String siteHost, int sitePort) throws TException {
-        TResponse response = client.registerSite(new TSiteDetails(siteId, sitePort, siteHost));
+        TResponse response = client.registerSite(new TSite(siteId, sitePort, siteHost));
         return response.getState() == TResponseState.SUCCESS;
     }
 

@@ -53,7 +53,7 @@ public class SensorClient {
         try {
             TSiteDetailsResponse response = this.client.getSite(id);
             if (response.getState().getState() == TResponseState.SUCCESS) {
-                TSiteDetails details = response.getDetails();
+                TSite details = response.getDetails();
                 return new SiteDescriptor(details.getSiteId(), details.getPort(), details.getHost());
             }
             return null;

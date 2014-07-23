@@ -29,7 +29,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TResponse registerSite(TSiteDetails request) throws TException {
+    public TResponse registerSite(TSite request) throws TException {
         String id = request.getSiteId();
         String host = request.getHost();
         int port = request.getPort();
@@ -47,7 +47,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TResponse unRegisterSite(TSiteDetails site) throws TException {
+    public TResponse unRegisterSite(TSite site) throws TException {
         String id = site.getSiteId();
 
         // notify the monitor about the new site

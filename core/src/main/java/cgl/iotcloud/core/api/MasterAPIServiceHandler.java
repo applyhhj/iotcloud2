@@ -38,7 +38,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
         SiteDescriptor descriptor = masterContext.getSensorSite(siteId);
 
         if (descriptor != null) {
-            TSiteDetails siteDetails = new TSiteDetails(siteId, descriptor.getPort(), descriptor.getHost());
+            TSite siteDetails = new TSite(siteId, descriptor.getPort(), descriptor.getHost());
             // siteDetails.setMetadata(details.getMetadata());
             TSiteDetailsResponse response = new TSiteDetailsResponse();
             response.setDetails(siteDetails);
