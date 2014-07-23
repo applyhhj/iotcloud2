@@ -1,10 +1,16 @@
 package cgl.iotcloud.core.master;
 
+import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.master.events.*;
 import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.utils.SiteClientCache;
+import cgl.iotcloud.core.zk.SensorUpdater;
 import com.google.common.eventbus.Subscribe;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +30,14 @@ public class MasterSensorController {
 
     private MasterContext context;
 
+    private CuratorFramework curatorFramework;
+
     public MasterSensorController(SiteClientCache clientCache, MasterContext context) {
         this.clientCache = clientCache;
         this.context = context;
+
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        this.curatorFramework = CuratorFrameworkFactory.newClient(Configuration.getZkConnectionString(context.getConf()), retryPolicy);
     }
 
     @Subscribe
@@ -62,6 +73,10 @@ public class MasterSensorController {
         } else {
             LOG.warn("Unrecognized event type {}", updateEvent.getState());
         }
+    }
+
+    private void sensorAdded(MSensorSiteEvent updateEvent) {
+        context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
     }
 
     private void deploySensor(MSensorClientEvent deployEvent) {

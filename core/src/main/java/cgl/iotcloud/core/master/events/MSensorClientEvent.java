@@ -7,6 +7,9 @@ import cgl.iotcloud.core.sensorsite.SensorState;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sensor events from the client side
+ */
 public class MSensorClientEvent extends MSensorEvent {
     private List<String> sites = new ArrayList<String>();
 
