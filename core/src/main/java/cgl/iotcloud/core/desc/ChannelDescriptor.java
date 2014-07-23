@@ -1,33 +1,15 @@
 package cgl.iotcloud.core.desc;
 
-import java.io.Serializable;
+import cgl.iotcloud.core.transport.Direction;
 
-public class ChannelDescriptor implements Serializable {
-    private String name;
+public class ChannelDescriptor {
+    private Direction direction;
 
-    private TransportDescriptor transport;
-
-    public ChannelDescriptor() {
+    public ChannelDescriptor(Direction direction) {
+        this.direction = direction;
     }
 
-    public ChannelDescriptor(String name, TransportDescriptor transport) {
-        this.name = name;
-        this.transport = transport;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public TransportDescriptor getTransport() {
-        return transport;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setTransport(TransportDescriptor transport) {
-        this.transport = transport;
+    public Direction getDirection() {
+        return direction;
     }
 }

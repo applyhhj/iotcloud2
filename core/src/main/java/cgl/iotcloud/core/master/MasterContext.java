@@ -2,17 +2,17 @@ package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.desc.SiteDescriptor;
-import cgl.iotcloud.core.sensor.SensorDetails;
 
 import java.util.*;
 
 public class MasterContext {
     private Map<String, SiteDescriptor> sites = new HashMap<String, SiteDescriptor>();
 
-    private Map<String, List<SensorDetails>> siteSensors = new HashMap<String, List<SensorDetails>>();
+    private Map<String, List<SensorDescriptor>> siteSensors = new HashMap<String, List<SensorDescriptor>>();
 
-    private Map<String, List<SensorDetails>> deactivatedSiteSensors = new HashMap<String, List<SensorDetails>>();
+    private Map<String, List<SensorDescriptor>> deactivatedSiteSensors = new HashMap<String, List<SensorDescriptor>>();
 
     private Map<String, SiteDescriptor> deactivatedSites = new HashMap<String, SiteDescriptor>();
 
@@ -34,14 +34,14 @@ public class MasterContext {
         return sites;
     }
 
-    public boolean addSensor(String site, SensorDetails details) {
+    public boolean addSensor(String site, SensorDescriptor details) {
         if (!sites.containsKey(site)) {
             return false;
         }
 
-        List<SensorDetails> detailsList = siteSensors.get(site);
+        List<SensorDescriptor> detailsList = siteSensors.get(site);
         if (detailsList == null) {
-            detailsList = new ArrayList<SensorDetails>();
+            detailsList = new ArrayList<SensorDescriptor>();
             siteSensors.put(site, detailsList);
         }
 
@@ -65,8 +65,8 @@ public class MasterContext {
         if (!sites.containsKey(site)) {
             return false;
         }
-        List<SensorDetails> detailsList = siteSensors.get(site);
-        return detailsList != null && detailsList.remove(new SensorDetails(id));
+        List<SensorDescriptor> detailsList = siteSensors.get(site);
+        return detailsList != null && detailsList.remove(new SensorDescriptor(id));
     }
 
     public void removeSite(String site) {
@@ -74,10 +74,10 @@ public class MasterContext {
         sites.remove(site);
     }
 
-    public SensorDetails getSensor(String siteId, SensorId name) {
-        List<SensorDetails> details = siteSensors.get(siteId);
+    public SensorDescriptor getSensor(String siteId, SensorId name) {
+        List<SensorDescriptor> details = siteSensors.get(siteId);
         if (details != null) {
-            for (SensorDetails detail : details) {
+            for (SensorDescriptor detail : details) {
                 if (detail.getSensorId().equals(name)) {
                     return detail;
                 }

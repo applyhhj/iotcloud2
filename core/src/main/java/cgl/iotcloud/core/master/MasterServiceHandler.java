@@ -2,14 +2,14 @@ package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
+import cgl.iotcloud.core.desc.ChannelDescriptor;
+import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
 import cgl.iotcloud.core.master.thrift.TSite;
-import cgl.iotcloud.core.sensor.ChannelDetails;
-import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.transport.Direction;
 import com.google.common.eventbus.EventBus;
@@ -69,24 +69,24 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         LOG.info("Request received for registering a sensor from site {} with sensor id {}", siteId, sensorID);
 
-        SensorDetails sensorDetails = new SensorDetails(sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(sensorID);
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {
-                ChannelDetails details = null;
+                ChannelDescriptor details = null;
                 if (tChannel.getDirection() == TDirection.IN) {
-                    details = new ChannelDetails(Direction.IN);
+                    details = new ChannelDescriptor(Direction.IN);
                 } else if (tChannel.getDirection() == TDirection.OUT) {
-                    details = new ChannelDetails(Direction.OUT);
+                    details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDetails.addChannel(tChannel.getTransport(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);
         }
-        sensorDetails.setMetadata(sensor.getMetadata());
+        sensorDescriptor.setMetadata(sensor.getMetadata());
 
         MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEPLOY, siteId);
-        updateEvent.setSensorDetails(sensorDetails);
+        updateEvent.setSensorDescriptor(sensorDescriptor);
 
         sensorEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully added");
@@ -110,23 +110,23 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, sensorID);
 
-        SensorDetails sensorDetails = new SensorDetails(sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(sensorID);
 
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {
-                ChannelDetails details = null;
+                ChannelDescriptor details = null;
                 if (tChannel.getDirection() == TDirection.IN) {
-                    details = new ChannelDetails(Direction.IN);
+                    details = new ChannelDescriptor(Direction.IN);
                 } else if (tChannel.getDirection() == TDirection.OUT) {
-                    details = new ChannelDetails(Direction.OUT);
+                    details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDetails.addChannel(tChannel.getTransport(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);
         }
 
-        sensorDetails.setMetadata(sensor.getMetadata());
+        sensorDescriptor.setMetadata(sensor.getMetadata());
         MSensorSiteEvent updateEvent;
         if (sensor.getState() == TSensorState.UPDATE) {
             updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
@@ -137,7 +137,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         } else {
             updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
         }
-        updateEvent.setSensorDetails(sensorDetails);
+        updateEvent.setSensorDescriptor(sensorDescriptor);
 
         sensorEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");

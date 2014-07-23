@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.zk;
 
 import cgl.iotcloud.core.desc.SiteDescriptor;
-import cgl.iotcloud.core.sensor.SensorDescriptor;
+import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.utils.SerializationUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class SensorUpdater {
         }
     }
 
-    public static void registerSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
+    public static void registerSensor(CuratorFramework client, String parent, SensorInstance descriptor) {
         // this will create the given ZNode with the given data
         try {
             client.create().forPath(getSensorPath(parent, descriptor), SerializationUtils.serializeToBytes(descriptor));
@@ -40,7 +40,7 @@ public class SensorUpdater {
         }
     }
 
-    public static void removeSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
+    public static void removeSensor(CuratorFramework client, String parent, SensorInstance descriptor) {
         try {
             client.delete().forPath(getSensorPath(parent, descriptor));
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class SensorUpdater {
         return parent + "/" + descriptor.getId();
     }
 
-    private static String getSensorPath(String parent, SensorDescriptor descriptor) {
+    private static String getSensorPath(String parent, SensorInstance descriptor) {
         return parent + "/" + descriptor.getSensorContext().getId().getGroup() + "/" + descriptor.getSensorContext().getId().getName();
     }
 }

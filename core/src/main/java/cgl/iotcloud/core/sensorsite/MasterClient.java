@@ -2,11 +2,11 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.api.thrift.*;
+import cgl.iotcloud.core.desc.ChannelDescriptor;
+import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
-import cgl.iotcloud.core.sensor.ChannelDetails;
-import cgl.iotcloud.core.sensor.SensorDescriptor;
-import cgl.iotcloud.core.sensor.SensorDetails;
+import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.utils.SensorUtils;
@@ -40,7 +40,7 @@ public class MasterClient {
         return response.getState() == TResponseState.SUCCESS;
     }
 
-    public void registerSensor(String siteId, SensorDescriptor sensor) throws TException {
+    public void registerSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
 
         TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
@@ -62,7 +62,7 @@ public class MasterClient {
         client.registerSensor(siteId, tSensor);
     }
 
-    public void unRegisterSensor(String siteId, SensorDescriptor sensor) throws TException {
+    public void unRegisterSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
 
         TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
@@ -70,17 +70,17 @@ public class MasterClient {
         client.unRegisterSensor(siteId, tSensorId);
     }
 
-    public void updateSensor(String siteId, SensorDetails sensor) throws TException {
+    public void updateSensor(String siteId, SensorDescriptor sensor) throws TException {
         TSensorId tSensorId = new TSensorId(sensor.getSensorId().getName(), sensor.getSensorId().getName());
         TSensor tSensor = new TSensor();
         tSensor.setId(tSensorId);
         tSensor.setState(SensorUtils.getSensorState(sensor.getState()));
 
-        for (Map.Entry<String, List<ChannelDetails>> e: sensor.getChannels().entrySet()) {
-            List<ChannelDetails> channels = e.getValue();
+        for (Map.Entry<String, List<ChannelDescriptor>> e: sensor.getChannels().entrySet()) {
+            List<ChannelDescriptor> channels = e.getValue();
             String transport = e.getKey();
 
-            for (ChannelDetails c : channels) {
+            for (ChannelDescriptor c : channels) {
                 if (c.getDirection() == Direction.IN) {
                     TChannel tChannel = new TChannel(transport, TDirection.IN);
                     tSensor.addToChannels(tChannel);

@@ -4,8 +4,8 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.sensor.SensorDescriptor;
-import cgl.iotcloud.core.sensor.SensorDetails;
+import cgl.iotcloud.core.desc.SensorDescriptor;
+import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.transport.Transport;
 
 import java.util.ArrayList;
@@ -24,13 +24,13 @@ public class SiteContext {
     private Map<String, Transport> transports = new HashMap<String, Transport>();
 
     // static information about the deployed sensors
-    private Map<SensorId, SensorDescriptor> sensors = new HashMap<SensorId, SensorDescriptor>();
+    private Map<SensorId, SensorInstance> sensors = new HashMap<SensorId, SensorInstance>();
 
     // runtime information about the deployed sensors
     private Map<SensorId, SensorContext> sensorContexts = new HashMap<SensorId, SensorContext>();
 
     // information about the deployed sensors
-    private Map<SensorId, SensorDetails> sensorDescriptions = new HashMap<SensorId, SensorDetails>();
+    private Map<SensorId, SensorDescriptor> sensorDescriptions = new HashMap<SensorId, SensorDescriptor>();
 
     private Map conf;
 
@@ -44,13 +44,13 @@ public class SiteContext {
     }
 
     public void addSensor(SensorContext context, ISensor sensor) {
-        SensorDescriptor details = new SensorDescriptor(context, sensor);
+        SensorInstance details = new SensorInstance(context, sensor);
         sensors.put(context.getId(), details);
 
         sensorContexts.put(context.getId(), context);
     }
 
-    public SensorDescriptor removeSensor(SensorId sensorId) {
+    public SensorInstance removeSensor(SensorId sensorId) {
         return sensors.remove(sensorId);
     }
 
@@ -62,15 +62,15 @@ public class SiteContext {
         return transports.get(tName);
     }
 
-    public List<SensorDescriptor> getRegisteredSensors() {
-        return new ArrayList<SensorDescriptor>(sensors.values());
+    public List<SensorInstance> getRegisteredSensors() {
+        return new ArrayList<SensorInstance>(sensors.values());
     }
 
     public SensorContext getSensor(SensorId id) {
         return sensorContexts.get(id);
     }
 
-    public SensorDescriptor getSensorDescriptor(SensorId id) {
+    public SensorInstance getSensorDescriptor(SensorId id) {
         return sensors.get(id);
     }
 

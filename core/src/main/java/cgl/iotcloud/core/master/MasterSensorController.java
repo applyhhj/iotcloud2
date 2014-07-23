@@ -1,11 +1,10 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.Configuration;
+import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.events.*;
-import cgl.iotcloud.core.sensor.SensorDetails;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.utils.SiteClientCache;
-import cgl.iotcloud.core.zk.SensorUpdater;
 import com.google.common.eventbus.Subscribe;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -58,25 +57,25 @@ public class MasterSensorController {
     @Subscribe
     public void updateSensor(MSensorSiteEvent updateEvent) {
         if (updateEvent.getState() == SensorState.DEPLOY) {
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
+            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
         } else if (updateEvent.getState() == SensorState.UN_DEPLOY) {
             context.removeSensor(updateEvent.getSite(), updateEvent.getId());
         } else if (updateEvent.getState() == SensorState.ACTIVATE) {
-            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDetails.setState(SensorState.ACTIVATE);
+            SensorDescriptor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDescriptor.setState(SensorState.ACTIVATE);
         } else if (updateEvent.getState() == SensorState.DEACTIVATE) {
-            SensorDetails sensorDetails = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDetails.setState(SensorState.DEACTIVATE);
+            SensorDescriptor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDescriptor.setState(SensorState.DEACTIVATE);
         } else if (updateEvent.getState() == SensorState.UPDATE) {
             context.removeSensor(updateEvent.getSite(), updateEvent.getId());
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
+            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
         } else {
             LOG.warn("Unrecognized event type {}", updateEvent.getState());
         }
     }
 
     private void sensorAdded(MSensorSiteEvent updateEvent) {
-        context.addSensor(updateEvent.getSite(), updateEvent.getSensorDetails());
+        context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
     }
 
     private void deploySensor(MSensorClientEvent deployEvent) {

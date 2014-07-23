@@ -10,14 +10,14 @@ import java.io.Serializable;
  * Contains static information about the sensor. This information can be
  * saved in persistant store.
  */
-public class SensorDescriptor implements Serializable {
+public class SensorInstance implements Serializable {
     private SensorContext sensorContext;
 
     private ISensor sensor;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SensorDescriptor(SensorContext sensorContext, ISensor sensor) {
+    public SensorInstance(SensorContext sensorContext, ISensor sensor) {
         this.sensorContext = sensorContext;
         this.sensor = sensor;
     }

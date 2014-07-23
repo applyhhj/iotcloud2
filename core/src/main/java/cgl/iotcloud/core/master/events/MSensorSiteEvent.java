@@ -1,14 +1,14 @@
 package cgl.iotcloud.core.master.events;
 
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.sensor.SensorDetails;
+import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
 /**
  * These are events sent by the sensor sites about the sensor changes
  */
 public class MSensorSiteEvent extends MSensorEvent {
-    private SensorDetails sensorDetails;
+    private SensorDescriptor sensorDescriptor;
 
     private String site;
 
@@ -21,11 +21,11 @@ public class MSensorSiteEvent extends MSensorEvent {
         return site;
     }
 
-    public void setSensorDetails(SensorDetails sensorDetails) {
-        this.sensorDetails = sensorDetails;
+    public void setSensorDescriptor(SensorDescriptor sensorDescriptor) {
+        this.sensorDescriptor = sensorDescriptor;
     }
 
-    public SensorDetails getSensorDetails() {
-        return sensorDetails;
+    public SensorDescriptor getSensorDescriptor() {
+        return sensorDescriptor;
     }
 }

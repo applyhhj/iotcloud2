@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
-import cgl.iotcloud.core.sensor.SensorDescriptor;
+import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
@@ -41,7 +41,7 @@ public class SiteSensorDeployer {
                 SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
                 deploySensor(deployDescriptor);
             } else if (event.getState() == SensorState.ACTIVATE) {
-                SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
+                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                 if (descriptor != null) {
                     ISensor sensor = descriptor.getSensor();
                     sensor.activate();
@@ -49,7 +49,7 @@ public class SiteSensorDeployer {
                     LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
                 }
             } else if (event.getState() == SensorState.DEACTIVATE) {
-                SensorDescriptor descriptor = siteContext.getSensorDescriptor(event.getSensorId());
+                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                 if (descriptor != null) {
                     ISensor sensor = descriptor.getSensor();
                     sensor.deactivate();
@@ -65,7 +65,7 @@ public class SiteSensorDeployer {
     }
 
     public void unDeploySensor(SensorEvent event) {
-        SensorDescriptor descriptor = siteContext.removeSensor(event.getSensorId());
+        SensorInstance descriptor = siteContext.removeSensor(event.getSensorId());
         if (descriptor == null) {
             LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
             return;
