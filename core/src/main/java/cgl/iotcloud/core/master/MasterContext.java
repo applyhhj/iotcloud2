@@ -66,7 +66,7 @@ public class MasterContext {
             return false;
         }
         List<SensorDescriptor> detailsList = siteSensors.get(site);
-        return detailsList != null && detailsList.remove(new SensorDescriptor(id));
+        return detailsList != null && detailsList.remove(new SensorDescriptor(site, id));
     }
 
     public void removeSite(String site) {

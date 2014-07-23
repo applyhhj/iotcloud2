@@ -69,7 +69,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         LOG.info("Request received for registering a sensor from site {} with sensor id {}", siteId, sensorID);
 
-        SensorDescriptor sensorDescriptor = new SensorDescriptor(sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, sensorID);
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {
                 ChannelDescriptor details = null;
@@ -110,7 +110,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, sensorID);
 
-        SensorDescriptor sensorDescriptor = new SensorDescriptor(sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, sensorID);
 
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {

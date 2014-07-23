@@ -49,7 +49,7 @@ public class MasterSiteController {
         SiteDescriptor descriptor = event.getDescriptor();
         context.addSensorSite(descriptor);
 
-        SensorUpdater.registerSite(curatorFramework, Configuration.getZkRoot(context.getConf()), descriptor);
+        SensorUpdater.addSite(curatorFramework, Configuration.getZkRoot(context.getConf()), descriptor);
         heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
         LOG.info("A new site added {} with host {} and port {}", event.getSiteId(), descriptor.getHost(), descriptor.getPort());
     }

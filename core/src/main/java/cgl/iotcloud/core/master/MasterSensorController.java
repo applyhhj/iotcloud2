@@ -5,6 +5,7 @@ import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.events.*;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.utils.SiteClientCache;
+import cgl.iotcloud.core.zk.SensorUpdater;
 import com.google.common.eventbus.Subscribe;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -39,6 +40,10 @@ public class MasterSensorController {
         this.curatorFramework = CuratorFrameworkFactory.newClient(Configuration.getZkConnectionString(context.getConf()), retryPolicy);
     }
 
+    public void start() {
+        this.curatorFramework.start();
+    }
+
     @Subscribe
     public void handleClientEvents(MSensorClientEvent event) {
         if (event.getState() == SensorState.DEPLOY) {
@@ -57,9 +62,9 @@ public class MasterSensorController {
     @Subscribe
     public void updateSensor(MSensorSiteEvent updateEvent) {
         if (updateEvent.getState() == SensorState.DEPLOY) {
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
+            sensorAdded(updateEvent);
         } else if (updateEvent.getState() == SensorState.UN_DEPLOY) {
-            context.removeSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorRemoved(updateEvent);
         } else if (updateEvent.getState() == SensorState.ACTIVATE) {
             SensorDescriptor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
             sensorDescriptor.setState(SensorState.ACTIVATE);
@@ -76,6 +81,14 @@ public class MasterSensorController {
 
     private void sensorAdded(MSensorSiteEvent updateEvent) {
         context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
+
+        SensorUpdater.addSensor(curatorFramework, context.getParentPath(), updateEvent.getSensorDescriptor());
+    }
+
+    private void sensorRemoved(MSensorSiteEvent updateEvent) {
+        context.removeSensor(updateEvent.getSite(), updateEvent.getId());
+
+        SensorUpdater.removeSensor(curatorFramework, context.getParentPath(), updateEvent.getSensorDescriptor());
     }
 
     private void deploySensor(MSensorClientEvent deployEvent) {
@@ -160,3 +173,4 @@ public class MasterSensorController {
         }
     }
 }
+

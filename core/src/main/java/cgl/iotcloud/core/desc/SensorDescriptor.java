@@ -3,6 +3,7 @@ package cgl.iotcloud.core.desc;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +13,10 @@ import java.util.Map;
  * Contains static information about the sensor. This information can be
  * saved in persistant store.
  */
-public class SensorDescriptor {
-    private final SensorId sensorId;
+public class SensorDescriptor implements Serializable {
+    private SensorId sensorId;
+
+    private String siteId;
 
     private Map<String, List<ChannelDescriptor>> channels = new HashMap<String, List<ChannelDescriptor>>();
 
@@ -21,8 +24,12 @@ public class SensorDescriptor {
 
     private SensorState state = SensorState.ACTIVATE;
 
-    public SensorDescriptor(SensorId sensorId) {
+    public SensorDescriptor() {
+    }
+
+    public SensorDescriptor(String siteId, SensorId sensorId) {
         this.sensorId = sensorId;
+        this.siteId = siteId;
     }
 
     public void addChannel(String transport, ChannelDescriptor channelDescriptor) {
@@ -33,6 +40,10 @@ public class SensorDescriptor {
         }
 
         channelsForTransport.add(channelDescriptor);
+    }
+
+    public void setSensorId(SensorId sensorId) {
+        this.sensorId = sensorId;
     }
 
     public void setMetadata(Object metadata) {
@@ -59,6 +70,18 @@ public class SensorDescriptor {
         this.state = state;
     }
 
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public void setChannels(Map<String, List<ChannelDescriptor>> channels) {
+        this.channels = channels;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,12 +90,15 @@ public class SensorDescriptor {
         SensorDescriptor that = (SensorDescriptor) o;
 
         if (sensorId != null ? !sensorId.equals(that.sensorId) : that.sensorId != null) return false;
+        if (siteId != null ? !siteId.equals(that.siteId) : that.siteId != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return sensorId != null ? sensorId.hashCode() : 0;
+        int result = sensorId != null ? sensorId.hashCode() : 0;
+        result = 31 * result + (siteId != null ? siteId.hashCode() : 0);
+        return result;
     }
 }
