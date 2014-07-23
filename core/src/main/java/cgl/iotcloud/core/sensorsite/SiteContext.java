@@ -5,7 +5,6 @@ import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.desc.SensorDescriptor;
-import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.transport.Transport;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package cgl.iotcloud.core.sensor;
+package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;

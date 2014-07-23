@@ -6,7 +6,6 @@ import cgl.iotcloud.core.desc.ChannelDescriptor;
 import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.master.thrift.TRegisterSiteRequest;
-import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
 import cgl.iotcloud.core.utils.SensorUtils;

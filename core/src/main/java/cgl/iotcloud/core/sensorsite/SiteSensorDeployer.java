@@ -1,7 +1,6 @@
 package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.*;
-import cgl.iotcloud.core.sensor.SensorInstance;
 import cgl.iotcloud.core.sensorsite.events.SensorEvent;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.ChannelName;
