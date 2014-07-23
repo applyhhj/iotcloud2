@@ -24,11 +24,17 @@ struct TChannel {
     2:TDirection direction
 }
 
+struct TBroker {
+    1:string name
+    2:map<string, string> properties
+}
+
 struct TSensor {
     1:TSensorId id
-    2:TSensorState state
-    3:binary metadata
-    4:list<TChannel> channels
+    2:string siteId
+    3:TSensorState state
+    4:binary metadata
+    5:list<TChannel> channels
 }
 
 enum TResponseState {
@@ -46,6 +52,7 @@ struct TSiteDetails {
     2:required i32 port
     3:required string host
     4:optional binary metadata
+    5:list<TBroker> brokers
 }
 
 struct TSiteDetailsResponse {

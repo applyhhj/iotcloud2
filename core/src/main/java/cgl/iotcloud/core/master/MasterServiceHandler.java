@@ -78,7 +78,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
                 } else if (tChannel.getDirection() == TDirection.OUT) {
                     details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDescriptor.addChannel(tChannel.getTransport(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport().getName(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);
@@ -120,7 +120,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
                 } else if (tChannel.getDirection() == TDirection.OUT) {
                     details = new ChannelDescriptor(Direction.OUT);
                 }
-                sensorDescriptor.addChannel(tChannel.getTransport(), details);
+                sensorDescriptor.addChannel(tChannel.getTransport().getName(), details);
             }
         } else {
             LOG.warn("Sensor registered with no channels {}", id);

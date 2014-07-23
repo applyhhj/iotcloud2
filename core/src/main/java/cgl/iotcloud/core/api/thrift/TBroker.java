@@ -46,28 +46,25 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TSensorDetails implements org.apache.thrift.TBase<TSensorDetails, TSensorDetails._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorDetails> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorDetails");
+@SuppressWarnings("all") public class TBroker implements org.apache.thrift.TBase<TBroker, TBroker._Fields>, java.io.Serializable, Cloneable, Comparable<TBroker> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TBroker");
 
-  private static final org.apache.thrift.protocol.TField FILENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("filename", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField CLASS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("className", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)3);
+  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TSensorDetailsStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TSensorDetailsTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TBrokerStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TBrokerTupleSchemeFactory());
   }
 
-  public String filename; // required
-  public String className; // required
-  public Map<String,String> properties; // optional
+  public String name; // required
+  public Map<String,String> properties; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    FILENAME((short)1, "filename"),
-    CLASS_NAME((short)2, "className"),
-    PROPERTIES((short)3, "properties");
+    NAME((short)1, "name"),
+    PROPERTIES((short)2, "properties");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -82,11 +79,9 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // FILENAME
-          return FILENAME;
-        case 2: // CLASS_NAME
-          return CLASS_NAME;
-        case 3: // PROPERTIES
+        case 1: // NAME
+          return NAME;
+        case 2: // PROPERTIES
           return PROPERTIES;
         default:
           return null;
@@ -128,43 +123,37 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.PROPERTIES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.FILENAME, new org.apache.thrift.meta_data.FieldMetaData("filename", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CLASS_NAME, new org.apache.thrift.meta_data.FieldMetaData("className", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PROPERTIES, new org.apache.thrift.meta_data.FieldMetaData("properties", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PROPERTIES, new org.apache.thrift.meta_data.FieldMetaData("properties", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorDetails.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TBroker.class, metaDataMap);
   }
 
-  public TSensorDetails() {
+  public TBroker() {
   }
 
-  public TSensorDetails(
-    String filename,
-    String className)
+  public TBroker(
+    String name,
+    Map<String,String> properties)
   {
     this();
-    this.filename = filename;
-    this.className = className;
+    this.name = name;
+    this.properties = properties;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TSensorDetails(TSensorDetails other) {
-    if (other.isSetFilename()) {
-      this.filename = other.filename;
-    }
-    if (other.isSetClassName()) {
-      this.className = other.className;
+  public TBroker(TBroker other) {
+    if (other.isSetName()) {
+      this.name = other.name;
     }
     if (other.isSetProperties()) {
       Map<String,String> __this__properties = new HashMap<String,String>(other.properties);
@@ -172,62 +161,37 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public TSensorDetails deepCopy() {
-    return new TSensorDetails(this);
+  public TBroker deepCopy() {
+    return new TBroker(this);
   }
 
   @Override
   public void clear() {
-    this.filename = null;
-    this.className = null;
+    this.name = null;
     this.properties = null;
   }
 
-  public String getFilename() {
-    return this.filename;
+  public String getName() {
+    return this.name;
   }
 
-  public TSensorDetails setFilename(String filename) {
-    this.filename = filename;
+  public TBroker setName(String name) {
+    this.name = name;
     return this;
   }
 
-  public void unsetFilename() {
-    this.filename = null;
+  public void unsetName() {
+    this.name = null;
   }
 
-  /** Returns true if field filename is set (has been assigned a value) and false otherwise */
-  public boolean isSetFilename() {
-    return this.filename != null;
+  /** Returns true if field name is set (has been assigned a value) and false otherwise */
+  public boolean isSetName() {
+    return this.name != null;
   }
 
-  public void setFilenameIsSet(boolean value) {
+  public void setNameIsSet(boolean value) {
     if (!value) {
-      this.filename = null;
-    }
-  }
-
-  public String getClassName() {
-    return this.className;
-  }
-
-  public TSensorDetails setClassName(String className) {
-    this.className = className;
-    return this;
-  }
-
-  public void unsetClassName() {
-    this.className = null;
-  }
-
-  /** Returns true if field className is set (has been assigned a value) and false otherwise */
-  public boolean isSetClassName() {
-    return this.className != null;
-  }
-
-  public void setClassNameIsSet(boolean value) {
-    if (!value) {
-      this.className = null;
+      this.name = null;
     }
   }
 
@@ -246,7 +210,7 @@ import org.slf4j.LoggerFactory;
     return this.properties;
   }
 
-  public TSensorDetails setProperties(Map<String,String> properties) {
+  public TBroker setProperties(Map<String,String> properties) {
     this.properties = properties;
     return this;
   }
@@ -268,19 +232,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case FILENAME:
+    case NAME:
       if (value == null) {
-        unsetFilename();
+        unsetName();
       } else {
-        setFilename((String)value);
-      }
-      break;
-
-    case CLASS_NAME:
-      if (value == null) {
-        unsetClassName();
-      } else {
-        setClassName((String)value);
+        setName((String)value);
       }
       break;
 
@@ -297,11 +253,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case FILENAME:
-      return getFilename();
-
-    case CLASS_NAME:
-      return getClassName();
+    case NAME:
+      return getName();
 
     case PROPERTIES:
       return getProperties();
@@ -317,10 +270,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case FILENAME:
-      return isSetFilename();
-    case CLASS_NAME:
-      return isSetClassName();
+    case NAME:
+      return isSetName();
     case PROPERTIES:
       return isSetProperties();
     }
@@ -331,30 +282,21 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TSensorDetails)
-      return this.equals((TSensorDetails)that);
+    if (that instanceof TBroker)
+      return this.equals((TBroker)that);
     return false;
   }
 
-  public boolean equals(TSensorDetails that) {
+  public boolean equals(TBroker that) {
     if (that == null)
       return false;
 
-    boolean this_present_filename = true && this.isSetFilename();
-    boolean that_present_filename = true && that.isSetFilename();
-    if (this_present_filename || that_present_filename) {
-      if (!(this_present_filename && that_present_filename))
+    boolean this_present_name = true && this.isSetName();
+    boolean that_present_name = true && that.isSetName();
+    if (this_present_name || that_present_name) {
+      if (!(this_present_name && that_present_name))
         return false;
-      if (!this.filename.equals(that.filename))
-        return false;
-    }
-
-    boolean this_present_className = true && this.isSetClassName();
-    boolean that_present_className = true && that.isSetClassName();
-    if (this_present_className || that_present_className) {
-      if (!(this_present_className && that_present_className))
-        return false;
-      if (!this.className.equals(that.className))
+      if (!this.name.equals(that.name))
         return false;
     }
 
@@ -376,29 +318,19 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TSensorDetails other) {
+  public int compareTo(TBroker other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetFilename()).compareTo(other.isSetFilename());
+    lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetFilename()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.filename, other.filename);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetClassName()).compareTo(other.isSetClassName());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetClassName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.className, other.className);
+    if (isSetName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -430,46 +362,30 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TSensorDetails(");
+    StringBuilder sb = new StringBuilder("TBroker(");
     boolean first = true;
 
-    sb.append("filename:");
-    if (this.filename == null) {
+    sb.append("name:");
+    if (this.name == null) {
       sb.append("null");
     } else {
-      sb.append(this.filename);
+      sb.append(this.name);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("className:");
-    if (this.className == null) {
+    sb.append("properties:");
+    if (this.properties == null) {
       sb.append("null");
     } else {
-      sb.append(this.className);
+      sb.append(this.properties);
     }
     first = false;
-    if (isSetProperties()) {
-      if (!first) sb.append(", ");
-      sb.append("properties:");
-      if (this.properties == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.properties);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (filename == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'filename' was not present! Struct: " + toString());
-    }
-    if (className == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'className' was not present! Struct: " + toString());
-    }
     // check for sub-struct validity
   }
 
@@ -489,15 +405,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TSensorDetailsStandardSchemeFactory implements SchemeFactory {
-    public TSensorDetailsStandardScheme getScheme() {
-      return new TSensorDetailsStandardScheme();
+  private static class TBrokerStandardSchemeFactory implements SchemeFactory {
+    public TBrokerStandardScheme getScheme() {
+      return new TBrokerStandardScheme();
     }
   }
 
-  private static class TSensorDetailsStandardScheme extends StandardScheme<TSensorDetails> {
+  private static class TBrokerStandardScheme extends StandardScheme<TBroker> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TBroker struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -507,34 +423,26 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // FILENAME
+          case 1: // NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.filename = iprot.readString();
-              struct.setFilenameIsSet(true);
+              struct.name = iprot.readString();
+              struct.setNameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // CLASS_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.className = iprot.readString();
-              struct.setClassNameIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // PROPERTIES
+          case 2: // PROPERTIES
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map26 = iprot.readMapBegin();
-                struct.properties = new HashMap<String,String>(2*_map26.size);
-                for (int _i27 = 0; _i27 < _map26.size; ++_i27)
+                org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
+                struct.properties = new HashMap<String,String>(2*_map0.size);
+                for (int _i1 = 0; _i1 < _map0.size; ++_i1)
                 {
-                  String _key28;
-                  String _val29;
-                  _key28 = iprot.readString();
-                  _val29 = iprot.readString();
-                  struct.properties.put(_key28, _val29);
+                  String _key2;
+                  String _val3;
+                  _key2 = iprot.readString();
+                  _val3 = iprot.readString();
+                  struct.properties.put(_key2, _val3);
                 }
                 iprot.readMapEnd();
               }
@@ -554,34 +462,27 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TBroker struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.filename != null) {
-        oprot.writeFieldBegin(FILENAME_FIELD_DESC);
-        oprot.writeString(struct.filename);
-        oprot.writeFieldEnd();
-      }
-      if (struct.className != null) {
-        oprot.writeFieldBegin(CLASS_NAME_FIELD_DESC);
-        oprot.writeString(struct.className);
+      if (struct.name != null) {
+        oprot.writeFieldBegin(NAME_FIELD_DESC);
+        oprot.writeString(struct.name);
         oprot.writeFieldEnd();
       }
       if (struct.properties != null) {
-        if (struct.isSetProperties()) {
-          oprot.writeFieldBegin(PROPERTIES_FIELD_DESC);
+        oprot.writeFieldBegin(PROPERTIES_FIELD_DESC);
+        {
+          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.properties.size()));
+          for (Map.Entry<String, String> _iter4 : struct.properties.entrySet())
           {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.properties.size()));
-            for (Map.Entry<String, String> _iter30 : struct.properties.entrySet())
-            {
-              oprot.writeString(_iter30.getKey());
-              oprot.writeString(_iter30.getValue());
-            }
-            oprot.writeMapEnd();
+            oprot.writeString(_iter4.getKey());
+            oprot.writeString(_iter4.getValue());
           }
-          oprot.writeFieldEnd();
+          oprot.writeMapEnd();
         }
+        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -589,55 +490,59 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TSensorDetailsTupleSchemeFactory implements SchemeFactory {
-    public TSensorDetailsTupleScheme getScheme() {
-      return new TSensorDetailsTupleScheme();
+  private static class TBrokerTupleSchemeFactory implements SchemeFactory {
+    public TBrokerTupleScheme getScheme() {
+      return new TBrokerTupleScheme();
     }
   }
 
-  private static class TSensorDetailsTupleScheme extends TupleScheme<TSensorDetails> {
+  private static class TBrokerTupleScheme extends TupleScheme<TBroker> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TBroker struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.filename);
-      oprot.writeString(struct.className);
       BitSet optionals = new BitSet();
-      if (struct.isSetProperties()) {
+      if (struct.isSetName()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetProperties()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetName()) {
+        oprot.writeString(struct.name);
+      }
       if (struct.isSetProperties()) {
         {
           oprot.writeI32(struct.properties.size());
-          for (Map.Entry<String, String> _iter31 : struct.properties.entrySet())
+          for (Map.Entry<String, String> _iter5 : struct.properties.entrySet())
           {
-            oprot.writeString(_iter31.getKey());
-            oprot.writeString(_iter31.getValue());
+            oprot.writeString(_iter5.getKey());
+            oprot.writeString(_iter5.getValue());
           }
         }
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorDetails struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TBroker struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.filename = iprot.readString();
-      struct.setFilenameIsSet(true);
-      struct.className = iprot.readString();
-      struct.setClassNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
+        struct.name = iprot.readString();
+        struct.setNameIsSet(true);
+      }
+      if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TMap _map32 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.properties = new HashMap<String,String>(2*_map32.size);
-          for (int _i33 = 0; _i33 < _map32.size; ++_i33)
+          org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.properties = new HashMap<String,String>(2*_map6.size);
+          for (int _i7 = 0; _i7 < _map6.size; ++_i7)
           {
-            String _key34;
-            String _val35;
-            _key34 = iprot.readString();
-            _val35 = iprot.readString();
-            struct.properties.put(_key34, _val35);
+            String _key8;
+            String _val9;
+            _key8 = iprot.readString();
+            _val9 = iprot.readString();
+            struct.properties.put(_key8, _val9);
           }
         }
         struct.setPropertiesIsSet(true);

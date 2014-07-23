@@ -52,7 +52,8 @@ public class MasterClient {
 
             for (Channel c : channels) {
                 if (c.getDirection() == Direction.IN) {
-                    TChannel tChannel = new TChannel(transport, TDirection.IN);
+                    // todo
+                    TChannel tChannel = new TChannel(c.getName(), TDirection.IN, null);
                     tSensor.addToChannels(tChannel);
                 }
             }
@@ -81,7 +82,8 @@ public class MasterClient {
 
             for (ChannelDescriptor c : channels) {
                 if (c.getDirection() == Direction.IN) {
-                    TChannel tChannel = new TChannel(transport, TDirection.IN);
+                    // TODO
+                    TChannel tChannel = new TChannel(transport, TDirection.IN, null);
                     tSensor.addToChannels(tChannel);
                 }
             }
