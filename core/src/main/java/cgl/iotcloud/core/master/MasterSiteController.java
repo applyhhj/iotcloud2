@@ -37,7 +37,7 @@ public class MasterSiteController {
     @Subscribe
     public void handleEvent(MSiteEvent event) {
         if (event.getState() == SiteState.DEACTIVATED) {
-           deactivateSite(event);
+            deactivateSite(event);
         } else if (event.getState() == SiteState.ACTIVE) {
             activateSite(event);
         } else if (event.getState() == SiteState.ADDED) {
