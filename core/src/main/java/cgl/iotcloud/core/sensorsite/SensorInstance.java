@@ -2,7 +2,6 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
-import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 
 import java.io.Serializable;
 

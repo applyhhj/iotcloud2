@@ -12,7 +12,7 @@
 
     <artifactId>iotcloud-kafka</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>kafka</name>
+    <name>iotcloud-transports-kafka</name>
     <packaging>jar</packaging>
 
     <properties>
