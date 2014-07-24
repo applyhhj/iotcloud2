@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.master.events;
 
 import cgl.iotcloud.core.SensorId;
+import cgl.iotcloud.core.api.thrift.TSensor;
 import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
@@ -11,6 +12,8 @@ public class MSensorSiteEvent extends MSensorEvent {
     private SensorDescriptor sensorDescriptor;
 
     private String site;
+
+    private TSensor sensor;
 
     public MSensorSiteEvent(SensorId id, SensorState state, String site) {
         super(id, state);
@@ -27,5 +30,13 @@ public class MSensorSiteEvent extends MSensorEvent {
 
     public SensorDescriptor getSensorDescriptor() {
         return sensorDescriptor;
+    }
+
+    public TSensor getSensor() {
+        return sensor;
+    }
+
+    public void setSensor(TSensor sensor) {
+        this.sensor = sensor;
     }
 }

@@ -85,6 +85,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEPLOY, siteId);
         updateEvent.setSensorDescriptor(sensorDescriptor);
+        updateEvent.setSensor(sensor);
 
         sensorEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully added");

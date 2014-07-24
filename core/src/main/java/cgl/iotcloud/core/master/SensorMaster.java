@@ -6,6 +6,7 @@ import cgl.iotcloud.core.api.MasterAPIServiceHandler;
 import cgl.iotcloud.core.api.thrift.TMasterAPIService;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.utils.SiteClientCache;
+import cgl.iotcloud.core.zk.MasterPersistant;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.server.THsHaServer;
 import org.apache.thrift.transport.TNonblockingServerSocket;
@@ -48,6 +49,8 @@ public class SensorMaster {
     // this class manages the sensors and sites according to the events it receive
     private MasterSiteController siteController;
 
+    private MasterPersistant masterLoader;
+
     public void start() {
         // read the configuration file
         conf = Utils.readConfig();
@@ -68,6 +71,9 @@ public class SensorMaster {
         sensorController.start();
         // register this with sensor event bus
         sensorEventBus.register(sensorController);
+
+        masterLoader = new MasterPersistant(masterContext);
+        masterLoader.start();
 
         // now start the server to listen for the sites
         Thread t = new Thread(new Runnable() {
