@@ -88,7 +88,7 @@ public class MasterSensorController {
     private void sensorRemoved(MSensorSiteEvent updateEvent) {
         context.removeSensor(updateEvent.getSite(), updateEvent.getId());
 
-//        SensorUpdater.removeSensor(curatorFramework, context.getParentPath(), updateEvent.getSensorDescriptor());
+        SensorUpdater.removeSensor(curatorFramework, context.getParentPath(), updateEvent.getSensor().getId());
     }
 
     private void deploySensor(MSensorClientEvent deployEvent) {

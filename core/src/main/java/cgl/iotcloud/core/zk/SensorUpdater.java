@@ -1,6 +1,7 @@
 package cgl.iotcloud.core.zk;
 
 import cgl.iotcloud.core.api.thrift.TSensor;
+import cgl.iotcloud.core.api.thrift.TSensorId;
 import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.utils.SerializationUtils;
@@ -39,18 +40,18 @@ public class SensorUpdater {
     public static void addSensor(CuratorFramework client, String parent, TSensor descriptor) {
         // this will create the given ZNode with the given data
         try {
-            client.create().withMode(CreateMode.PERSISTENT).forPath(getSensorPath(parent, descriptor), SerializationUtils.serializeThriftObject(descriptor));
+            client.create().withMode(CreateMode.PERSISTENT).forPath(getSensorPath(parent, descriptor.getId()), SerializationUtils.serializeThriftObject(descriptor));
         } catch (Exception e) {
             String msg = "Failed to register the sensor in ZK";
             LOG.error(msg, e);
         }
     }
 
-    public static void removeSensor(CuratorFramework client, String parent, SensorDescriptor descriptor) {
+    public static void removeSensor(CuratorFramework client, String parent, TSensorId id) {
         try {
-            client.delete().forPath(getSensorPath(parent, descriptor));
+            client.delete().forPath(getSensorPath(parent, id));
         } catch (Exception e) {
-            String msg = "Failed to remove the sensor: " + getSensorPath(parent, descriptor) + " from ZK";
+            String msg = "Failed to remove the sensor: " + getSensorPath(parent, id) + " from ZK";
             LOG.error(msg, e);
         }
     }
@@ -63,7 +64,7 @@ public class SensorUpdater {
         return parent + "/" + descriptor.getSensorId().getGroup() + "/" + descriptor.getSensorId().getName();
     }
 
-    private static String getSensorPath(String parent, TSensor descriptor) {
-        return parent + "/" + descriptor.getId().getGroup() + "/" + descriptor.getId().getName();
+    private static String getSensorPath(String parent, TSensorId descriptor) {
+        return parent + "/" + descriptor.getGroup() + "/" + descriptor.getName();
     }
 }
