@@ -44,6 +44,7 @@ public class MasterClient {
         TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
         TSensor tSensor = new TSensor();
         tSensor.setId(tSensorId);
+        tSensor.setSensorId(context.getSensorID());
 
         for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
             List<Channel> channels = e.getValue();

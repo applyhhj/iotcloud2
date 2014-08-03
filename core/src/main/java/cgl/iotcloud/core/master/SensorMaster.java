@@ -35,19 +35,19 @@ public class SensorMaster {
     private MasterContext masterContext;
 
     // this event bus carries the events about the sensors
-    private EventBus sensorEventBus = new EventBus();
+    private EventBus clientEventBus = new EventBus();
 
     // this event bus carries event about the sites
     private EventBus siteEventBus = new EventBus();
 
     // deploy sensors
-    private MasterSensorController sensorController;
+    private ClientEventController clientEventController;
 
     // a factory
     private SiteClientCache siteClientCache;
 
     // this class manages the sensors and sites according to the events it receive
-    private MasterSiteController siteController;
+    private SiteEventController siteEventController;
 
     private MasterPersistant masterLoader;
 
@@ -62,15 +62,15 @@ public class SensorMaster {
         siteClientCache = new SiteClientCache(masterContext);
 
         // start the thread to manager the sites
-        siteController = new MasterSiteController(masterContext, siteEventBus);
-        siteController.start();
-        siteEventBus.register(siteController);
+        siteEventController = new SiteEventController(masterContext, siteEventBus);
+        siteEventController.start();
+        siteEventBus.register(siteEventController);
 
         // start the thread to manage the sensor deployments from clients
-        sensorController = new MasterSensorController(siteClientCache, masterContext);
-        sensorController.start();
+        clientEventController = new ClientEventController(siteClientCache, masterContext);
+        clientEventController.start();
         // register this with sensor event bus
-        sensorEventBus.register(sensorController);
+        clientEventBus.register(clientEventController);
 
         masterLoader = new MasterPersistant(masterContext);
         masterLoader.start();
@@ -88,7 +88,7 @@ public class SensorMaster {
                     siteServer = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TMasterService.Processor <MasterServiceHandler>(
-                                            new MasterServiceHandler(siteEventBus, sensorEventBus))).executorService(
+                                            new MasterServiceHandler(siteEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterServerThreads(conf))));
                     LOG.info("Starting the SensorMaster server on host: {} and port: {}", host, port);
                     siteServer.serve();
@@ -114,7 +114,7 @@ public class SensorMaster {
                     apiServer = new THsHaServer(
                             new THsHaServer.Args(serverTransport).processor(
                                     new TMasterAPIService.Processor<MasterAPIServiceHandler>(
-                                            new MasterAPIServiceHandler(masterContext, sensorEventBus))).executorService(
+                                            new MasterAPIServiceHandler(masterContext, clientEventBus))).executorService(
                                     Executors.newFixedThreadPool(Configuration.getMasterAPIThreads(conf))));
                     LOG.info("Starting the SensorMaster API server on host: {} and port: {}", host, port);
                     apiServer.serve();
@@ -139,7 +139,7 @@ public class SensorMaster {
         }
 
         // un register the even notifications
-        sensorEventBus.unregister(sensorController);
+        clientEventBus.unregister(clientEventController);
     }
 
     public static void main(String[] args) {

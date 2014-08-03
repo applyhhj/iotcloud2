@@ -1,7 +1,7 @@
 package cgl.iotcloud.core.zk;
 
-public class SensorSiteLoader {
-    public void addSite(String siteId) {
+import org.apache.curator.framework.CuratorFramework;
 
-    }
+public class SensorSiteLoader {
+
 }

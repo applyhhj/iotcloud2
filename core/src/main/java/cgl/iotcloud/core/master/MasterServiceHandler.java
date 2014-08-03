@@ -4,7 +4,6 @@ import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.desc.ChannelDescriptor;
 import cgl.iotcloud.core.desc.SensorDescriptor;
-import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.master.thrift.TMasterService;
@@ -18,27 +17,16 @@ import org.slf4j.LoggerFactory;
 public class MasterServiceHandler implements TMasterService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterServiceHandler.class);
 
-    private EventBus sensorEventBus;
-
     private EventBus siteEventBus;
 
-    public MasterServiceHandler(EventBus siteEventBus,
-                                EventBus sensorEventBus) {
+    public MasterServiceHandler(EventBus siteEventBus) {
         this.siteEventBus = siteEventBus;
-        this.sensorEventBus = sensorEventBus;
     }
 
     @Override
     public TResponse registerSite(TSite request) throws TException {
-        String id = request.getSiteId();
-        String host = request.getHost();
-        int port = request.getPort();
-
-        SiteDescriptor descriptor = new SiteDescriptor(id, port, host);
-        descriptor.setMetadata(request.getMetadata());
-
         // notify the monitor about the new site
-        MSiteEvent siteEvent = new MSiteEvent(id, SiteState.ADDED, descriptor);
+        MSiteEvent siteEvent = new MSiteEvent(request.getSiteId(), SiteState.ADDED, request);
         siteEventBus.post(siteEvent);
 
         TResponse registerSiteResponse = new TResponse();
@@ -49,7 +37,6 @@ public class MasterServiceHandler implements TMasterService.Iface {
     @Override
     public TResponse unRegisterSite(TSite site) throws TException {
         String id = site.getSiteId();
-
         // notify the monitor about the new site
         MSiteEvent siteEvent = new MSiteEvent(id, SiteState.REMOVED);
         siteEventBus.post(siteEvent);
@@ -61,7 +48,6 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
     @Override
     public TResponse registerSensor(String siteId, TSensor sensor) throws TException {
-
         TSensorId id = sensor.getId();
         SensorId sensorID = new SensorId(id.getName(), id.getGroup());
 
@@ -87,7 +73,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         updateEvent.setSensorDescriptor(sensorDescriptor);
         updateEvent.setSensor(sensor);
 
-        sensorEventBus.post(updateEvent);
+        siteEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully added");
     }
 
@@ -98,7 +84,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         LOG.info("Request received for un-registering a sensor from site {} with sensor id {}", siteId, sensorID);
 
         MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.UN_DEPLOY, siteId);
-        sensorEventBus.post(updateEvent);
+        siteEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");
     }
 
@@ -137,8 +123,9 @@ public class MasterServiceHandler implements TMasterService.Iface {
             updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
         }
         updateEvent.setSensorDescriptor(sensorDescriptor);
+        updateEvent.setSensor(sensor);
 
-        sensorEventBus.post(updateEvent);
+        siteEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");
     }
 }

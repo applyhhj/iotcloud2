@@ -56,18 +56,8 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     @Override
     public TResponse deploySensor(List<String> sites, TSensorDeployDescriptor sensor) throws TException {
-        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor(sensor.getFilename(), sensor.getClassName());
-        LOG.info("Request received for deploying a sensor {}", deployDescriptor);
-        deployDescriptor.addDeploySites(sites);
-
-        if (sensor.getProperties() != null) {
-            for (Map.Entry<String, String> e : sensor.getProperties().entrySet()) {
-                deployDescriptor.addProperty(e.getKey(), e.getValue());
-            }
-        }
-
-        MSensorClientEvent deployEvent = new MSensorClientEvent(null, SensorState.DEPLOY, sites);
-        deployEvent.setDeployDescriptor(deployDescriptor);
+        LOG.info("Request received for deploying a sensor with jar {} and class {}", sensor.getFilename(), sensor.getClassName());
+        MSensorClientEvent deployEvent = new MSensorClientEvent(SensorState.DEPLOY, sensor, sites);
         sensorEventBus.post(deployEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
