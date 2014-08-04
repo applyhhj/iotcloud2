@@ -1,7 +1,6 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 
@@ -61,7 +60,7 @@ public class MasterContext {
         }
     }
 
-    public boolean removeSensor(String site, SensorId id) {
+    public boolean removeSensor(String site, String id) {
         if (!sites.containsKey(site)) {
             return false;
         }
@@ -74,7 +73,7 @@ public class MasterContext {
         sites.remove(site);
     }
 
-    public SensorDescriptor getSensor(String siteId, SensorId name) {
+    public SensorDescriptor getSensor(String siteId, String name) {
         List<SensorDescriptor> details = siteSensors.get(siteId);
         if (details != null) {
             for (SensorDescriptor detail : details) {

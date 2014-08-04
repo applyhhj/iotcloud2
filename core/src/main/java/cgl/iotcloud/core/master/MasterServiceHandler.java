@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.desc.ChannelDescriptor;
 import cgl.iotcloud.core.desc.SensorDescriptor;
@@ -48,12 +47,11 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
     @Override
     public TResponse registerSensor(String siteId, TSensor sensor) throws TException {
-        TSensorId id = sensor.getId();
-        SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+        String id = sensor.getName();
 
-        LOG.info("Request received for registering a sensor from site {} with sensor id {}", siteId, sensorID);
+        LOG.info("Request received for registering a sensor from site {} with sensor id {}", siteId, id);
 
-        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, id);
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {
                 ChannelDescriptor details = null;
@@ -69,7 +67,7 @@ public class MasterServiceHandler implements TMasterService.Iface {
         }
         sensorDescriptor.setMetadata(sensor.getMetadata());
 
-        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEPLOY, siteId);
+        MSensorSiteEvent updateEvent = new MSensorSiteEvent(id, SensorState.DEPLOY, siteId);
         updateEvent.setSensorDescriptor(sensorDescriptor);
         updateEvent.setSensor(sensor);
 
@@ -78,24 +76,21 @@ public class MasterServiceHandler implements TMasterService.Iface {
     }
 
     @Override
-    public TResponse unRegisterSensor(String siteId, TSensorId id) throws TException {
-        SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+    public TResponse unRegisterSensor(String siteId, String id) throws TException {
+        LOG.info("Request received for un-registering a sensor from site {} with sensor id {}", siteId, id);
 
-        LOG.info("Request received for un-registering a sensor from site {} with sensor id {}", siteId, sensorID);
-
-        MSensorSiteEvent updateEvent = new MSensorSiteEvent(sensorID, SensorState.UN_DEPLOY, siteId);
+        MSensorSiteEvent updateEvent = new MSensorSiteEvent(id, SensorState.UN_DEPLOY, siteId);
         siteEventBus.post(updateEvent);
         return new TResponse(TResponseState.SUCCESS, "successfully un deployed");
     }
 
     @Override
     public TResponse updateSensor(String siteId, TSensor sensor) throws TException {
-        TSensorId id = sensor.getId();
-        SensorId sensorID = new SensorId(id.getName(), id.getGroup());
+        String id = sensor.getName();
 
-        LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, sensorID);
+        LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, id);
 
-        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, sensorID);
+        SensorDescriptor sensorDescriptor = new SensorDescriptor(siteId, id);
 
         if (sensor.getChannels() != null) {
             for (TChannel tChannel : sensor.getChannels()) {
@@ -114,13 +109,13 @@ public class MasterServiceHandler implements TMasterService.Iface {
         sensorDescriptor.setMetadata(sensor.getMetadata());
         MSensorSiteEvent updateEvent;
         if (sensor.getState() == TSensorState.UPDATE) {
-            updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
+            updateEvent = new MSensorSiteEvent(id, SensorState.UPDATE, siteId);
         } else if (sensor.getState() == TSensorState.ACTIVE) {
-            updateEvent = new MSensorSiteEvent(sensorID, SensorState.ACTIVATE, siteId);
+            updateEvent = new MSensorSiteEvent(id, SensorState.ACTIVATE, siteId);
         } else if (sensor.getState() == TSensorState.DE_ACTIVATE) {
-            updateEvent = new MSensorSiteEvent(sensorID, SensorState.DEACTIVATE, siteId);
+            updateEvent = new MSensorSiteEvent(id, SensorState.DEACTIVATE, siteId);
         } else {
-            updateEvent = new MSensorSiteEvent(sensorID, SensorState.UPDATE, siteId);
+            updateEvent = new MSensorSiteEvent(id, SensorState.UPDATE, siteId);
         }
         updateEvent.setSensorDescriptor(sensorDescriptor);
         updateEvent.setSensor(sensor);

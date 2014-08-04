@@ -1,10 +1,5 @@
 namespace java cgl.iotcloud.core.api.thrift
 
-struct TSensorId {
-    1:string name
-    2:string group
-}
-
 enum TDirection {
     IN,
     OUT
@@ -30,7 +25,7 @@ struct TBroker {
 }
 
 struct TSensor {
-    1:TSensorId id
+    1:string name
     2:string siteId
     3:TSensorState state
     4:binary metadata

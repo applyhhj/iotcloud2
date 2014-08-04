@@ -1,11 +1,9 @@
 package cgl.iotcloud.core.api;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorClientEvent;
-import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import com.google.common.eventbus.EventBus;
 import org.apache.thrift.TException;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     private static Logger LOG = LoggerFactory.getLogger(MasterAPIServiceHandler.class);
@@ -63,55 +60,49 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
     }
 
     @Override
-    public TResponse unDeploySensor(List<String> sites, TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for un-deploying a sensor {}", sensorId);
-        MSensorClientEvent deployEvent = new MSensorClientEvent(sensorId, SensorState.UN_DEPLOY, sites);
+    public TResponse unDeploySensor(List<String> sites, String id) throws TException {
+        LOG.info("Request received for un-deploying a sensor {}", id);
+        MSensorClientEvent deployEvent = new MSensorClientEvent(id, SensorState.UN_DEPLOY, sites);
         sensorEventBus.post(deployEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
-    public TResponse unDeployAllSensor(TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for un-deploying a sensor {}", sensorId);
-        MSensorClientEvent deployEvent = new MSensorClientEvent(sensorId, SensorState.UN_DEPLOY);
+    public TResponse unDeployAllSensor(String id) throws TException {
+        LOG.info("Request received for un-deploying a sensor {}", id);
+        MSensorClientEvent deployEvent = new MSensorClientEvent(id, SensorState.UN_DEPLOY);
         sensorEventBus.post(deployEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
-    public TResponse startSensor(List<String> sites, TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for starting a sensor {}", sensorId);
-        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(sensorId, SensorState.ACTIVATE, sites);
+    public TResponse startSensor(List<String> sites, String id) throws TException {
+        LOG.info("Request received for starting a sensor {}", id);
+        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(id, SensorState.ACTIVATE, sites);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
-    public TResponse startAllSensor(TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for starting a sensor {}", sensorId);
-        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(sensorId, SensorState.ACTIVATE);
+    public TResponse startAllSensor(String id) throws TException {
+        LOG.info("Request received for starting a sensor {}", id);
+        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(id, SensorState.ACTIVATE);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
-    public TResponse stopSiteSensors(List<String> sites, TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for stopping a sensor {}", sensorId);
-        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(sensorId, SensorState.DEACTIVATE, sites);
+    public TResponse stopSiteSensors(List<String> sites, String id) throws TException {
+        LOG.info("Request received for stopping a sensor {}", id);
+        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(id, SensorState.DEACTIVATE, sites);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }
 
     @Override
-    public TResponse stopAllSensors(TSensorId id) throws TException {
-        SensorId sensorId = new SensorId(id.getName(), id.getGroup());
-        LOG.info("Request received for starting a sensor {}", sensorId);
-        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(sensorId, SensorState.DEACTIVATE);
+    public TResponse stopAllSensors(String id) throws TException {
+        LOG.info("Request received for starting a sensor {}", id);
+        MSensorClientEvent sensorStopEvent = new MSensorClientEvent(id, SensorState.DEACTIVATE);
         sensorEventBus.post(sensorStopEvent);
         return new TResponse(TResponseState.SUCCESS, "success");
     }

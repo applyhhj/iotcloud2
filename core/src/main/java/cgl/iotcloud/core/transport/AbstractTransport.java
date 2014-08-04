@@ -92,7 +92,7 @@ public abstract class AbstractTransport implements Transport {
      */
     protected ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {
         if (channel.isGrouped()) {
-            return new ChannelGroupName(channel.getName(), channelName.getId().getGroup());
+            return new ChannelGroupName(channel.getName(), channelName.getId());
         } else {
             return new ChannelGroupName(channel.getName(), channel.getSensorID());
         }

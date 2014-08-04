@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.master.events;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
 /**
@@ -9,14 +8,14 @@ import cgl.iotcloud.core.sensorsite.SensorState;
 public class MSensorEvent {
     private SensorState state;
 
-    protected SensorId id;
+    protected String id;
 
-    public MSensorEvent(SensorId id, SensorState state) {
+    public MSensorEvent(String id, SensorState state) {
         this.id = id;
         this.state = state;
     }
 
-    public SensorId getId() {
+    public String getId() {
         return id;
     }
 

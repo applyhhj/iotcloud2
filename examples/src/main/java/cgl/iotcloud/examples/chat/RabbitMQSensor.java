@@ -61,7 +61,7 @@ public class RabbitMQSensor extends AbstractSensor {
     private class RabbitConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
-            SensorContext context = new SensorContext(new SensorId("rabbitChat", "general"));
+            SensorContext context = new SensorContext("rabbitMQSensor");
 
             Map sendProps = new HashMap();
             sendProps.put("exchange", "test");

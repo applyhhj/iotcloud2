@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class TSensor implements org.apache.thrift.TBase<TSensor, TSensor._Fields>, java.io.Serializable, Cloneable, Comparable<TSensor> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensor");
 
-  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SITE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("siteId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField METADATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metadata", org.apache.thrift.protocol.TType.STRING, (short)4);
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new TSensorTupleSchemeFactory());
   }
 
-  public TSensorId id; // required
+  public String name; // required
   public String siteId; // required
   /**
    * 
@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    ID((short)1, "id"),
+    NAME((short)1, "name"),
     SITE_ID((short)2, "siteId"),
     /**
      * 
@@ -101,8 +101,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // ID
-          return ID;
+        case 1: // NAME
+          return NAME;
         case 2: // SITE_ID
           return SITE_ID;
         case 3: // STATE
@@ -157,8 +157,8 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TSensorId.class)));
+    tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SITE_ID, new org.apache.thrift.meta_data.FieldMetaData("siteId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -178,14 +178,14 @@ import org.slf4j.LoggerFactory;
   }
 
   public TSensor(
-    TSensorId id,
+    String name,
     String siteId,
     TSensorState state,
     ByteBuffer metadata,
     List<TChannel> channels)
   {
     this();
-    this.id = id;
+    this.name = name;
     this.siteId = siteId;
     this.state = state;
     this.metadata = metadata;
@@ -196,8 +196,8 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public TSensor(TSensor other) {
-    if (other.isSetId()) {
-      this.id = new TSensorId(other.id);
+    if (other.isSetName()) {
+      this.name = other.name;
     }
     if (other.isSetSiteId()) {
       this.siteId = other.siteId;
@@ -227,7 +227,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.id = null;
+    this.name = null;
     this.siteId = null;
     this.state = null;
     this.metadata = null;
@@ -235,27 +235,27 @@ import org.slf4j.LoggerFactory;
     this.sensorId = null;
   }
 
-  public TSensorId getId() {
-    return this.id;
+  public String getName() {
+    return this.name;
   }
 
-  public TSensor setId(TSensorId id) {
-    this.id = id;
+  public TSensor setName(String name) {
+    this.name = name;
     return this;
   }
 
-  public void unsetId() {
-    this.id = null;
+  public void unsetName() {
+    this.name = null;
   }
 
-  /** Returns true if field id is set (has been assigned a value) and false otherwise */
-  public boolean isSetId() {
-    return this.id != null;
+  /** Returns true if field name is set (has been assigned a value) and false otherwise */
+  public boolean isSetName() {
+    return this.name != null;
   }
 
-  public void setIdIsSet(boolean value) {
+  public void setNameIsSet(boolean value) {
     if (!value) {
-      this.id = null;
+      this.name = null;
     }
   }
 
@@ -414,11 +414,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case ID:
+    case NAME:
       if (value == null) {
-        unsetId();
+        unsetName();
       } else {
-        setId((TSensorId)value);
+        setName((String)value);
       }
       break;
 
@@ -467,8 +467,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case ID:
-      return getId();
+    case NAME:
+      return getName();
 
     case SITE_ID:
       return getSiteId();
@@ -496,8 +496,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case ID:
-      return isSetId();
+    case NAME:
+      return isSetName();
     case SITE_ID:
       return isSetSiteId();
     case STATE:
@@ -525,12 +525,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_id = true && this.isSetId();
-    boolean that_present_id = true && that.isSetId();
-    if (this_present_id || that_present_id) {
-      if (!(this_present_id && that_present_id))
+    boolean this_present_name = true && this.isSetName();
+    boolean that_present_name = true && that.isSetName();
+    if (this_present_name || that_present_name) {
+      if (!(this_present_name && that_present_name))
         return false;
-      if (!this.id.equals(that.id))
+      if (!this.name.equals(that.name))
         return false;
     }
 
@@ -595,12 +595,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetId()).compareTo(other.isSetId());
+    lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, other.id);
+    if (isSetName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -675,11 +675,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("TSensor(");
     boolean first = true;
 
-    sb.append("id:");
-    if (this.id == null) {
+    sb.append("name:");
+    if (this.name == null) {
       sb.append("null");
     } else {
-      sb.append(this.id);
+      sb.append(this.name);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -731,9 +731,6 @@ import org.slf4j.LoggerFactory;
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
-    if (id != null) {
-      id.validate();
-    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -770,11 +767,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.id = new TSensorId();
-              struct.id.read(iprot);
-              struct.setIdIsSet(true);
+          case 1: // NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.name = iprot.readString();
+              struct.setNameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -845,9 +841,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.id != null) {
-        oprot.writeFieldBegin(ID_FIELD_DESC);
-        struct.id.write(oprot);
+      if (struct.name != null) {
+        oprot.writeFieldBegin(NAME_FIELD_DESC);
+        oprot.writeString(struct.name);
         oprot.writeFieldEnd();
       }
       if (struct.siteId != null) {
@@ -902,7 +898,7 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, TSensor struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetId()) {
+      if (struct.isSetName()) {
         optionals.set(0);
       }
       if (struct.isSetSiteId()) {
@@ -921,8 +917,8 @@ import org.slf4j.LoggerFactory;
         optionals.set(5);
       }
       oprot.writeBitSet(optionals, 6);
-      if (struct.isSetId()) {
-        struct.id.write(oprot);
+      if (struct.isSetName()) {
+        oprot.writeString(struct.name);
       }
       if (struct.isSetSiteId()) {
         oprot.writeString(struct.siteId);
@@ -952,9 +948,8 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
-        struct.id = new TSensorId();
-        struct.id.read(iprot);
-        struct.setIdIsSet(true);
+        struct.name = iprot.readString();
+        struct.setNameIsSet(true);
       }
       if (incoming.get(1)) {
         struct.siteId = iprot.readString();

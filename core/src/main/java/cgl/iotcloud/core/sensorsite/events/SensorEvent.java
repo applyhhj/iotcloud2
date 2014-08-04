@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.sensorsite.events;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
@@ -8,13 +7,13 @@ public class SensorEvent {
 
     private SensorState state;
 
-    private SensorId sensorId;
+    private String sensorName;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SensorEvent(SensorId sensorId, SensorState state) {
+    public SensorEvent(String sensorName, SensorState state) {
         this.state = state;
-        this.sensorId = sensorId;
+        this.sensorName = sensorName;
     }
 
     public SensorEvent(SensorDeployDescriptor deployDescriptor, SensorState state) {
@@ -26,8 +25,8 @@ public class SensorEvent {
         return state;
     }
 
-    public SensorId getSensorId() {
-        return sensorId;
+    public String getSensorName() {
+        return sensorName;
     }
 
     public SensorDeployDescriptor getDeployDescriptor() {

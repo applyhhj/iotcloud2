@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.cmd;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.Utils;
 import cgl.iotcloud.core.client.SensorClient;
 import org.apache.commons.cli.*;
@@ -22,19 +21,18 @@ public class CommandClient {
         }
     }
 
-    public void killSensor(String name, String group) {
-        client.unDeploySensor(new SensorId(name, group));
+    public void killSensor(String name) {
+        client.unDeploySensor(name);
     }
 
-    public void startSensor(String name, String group) {
-        client.startSensor(new SensorId(name, group));
+    public void startSensor(String name) {
+        client.startSensor(name);
     }
 
     public static void main(String[] args) {
         Options options = new Options();
         options.addOption("kill", false, "Stop a sensor");
-        options.addOption("name", true, "IP");
-        options.addOption("group", true, "Receive Queue name");
+        options.addOption("name", true, "Name of sensor");
 
         CommandClient client = new CommandClient();
         CommandLineParser commandLineParser = new BasicParser();
@@ -43,9 +41,8 @@ public class CommandClient {
 
             if (cmd.hasOption("kill")) {
                 String name = cmd.getOptionValue("name");
-                String group = cmd.getOptionValue("group");
 
-                client.killSensor(name, group);
+                client.killSensor(name);
             }
         } catch (ParseException e) {
             HelpFormatter formatter = new HelpFormatter();

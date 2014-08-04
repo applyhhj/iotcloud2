@@ -1,10 +1,8 @@
 package cgl.iotcloud.core.master;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.TResponse;
 import cgl.iotcloud.core.api.thrift.TResponseState;
 import cgl.iotcloud.core.api.thrift.TSensorDeployDescriptor;
-import cgl.iotcloud.core.api.thrift.TSensorId;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
@@ -75,10 +73,9 @@ public class SiteClient {
         }
     }
 
-    public boolean startSensor(SensorId id) {
-        TSensorId sensorId = new TSensorId(id.getName(), id.getGroup());
+    public boolean startSensor(String id) {
         try {
-            TResponse response = this.client.startSensor(sensorId);
+            TResponse response = this.client.startSensor(id);
 
             if (response.getState() == TResponseState.SUCCESS) {
                 return true;
@@ -94,10 +91,9 @@ public class SiteClient {
         }
     }
 
-    public boolean stopSensor(SensorId id) {
-        TSensorId sensorId = new TSensorId(id.getName(), id.getGroup());
+    public boolean stopSensor(String id) {
         try {
-            TResponse response = this.client.stopSensor(sensorId);
+            TResponse response = this.client.stopSensor(id);
 
             if (response.getState() == TResponseState.SUCCESS) {
                 return true;
@@ -113,10 +109,9 @@ public class SiteClient {
         }
     }
 
-    public boolean unDeploySensor(SensorId id) {
-        TSensorId sensorId = new TSensorId(id.getName(), id.getGroup());
+    public boolean unDeploySensor(String id) {
         try {
-            TResponse response = this.client.unDeploySensor(sensorId);
+            TResponse response = this.client.unDeploySensor(id);
 
             if (response.getState() == TResponseState.SUCCESS) {
                 return true;

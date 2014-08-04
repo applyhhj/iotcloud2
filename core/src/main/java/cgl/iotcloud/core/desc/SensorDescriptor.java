@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.desc;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.sensorsite.SensorState;
 
 import java.io.Serializable;
@@ -14,7 +13,7 @@ import java.util.Map;
  * saved in persistant store.
  */
 public class SensorDescriptor implements Serializable {
-    private SensorId sensorId;
+    private String sensorId;
 
     private String siteId;
 
@@ -27,7 +26,7 @@ public class SensorDescriptor implements Serializable {
     public SensorDescriptor() {
     }
 
-    public SensorDescriptor(String siteId, SensorId sensorId) {
+    public SensorDescriptor(String siteId, String sensorId) {
         this.sensorId = sensorId;
         this.siteId = siteId;
     }
@@ -42,7 +41,7 @@ public class SensorDescriptor implements Serializable {
         channelsForTransport.add(channelDescriptor);
     }
 
-    public void setSensorId(SensorId sensorId) {
+    public void setSensorId(String sensorId) {
         this.sensorId = sensorId;
     }
 
@@ -54,7 +53,7 @@ public class SensorDescriptor implements Serializable {
         return channels;
     }
 
-    public SensorId getSensorId() {
+    public String getSensorId() {
         return sensorId;
     }
 

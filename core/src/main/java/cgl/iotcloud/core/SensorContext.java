@@ -16,7 +16,7 @@ public class SensorContext {
     private Map<String, List<Channel>> channels = new HashMap<String, List<Channel>>();
 
     // the sensor name, this is used to identify sensor logically
-    private final SensorId id;
+    private final String name;
 
     // the metadata about the sensor
     private Object metadata;
@@ -28,12 +28,12 @@ public class SensorContext {
     // a unique id to the sensor, this is used to identify the sensor uniquely
     private String sensorID;
 
-    public SensorContext(SensorId id) {
-        if (id == null) {
+    public SensorContext(String name) {
+        if (name == null) {
             throw new IllegalArgumentException("A sensor should have an id");
         }
 
-        this.id = id;
+        this.name = name;
     }
 
     public void addChannel(String transport, Channel channel) {
@@ -90,8 +90,8 @@ public class SensorContext {
         return metadata;
     }
 
-    public SensorId getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -101,11 +101,11 @@ public class SensorContext {
 
         SensorContext that = (SensorContext) o;
 
-        return id.equals(that.id);
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return name.hashCode();
     }
 }

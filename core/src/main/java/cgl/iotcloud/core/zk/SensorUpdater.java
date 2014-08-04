@@ -1,9 +1,7 @@
 package cgl.iotcloud.core.zk;
 
 import cgl.iotcloud.core.api.thrift.TSensor;
-import cgl.iotcloud.core.api.thrift.TSensorId;
 import cgl.iotcloud.core.api.thrift.TSite;
-import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.utils.SerializationUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -47,18 +45,18 @@ public class SensorUpdater {
                 client.create().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE);
             }
 
-            if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + descriptor.getId().getName()) == null) {
-                client.create().withMode(CreateMode.PERSISTENT).forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + descriptor.getId().getName());
+            if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName()) == null) {
+                client.create().withMode(CreateMode.PERSISTENT).forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName());
             }
 
-            if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getId().getName() + "/" + descriptor.getSensorId()) != null) {
-                String msg = "The sensor: " + descriptor.getId().getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+            if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId()) != null) {
+                    String msg = "The sensor: " + descriptor.getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
                 throw new RuntimeException(msg);
             }
 
             client.create().withMode(CreateMode.EPHEMERAL).forPath(
-                    context.getParentPath() + "/" + site + "/" + SENSORS_NODE + descriptor.getId().getName() + "/" + descriptor.getSensorId(),
+                    context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId(),
                             SerializationUtils.serializeThriftObject(descriptor));
         } catch (Exception e) {
             String msg = "Failed to register the sensor in ZK";
@@ -67,10 +65,10 @@ public class SensorUpdater {
     }
 
     public static void removeSensor(CuratorFramework client, MasterContext context, String site, TSensor descriptor) {
-        String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getId().getName() + "/" + descriptor.getSensorId();
+        String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId();
         try {
             if (client.checkExists().forPath(path) != null) {
-                String msg = "The sensor: " + descriptor.getId().getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+                String msg = "The sensor: " + descriptor.getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
                 throw new RuntimeException("Failed to deploy sensor");
             }
@@ -83,13 +81,5 @@ public class SensorUpdater {
 
     private static String getSitePath(String parent, TSite descriptor) {
         return parent + "/" + descriptor.getSiteId();
-    }
-
-    private static String getSensorPath(String parent, SensorDescriptor descriptor) {
-        return parent + "/" + descriptor.getSensorId().getGroup() + "/" + descriptor.getSensorId().getName();
-    }
-
-    private static String getSensorPath(String parent, TSensorId descriptor) {
-        return parent + "/" + descriptor.getGroup() + "/" + descriptor.getName();
     }
 }

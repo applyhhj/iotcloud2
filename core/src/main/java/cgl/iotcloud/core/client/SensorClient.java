@@ -1,7 +1,6 @@
 package cgl.iotcloud.core.client;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
@@ -77,27 +76,27 @@ public class SensorClient {
         }
     }
 
-    public boolean stopSensor(SensorId id) {
+    public boolean stopSensor(String id) {
         try {
-            client.stopAllSensors(new TSensorId(id.getName(), id.getGroup()));
+            client.stopAllSensors(id);
         } catch (TException e) {
             throw new RuntimeException("Failed to stop the sensors", e);
         }
         return true;
     }
 
-    public boolean unDeploySensor(SensorId id) {
+    public boolean unDeploySensor(String id) {
         try {
-            client.unDeployAllSensor(new TSensorId(id.getName(), id.getGroup()));
+            client.unDeployAllSensor(id);
         } catch (TException e) {
             throw new RuntimeException("Failed to unDeploy the sensors", e);
         }
         return true;
     }
 
-    public boolean startSensor(SensorId id) {
+    public boolean startSensor(String id) {
         try {
-            client.stopAllSensors(new TSensorId(id.getName(), id.getGroup()));
+            client.stopAllSensors(id);
         } catch (TException e) {
             throw new RuntimeException("Failed to unDeploy the sensors", e);
         }

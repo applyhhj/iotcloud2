@@ -11,8 +11,6 @@ public interface ISensor {
      *
      * <p>This includes the:</p>
      *
-     * @param conf The sensor site configuration of this sensor. This is the configuration provided to the sensor
-     *             merged in with cluster configuration on this machine.
      * @param context This object can be used to get information about this task's place within the topology,
      *                including the task id and component id of this task, input and output information, etc.
      */

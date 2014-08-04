@@ -51,14 +51,14 @@ public class ChatSensor extends AbstractSensor {
             }
         });
 
-        LOG.info("Received open request {}", context.getId());
+        LOG.info("Received open request {}", context.getName());
     }
 
     @SuppressWarnings("unchecked")
     private class ChatConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
-            SensorContext context = new SensorContext(new SensorId("chat", "general"));
+            SensorContext context = new SensorContext("chat");
 
             Map properties = new HashMap();
             properties.put(Configuration.CHANNEL_JMS_IS_QUEUE, "false");

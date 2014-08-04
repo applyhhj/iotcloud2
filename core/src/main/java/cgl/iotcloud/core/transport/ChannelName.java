@@ -1,18 +1,16 @@
 package cgl.iotcloud.core.transport;
 
-import cgl.iotcloud.core.SensorId;
-
 public class ChannelName {
-    private SensorId id;
+    private String id;
 
     private String channelName;
 
-    public ChannelName(SensorId id, String channelName) {
+    public ChannelName(String id, String channelName) {
         this.id = id;
         this.channelName = channelName;
     }
 
-    public SensorId getId() {
+    public String getId() {
         return id;
     }
 

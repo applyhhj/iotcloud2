@@ -36,9 +36,9 @@ public class MasterUpdater {
         try {
             client = clientCache.getMasterClient();
 
-            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorId()));
+            client.registerSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorName()));
         } catch (Exception e) {
-            LOG.error("Failed to register the sensor: " + event.getSensorId(), e);
+            LOG.error("Failed to register the sensor: " + event.getSensorName(), e);
         } finally {
             if (client != null) {
                 clientCache.done(client);
@@ -51,12 +51,12 @@ public class MasterUpdater {
         try {
             client = clientCache.getMasterClient();
 
-            client.unRegisterSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorId()));
+            client.unRegisterSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorName()));
 
             // now we remove the sensor records
-            siteContext.removeSensor(event.getSensorId());
+            siteContext.removeSensor(event.getSensorName());
         } catch (Exception e) {
-            LOG.error("Failed to un-register the sensor: " + event.getSensorId(), e);
+            LOG.error("Failed to un-register the sensor: " + event.getSensorName(), e);
         } finally {
             if (client != null) {
                 clientCache.done(client);
@@ -69,9 +69,9 @@ public class MasterUpdater {
         try {
             client = clientCache.getMasterClient();
 
-            client.updateSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorId()), SensorState.ACTIVATE);
+            client.updateSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorName()), SensorState.ACTIVATE);
         } catch (Exception e) {
-            LOG.error("Failed to activate the sensor: " + event.getSensorId(), e);
+            LOG.error("Failed to activate the sensor: " + event.getSensorName(), e);
         } finally {
             if (client != null) {
                 clientCache.done(client);
@@ -84,9 +84,9 @@ public class MasterUpdater {
         try {
             client = clientCache.getMasterClient();
 
-            client.updateSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorId()), SensorState.DEACTIVATE);
+            client.updateSensor(siteContext.getSiteId(), siteContext.getSensorDescriptor(event.getSensorName()), SensorState.DEACTIVATE);
         } catch (Exception e) {
-            LOG.error("Failed to de-activate the sensor: " + event.getSensorId(), e);
+            LOG.error("Failed to de-activate the sensor: " + event.getSensorName(), e);
         } finally {
             if (client != null) {
                 clientCache.done(client);

@@ -38,9 +38,9 @@ public class MasterClient {
     public void registerSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
 
-        TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
+        String tSensorId = context.getName();
         TSensor tSensor = new TSensor();
-        tSensor.setId(tSensorId);
+        tSensor.setName(tSensorId);
         tSensor.setSensorId(context.getSensorID());
         tSensor.setState(TSensorState.UN_DEPLOY);
 
@@ -63,9 +63,9 @@ public class MasterClient {
     public void unRegisterSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
 
-        TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
+        String tSensorId = context.getName();
         TSensor tSensor = new TSensor();
-        tSensor.setId(tSensorId);
+        tSensor.setName(tSensorId);
         tSensor.setSensorId(context.getSensorID());
         tSensor.setState(TSensorState.UN_DEPLOY);
 
@@ -88,9 +88,9 @@ public class MasterClient {
     public void updateSensor(String siteId, SensorInstance sensor, SensorState state) throws TException {
         SensorContext context = sensor.getSensorContext();
 
-        TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getGroup());
+        String tSensorId = context.getName();
         TSensor tSensor = new TSensor();
-        tSensor.setId(tSensorId);
+        tSensor.setName(tSensorId);
         tSensor.setSensorId(context.getSensorID());
 
         if (state == SensorState.ACTIVATE) {

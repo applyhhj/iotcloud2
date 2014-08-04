@@ -1,6 +1,5 @@
 package cgl.iotcloud.core.sensorsite;
 
-import cgl.iotcloud.core.SensorId;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.THeartBeatRequest;
 import cgl.iotcloud.core.master.thrift.THeartBeatResponse;
@@ -52,30 +51,28 @@ public class SensorSiteService implements TSensorSiteService.Iface {
     }
 
     @Override
-    public TResponse unDeploySensor(TSensorId id) throws TException {
+    public TResponse unDeploySensor(String id) throws TException {
         LOG.info("Request received for Un-Deploying a sensor with ID {}" + id);
-        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()), SensorState.UN_DEPLOY);
+        SensorEvent event = new SensorEvent(id, SensorState.UN_DEPLOY);
 
         sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to be deployed");
     }
 
     @Override
-    public TResponse startSensor(TSensorId id) throws TException {
+    public TResponse startSensor(String id) throws TException {
         LOG.info("Request received for starting a sensor with ID {}" + id);
 
-        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorState.ACTIVATE);
+        SensorEvent event = new SensorEvent(id, SensorState.ACTIVATE);
         sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for activation");
     }
 
     @Override
-    public TResponse stopSensor(TSensorId id) throws TException {
+    public TResponse stopSensor(String id) throws TException {
         LOG.info("Request received for stopping a sensor with ID {}" + id);
 
-        SensorEvent event = new SensorEvent(new SensorId(id.getName(), id.getGroup()),
-                SensorState.DEACTIVATE);
+        SensorEvent event = new SensorEvent(id, SensorState.DEACTIVATE);
         sensorEvents.post(event);
         return new TResponse(TResponseState.SUCCESS, "sensor is scheduled to for de-activation");
     }
