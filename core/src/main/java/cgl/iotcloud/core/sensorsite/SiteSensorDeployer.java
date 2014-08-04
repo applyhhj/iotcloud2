@@ -64,7 +64,7 @@ public class SiteSensorDeployer {
     }
 
     public void unDeploySensor(SensorEvent event) {
-        SensorInstance descriptor = siteContext.removeSensor(event.getSensorId());
+        SensorInstance descriptor = siteContext.getSensor(event.getSensorId());
         if (descriptor == null) {
             LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
             return;

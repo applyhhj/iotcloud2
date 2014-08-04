@@ -2,12 +2,9 @@ package cgl.iotcloud.core.sensorsite;
 
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.api.thrift.*;
-import cgl.iotcloud.core.desc.ChannelDescriptor;
-import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.master.thrift.TMasterService;
 import cgl.iotcloud.core.transport.Channel;
 import cgl.iotcloud.core.transport.Direction;
-import cgl.iotcloud.core.utils.SensorUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -45,6 +42,7 @@ public class MasterClient {
         TSensor tSensor = new TSensor();
         tSensor.setId(tSensorId);
         tSensor.setSensorId(context.getSensorID());
+        tSensor.setState(TSensorState.UN_DEPLOY);
 
         for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
             List<Channel> channels = e.getValue();
@@ -66,23 +64,54 @@ public class MasterClient {
         SensorContext context = sensor.getSensorContext();
 
         TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getName());
-
-        client.unRegisterSensor(siteId, tSensorId);
-    }
-
-    public void updateSensor(String siteId, SensorDescriptor sensor) throws TException {
-        TSensorId tSensorId = new TSensorId(sensor.getSensorId().getName(), sensor.getSensorId().getName());
         TSensor tSensor = new TSensor();
         tSensor.setId(tSensorId);
-        tSensor.setState(SensorUtils.getSensorState(sensor.getState()));
+        tSensor.setSensorId(context.getSensorID());
+        tSensor.setState(TSensorState.UN_DEPLOY);
 
-        for (Map.Entry<String, List<ChannelDescriptor>> e: sensor.getChannels().entrySet()) {
-            List<ChannelDescriptor> channels = e.getValue();
+        for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
+            List<Channel> channels = e.getValue();
             String transport = e.getKey();
 
-            for (ChannelDescriptor c : channels) {
+            for (Channel c : channels) {
                 if (c.getDirection() == Direction.IN) {
-                    // TODO
+                    // todo
+                    TChannel tChannel = new TChannel(transport, TDirection.IN);
+                    tSensor.addToChannels(tChannel);
+                }
+            }
+        }
+
+        client.updateSensor(siteId, tSensor);
+    }
+
+    public void updateSensor(String siteId, SensorInstance sensor, SensorState state) throws TException {
+        SensorContext context = sensor.getSensorContext();
+
+        TSensorId tSensorId = new TSensorId(context.getId().getName(), context.getId().getGroup());
+        TSensor tSensor = new TSensor();
+        tSensor.setId(tSensorId);
+        tSensor.setSensorId(context.getSensorID());
+
+        if (state == SensorState.ACTIVATE) {
+            tSensor.setState(TSensorState.ACTIVE);
+        } else if (state == SensorState.DEACTIVATE) {
+            tSensor.setState(TSensorState.DE_ACTIVATE);
+        } else if (state == SensorState.UN_DEPLOY) {
+            tSensor.setState(TSensorState.UN_DEPLOY);
+        } else if (state == SensorState.DEPLOY) {
+            tSensor.setState(TSensorState.DEPLOY);
+        } else if (state == SensorState.UPDATE) {
+            tSensor.setState(TSensorState.UPDATE);
+        }
+
+        for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
+            List<Channel> channels = e.getValue();
+            String transport = e.getKey();
+
+            for (Channel c : channels) {
+                if (c.getDirection() == Direction.IN) {
+                    // todo
                     TChannel tChannel = new TChannel(transport, TDirection.IN);
                     tSensor.addToChannels(tChannel);
                 }

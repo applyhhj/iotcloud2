@@ -78,7 +78,7 @@ public class SiteEventController {
     private void sensorRemoved(MSensorSiteEvent updateEvent) {
         context.removeSensor(updateEvent.getSite(), updateEvent.getId());
 
-        SensorUpdater.removeSensor(curatorFramework, context.getParentPath(), updateEvent.getSensor().getId());
+        SensorUpdater.removeSensor(curatorFramework, context, updateEvent.getSite(), updateEvent.getSensor());
     }
 
     private void addSite(MSiteEvent event) {

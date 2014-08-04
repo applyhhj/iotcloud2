@@ -6,8 +6,7 @@ import cgl.iotcloud.core.SensorContext;
 import java.io.Serializable;
 
 /**
- * Contains static information about the sensor. This information can be
- * saved in persistant store.
+ * Contains static information about the sensor.
  */
 public class SensorInstance implements Serializable {
     private SensorContext sensorContext;

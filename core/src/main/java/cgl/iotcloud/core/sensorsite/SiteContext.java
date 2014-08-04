@@ -4,7 +4,6 @@ import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.ISensor;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.SensorId;
-import cgl.iotcloud.core.desc.SensorDescriptor;
 import cgl.iotcloud.core.transport.Transport;
 
 import java.util.ArrayList;
@@ -25,12 +24,6 @@ public class SiteContext {
     // static information about the deployed sensors
     private Map<SensorId, SensorInstance> sensors = new HashMap<SensorId, SensorInstance>();
 
-    // runtime information about the deployed sensors
-    private Map<SensorId, SensorContext> sensorContexts = new HashMap<SensorId, SensorContext>();
-
-    // information about the deployed sensors
-    private Map<SensorId, SensorDescriptor> sensorDescriptions = new HashMap<SensorId, SensorDescriptor>();
-
     private Map conf;
 
     public SiteContext(String siteId, Map conf) {
@@ -45,8 +38,6 @@ public class SiteContext {
     public void addSensor(SensorContext context, ISensor sensor) {
         SensorInstance details = new SensorInstance(context, sensor);
         sensors.put(context.getId(), details);
-
-        sensorContexts.put(context.getId(), context);
     }
 
     public SensorInstance removeSensor(SensorId sensorId) {
@@ -65,8 +56,8 @@ public class SiteContext {
         return new ArrayList<SensorInstance>(sensors.values());
     }
 
-    public SensorContext getSensor(SensorId id) {
-        return sensorContexts.get(id);
+    public SensorInstance getSensor(SensorId id) {
+        return sensors.get(id);
     }
 
     public SensorInstance getSensorDescriptor(SensorId id) {

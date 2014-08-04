@@ -52,9 +52,9 @@ public class SensorUpdater {
             }
 
             if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getId().getName() + "/" + descriptor.getSensorId()) != null) {
-                String msg = "The sensor: " + descriptor.getId().getName() + "is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+                String msg = "The sensor: " + descriptor.getId().getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
-                throw new RuntimeException("Failed to deploy sensor");
+                throw new RuntimeException(msg);
             }
 
             client.create().withMode(CreateMode.EPHEMERAL).forPath(
@@ -66,16 +66,17 @@ public class SensorUpdater {
         }
     }
 
-    public static void removeSensor(CuratorFramework client, MasterContext context, String siteId, TSensorId id) {
+    public static void removeSensor(CuratorFramework client, MasterContext context, String site, TSensor descriptor) {
+        String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getId().getName() + "/" + descriptor.getSensorId();
         try {
-            if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getId().getName() + "/" + descriptor.getSensorId()) != null) {
-                String msg = "The sensor: " + descriptor.getId().getName() + "is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+            if (client.checkExists().forPath(path) != null) {
+                String msg = "The sensor: " + descriptor.getId().getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
                 throw new RuntimeException("Failed to deploy sensor");
             }
-            client.delete().forPath(getSensorPath(context.getParentPath(), id));
+            client.delete().forPath(path);
         } catch (Exception e) {
-            String msg = "Failed to remove the sensor: " + getSensorPath(context.getParentPath(), id) + " from ZK";
+            String msg = "Failed to remove the sensor: " + path + " from ZK";
             LOG.error(msg, e);
         }
     }
