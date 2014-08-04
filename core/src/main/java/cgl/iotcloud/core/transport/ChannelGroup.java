@@ -59,10 +59,6 @@ public class ChannelGroup {
 
     protected Map<BrokerHost, Manageable> producers = new HashMap<BrokerHost, Manageable>();
 
-    protected Map<BrokerHost, ProducingWorker> producingWorkers = new HashMap<BrokerHost, ProducingWorker>();
-
-    protected Map<BrokerHost, ConsumingWorker> consumingWorkers = new HashMap<BrokerHost, ConsumingWorker>();
-
     protected boolean run;
 
     public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
@@ -121,8 +117,6 @@ public class ChannelGroup {
                     } else {
                         worker = new ConsumingWorker(channels, messageContexts, true);
                     }
-                    consumingWorkers.put(host, worker);
-
                     Thread thread = new Thread(worker);
                     thread.start();
 
