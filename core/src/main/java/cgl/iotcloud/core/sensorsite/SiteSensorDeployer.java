@@ -82,6 +82,7 @@ public class SiteSensorDeployer {
                 for (Channel c : entry.getValue()) {
                     // register with the transport
                     t.unRegisterChannel(new ChannelName(descriptor.getSensorContext().getName(), c.getName()), c);
+                    c.close();
                 }
             }
         }

@@ -59,6 +59,8 @@ public class ChannelGroup {
 
     protected Map<BrokerHost, Manageable> producers = new HashMap<BrokerHost, Manageable>();
 
+    protected Map<BrokerHost, ConsumingWorker> consumingWorkers = new HashMap<BrokerHost, ConsumingWorker>();
+
     protected boolean run;
 
     public ChannelGroup(String name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
@@ -142,7 +144,10 @@ public class ChannelGroup {
         lock.lock();
         try {
             if (channel.getDirection() == Direction.OUT) {
+                channel.setOutQueue(null);
+                for (Map.Entry<BrokerHost, BlockingQueue<MessageContext>> e : producerQueues.entrySet()) {
 
+                }
             } else if (channel.getDirection() == Direction.IN) {
 
             }

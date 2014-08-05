@@ -27,6 +27,13 @@ public class Channel {
 
     private String groupName;
 
+    private enum State {
+        OPEN,
+        CLOSED
+    }
+
+    private State state = State.OPEN;
+
     public Channel(String name, Direction direction) {
         this.name = name;
         this.direction = direction;
@@ -81,7 +88,7 @@ public class Channel {
     }
 
     public void open() {
-
+        this.state = State.OPEN;
     }
 
     public boolean isGrouped() {
@@ -94,10 +101,7 @@ public class Channel {
     }
 
     public void publish(MessageContext message) {
-        if (outQueue == null) {
-            throw new RuntimeException("The channel must be bound to a transport");
-        }
-
+        checkOpen();
         try {
             outQueue.put(message);
         } catch (InterruptedException e) {
@@ -105,12 +109,21 @@ public class Channel {
         }
     }
 
-    public void publish(byte []message) {
-        MessageContext messageContext = new MessageContext(sensorID, message);
+    private void checkOpen() {
         if (outQueue == null) {
             throw new RuntimeException("The channel must be bound to a transport");
         }
 
+        if (state == State.CLOSED) {
+            String msg = "The channel is in closed state and cannot send";
+            LOG.error(msg);
+            throw new RuntimeException(msg);
+        }
+    }
+
+    public void publish(byte []message) {
+        MessageContext messageContext = new MessageContext(sensorID, message);
+        checkOpen();
         try {
             outQueue.put(messageContext);
         } catch (InterruptedException e) {
@@ -120,10 +133,7 @@ public class Channel {
 
     public void publish(byte []message, Map<String, Object> properties) {
         MessageContext messageContext = new MessageContext(sensorID, message, properties);
-        if (outQueue == null) {
-            throw new RuntimeException("The channel must be bound to a transport");
-        }
-
+        checkOpen();
         try {
             outQueue.put(messageContext);
         } catch (InterruptedException e) {
@@ -132,6 +142,7 @@ public class Channel {
     }
 
     public void close() {
+        this.state = State.CLOSED;
     }
 
     @Override
