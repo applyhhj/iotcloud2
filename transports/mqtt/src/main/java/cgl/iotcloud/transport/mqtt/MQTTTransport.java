@@ -93,6 +93,11 @@ public class MQTTTransport implements Transport {
     }
 
     @Override
+    public void unRegisterChannel(ChannelName name, Channel channel) {
+
+    }
+
+    @Override
     public void start() {
         for (MQTTProducer producer : senders.values()) {
             producer.open();

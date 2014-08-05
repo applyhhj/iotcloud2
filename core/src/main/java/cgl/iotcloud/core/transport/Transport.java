@@ -7,6 +7,8 @@ public interface Transport {
 
     void registerChannel(ChannelName name, Channel channel);
 
+    void unRegisterChannel(ChannelName name, Channel channel);
+
     void start();
 
     void stop();

@@ -22,7 +22,7 @@ public class ChannelGroup {
     /**
      * Name of the group, this name is a unique combination of sensor group and channel name
      */
-    private ChannelGroupName name;
+    private String name;
 
     /**
      * Keep track of the channels for a broker host
@@ -61,7 +61,7 @@ public class ChannelGroup {
 
     protected boolean run;
 
-    public ChannelGroup(ChannelGroupName name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
+    public ChannelGroup(String name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
         this.transport = transport;
@@ -136,6 +136,19 @@ public class ChannelGroup {
             lock.unlock();
         }
         return null;
+    }
+
+    public void removeChannel(Channel channel) {
+        lock.lock();
+        try {
+            if (channel.getDirection() == Direction.OUT) {
+
+            } else if (channel.getDirection() == Direction.IN) {
+
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void incrementConsumerIndex() {

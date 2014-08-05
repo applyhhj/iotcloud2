@@ -25,6 +25,8 @@ public class Channel {
 
     private boolean grouped = false;
 
+    private String groupName;
+
     public Channel(String name, Direction direction) {
         this.name = name;
         this.direction = direction;
@@ -68,6 +70,14 @@ public class Channel {
 
     public Map getProperties() {
         return properties;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void open() {

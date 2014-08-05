@@ -27,7 +27,7 @@ public abstract class AbstractTransport implements Transport {
      * Every transport has a list of applications. A group has specific channels registers to
      * it by the sensors
      */
-    protected Map<ChannelGroupName, ChannelGroup> groups = new ConcurrentHashMap<ChannelGroupName, ChannelGroup>();
+    protected Map<String, ChannelGroup> groups = new ConcurrentHashMap<String, ChannelGroup>();
 
     /**
      * The transport specific configurations
@@ -73,13 +73,26 @@ public abstract class AbstractTransport implements Transport {
     @Override
     public void registerChannel(ChannelName name, Channel channel) {
         // check to see if we already have a group for this channel
-        ChannelGroupName groupName = getGroupName(channel, name);
+        String groupName = getGroupName(channel, name);
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
             group = new ChannelGroup(groupName, brokerHosts, this);
             groups.put(groupName, group);
         }
         group.addChannel(channel);
+    }
+
+    @Override
+    public void unRegisterChannel(ChannelName name, Channel channel) {
+        // check to see if we already have a group for this channel
+        String groupName = getGroupName(channel, name);
+        ChannelGroup group = groups.get(groupName);
+        if (group == null) {
+            String msg = "Trying to un-register a channel which doesn't exist";
+            LOG.error(msg);
+            throw new RuntimeException(msg);
+        }
+        group.removeChannel(channel);
     }
 
     /**
@@ -90,11 +103,11 @@ public abstract class AbstractTransport implements Transport {
      * @param channelName channel name
      * @return a group name
      */
-    protected ChannelGroupName getGroupName(Channel channel, ChannelName channelName) {
+    protected String getGroupName(Channel channel, ChannelName channelName) {
         if (channel.isGrouped()) {
-            return new ChannelGroupName(channel.getName(), channelName.getId());
+            return channelName.getChannelName();
         } else {
-            return new ChannelGroupName(channel.getName(), channel.getSensorID());
+            return channelName.getId() + "." + channelName.getChannelName();
         }
     }
 

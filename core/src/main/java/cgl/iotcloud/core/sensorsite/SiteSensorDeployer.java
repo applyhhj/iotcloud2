@@ -77,8 +77,12 @@ public class SiteSensorDeployer {
 
         Map<String, List<Channel>> channels = descriptor.getSensorContext().getChannels();
         for (Map.Entry<String, List<Channel>> entry : channels.entrySet()) {
-            for (Channel channel : entry.getValue()) {
-                channel.close();
+            Transport t = siteContext.getTransport(entry.getKey());
+            if (t != null) {
+                for (Channel c : entry.getValue()) {
+                    // register with the transport
+                    t.unRegisterChannel(new ChannelName(descriptor.getSensorContext().getName(), c.getName()), c);
+                }
             }
         }
 
