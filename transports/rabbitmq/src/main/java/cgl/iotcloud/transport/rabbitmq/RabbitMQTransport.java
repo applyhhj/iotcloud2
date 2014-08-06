@@ -22,13 +22,13 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerProducer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering producer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
-        RabbitMQSender sender = new RabbitMQSender(queue, exchangeName, siteId + "." + routingKey, siteId + "." + queueName, host.getUrl());
+        RabbitMQSender sender = new RabbitMQSender(queue, exchangeName, prefix + "." + routingKey, prefix + "." + queueName, host.getUrl());
         if (executorService != null) {
             sender.setExecutorService(executorService);
         }
@@ -36,19 +36,19 @@ public class RabbitMQTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering consumer to host {}", host);
         String exchangeName = (String) channelConf.get(EXCHANGE_NAME_PROPERTY);
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
-        RabbitMQReceiver listener = new RabbitMQReceiver(queue, siteId + "." + queueName, host.getUrl());
+        RabbitMQReceiver listener = new RabbitMQReceiver(queue, prefix + "." + queueName, host.getUrl());
         if (executorService != null) {
             listener.setExecutorService(executorService);
         }
 
         listener.setExchangeName(exchangeName);
-        listener.setRoutingKey(siteId + "." + routingKey);
+        listener.setRoutingKey(prefix + "." + routingKey);
 
         return listener;
     }

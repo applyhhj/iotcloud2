@@ -60,10 +60,13 @@ public class ChannelGroup {
 
     protected boolean run;
 
-    public ChannelGroup(String name, List<BrokerHost> brokerHosts, AbstractTransport transport) {
+    protected String prefix;
+
+    public ChannelGroup(String name, String prefix, List<BrokerHost> brokerHosts, AbstractTransport transport) {
         this.name = name;
         this.brokerHosts = brokerHosts;
         this.transport = transport;
+        this.prefix = prefix;
 
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToConsumerChannelMap.put(brokerHost, new ArrayList<Channel>());
@@ -86,7 +89,7 @@ public class ChannelGroup {
                 BlockingQueue<MessageContext> channelOutQueue = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {
-                    manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
+                    manageable = transport.registerProducer(host, prefix, channel.getProperties(), producerQueues.get(host));
                     producers.put(host, manageable);
 
                     manageable.start();
@@ -107,7 +110,7 @@ public class ChannelGroup {
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
                     BlockingQueue<MessageContext> channelInQueue = consumerQueues.get(host);
-                    manageable = transport.registerConsumer(host, channel.getProperties(), channelInQueue);
+                    manageable = transport.registerConsumer(host, prefix, channel.getProperties(), channelInQueue);
                     consumers.put(host, manageable);
 
                     ConsumingWorker worker;
@@ -182,7 +185,7 @@ public class ChannelGroup {
 
                             // if there are no more channels remove the producer
                             if (channels.size() == 0) {
-                                ConsumingWorker worker = consumingWorkers.remove(   registeredHost);
+                                ConsumingWorker worker = consumingWorkers.remove(registeredHost);
                                 worker.stop();
 
                                 Manageable consumer = consumers.remove(registeredHost);

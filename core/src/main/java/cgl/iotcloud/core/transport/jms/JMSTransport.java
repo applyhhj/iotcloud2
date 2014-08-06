@@ -19,7 +19,8 @@ public class JMSTransport extends AbstractTransport {
     public void configureTransport() {}
 
     @Override
-    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerProducer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering producer to host {}", host);
         String destination = Configuration.getChannelJmsDestination(channelConf);
         String isTopic = Configuration.getChannelIsQueue(channelConf);
         boolean topic = true;
@@ -29,13 +30,14 @@ public class JMSTransport extends AbstractTransport {
 
         ActiveMQConnectionFactory conFactory = new ActiveMQConnectionFactory(host.getUrl());
 
-        JMSSender sender = new JMSSender(conFactory, siteId + "." + destination, topic, queue);
+        JMSSender sender = new JMSSender(conFactory, prefix + "." + destination, topic, queue);
         sender.start();
         return sender;
     }
 
     @Override
-    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering consumer to host {}", host);
         String destination = Configuration.getChannelJmsDestination(channelConf);
         String isTopic = Configuration.getChannelIsQueue(channelConf);
         boolean topic = true;
@@ -45,7 +47,7 @@ public class JMSTransport extends AbstractTransport {
 
         ActiveMQConnectionFactory conFactory = new ActiveMQConnectionFactory(host.getUrl());
 
-        JMSListener listener = new JMSListener(conFactory, siteId + "." + destination, topic, queue);
+        JMSListener listener = new JMSListener(conFactory, prefix + "." + destination, topic, queue);
         listener.start();
         return listener;
     }

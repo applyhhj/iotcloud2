@@ -67,13 +67,15 @@ public class RabbitMQSensor extends AbstractSensor {
 
             Map sendProps = new HashMap();
             sendProps.put("exchange", "test");
-            sendProps.put("routingKey", "test1");
+            sendProps.put("routingKey", "test");
             sendProps.put("queueName", "test");
             Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024);
+            sendChannel.setGrouped(true);
 
             Map receiveProps = new HashMap();
             receiveProps.put("queueName", "test");
             Channel receiveChannel = createChannel("receiver", receiveProps, Direction.IN, 1024);
+            receiveChannel.setGrouped(true);
 
             context.addChannel("rabbitmq", sendChannel);
             context.addChannel("rabbitmq", receiveChannel);

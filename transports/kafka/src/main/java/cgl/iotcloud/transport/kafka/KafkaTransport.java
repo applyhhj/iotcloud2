@@ -43,7 +43,8 @@ public class KafkaTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerProducer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering producer to host {}", host);
         String topic = (String) channelConf.get(PROP_TOPIC);
         String serializerClass = (String) channelConf.get(PROP_SERIALIZER_CLASS);
         String partitionClass = (String) channelConf.get(PROP_PARTITION_CLASS);
@@ -64,7 +65,8 @@ public class KafkaTransport extends AbstractTransport {
     }
 
     @Override
-    public Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue) {
+    public Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
+        LOG.info("Registering consumer to host {}", host);
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 

@@ -76,7 +76,7 @@ public abstract class AbstractTransport implements Transport {
         String groupName = getGroupName(channel, name);
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
-            group = new ChannelGroup(groupName, brokerHosts, this);
+            group = new ChannelGroup(groupName, getPrefix(channel, name), brokerHosts, this);
             groups.put(groupName, group);
         }
         group.addChannel(channel);
@@ -103,17 +103,33 @@ public abstract class AbstractTransport implements Transport {
      * @param channelName channel name
      * @return a group name
      */
+    protected String getPrefix(Channel channel, ChannelName channelName) {
+        if (channel.isGrouped()) {
+            return siteId;
+        } else {
+            return siteId + "." + channelName.getSensorName();
+        }
+    }
+
+    /**
+     * If the channel is grouped we will create a name with Channel name and sensor group
+     * If the channel is not grouped, we will create a name with channel name and sensor ID which is unique,
+     * this group will only have a single channel
+     * @param channel channel
+     * @param channelName channel name
+     * @return a group name
+     */
     protected String getGroupName(Channel channel, ChannelName channelName) {
         if (channel.isGrouped()) {
             return channelName.getChannelName();
         } else {
-            return channelName.getId() + "." + channelName.getChannelName();
+            return channelName.getSensorName() + "." + channelName.getChannelName();
         }
     }
 
-    public abstract Manageable registerProducer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue);
+    public abstract Manageable registerProducer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue);
 
-    public abstract Manageable registerConsumer(BrokerHost host, Map channelConf, BlockingQueue<MessageContext> queue);
+    public abstract Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue);
 
     @Override
     public void start() {

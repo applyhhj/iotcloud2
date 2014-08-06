@@ -75,6 +75,7 @@ public class SensorSite {
                 // configure the transport, this doesn't start the transport
                 t.configure(siteId, (Map) tConf);
                 siteContext.addTransport((String) tName, t);
+                LOG.info("Registered transport {}", tName);
             }
         }
 
@@ -120,13 +121,16 @@ public class SensorSite {
     }
 
     public void stop() {
+        LOG.info("Stopping the sensor site {}", siteContext.getSiteId());
         // stop the transports
-        for (Transport t : siteContext.getTransports().values()) {
-            t.stop();
+        for (Map.Entry<String, Transport> e : siteContext.getTransports().entrySet()) {
+            LOG.info("Stopping transport {}", e.getKey());
+            e.getValue().stop();
         }
 
         // stop the server
         server.stop();
+        LOG.info("Sensor site {} stopped        ", siteContext.getSiteId());
     }
 
     public static void main(String[] args) {
