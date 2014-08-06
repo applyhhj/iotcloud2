@@ -17,6 +17,7 @@ enum TSensorState {
 struct TChannel {
     1:string transport
     2:TDirection direction
+    3:optional map<string,string> properties
 }
 
 struct TBroker {

@@ -38,49 +38,44 @@ public class MasterClient {
     public void registerSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
 
+        TSensor tSensor = createTSensor(context);
+        tSensor.setState(TSensorState.DEPLOY);
+
+        client.updateSensor(siteId, tSensor);
+    }
+
+    private TSensor createTSensor(SensorContext context) {
         String tSensorId = context.getName();
         TSensor tSensor = new TSensor();
         tSensor.setName(tSensorId);
         tSensor.setSensorId(context.getSensorID());
-        tSensor.setState(TSensorState.UN_DEPLOY);
 
         for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
             List<Channel> channels = e.getValue();
             String transport = e.getKey();
 
             for (Channel c : channels) {
+                TChannel tChannel;
                 if (c.getDirection() == Direction.IN) {
                     // todo
-                    TChannel tChannel = new TChannel(transport, TDirection.IN);
-                    tSensor.addToChannels(tChannel);
+                    tChannel = new TChannel(transport, TDirection.IN);
+
+                } else {
+                    tChannel = new TChannel(transport, TDirection.OUT);
                 }
+                for (Object key : c.getProperties().keySet()) {
+                    tChannel.putToProperties(key.toString(), c.getProperties().get(key).toString());
+                }
+                tSensor.addToChannels(tChannel);
             }
         }
-
-        client.registerSensor(siteId, tSensor);
+        return tSensor;
     }
 
     public void unRegisterSensor(String siteId, SensorInstance sensor) throws TException {
         SensorContext context = sensor.getSensorContext();
-
-        String tSensorId = context.getName();
-        TSensor tSensor = new TSensor();
-        tSensor.setName(tSensorId);
-        tSensor.setSensorId(context.getSensorID());
+        TSensor tSensor = createTSensor(context);
         tSensor.setState(TSensorState.UN_DEPLOY);
-
-        for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
-            List<Channel> channels = e.getValue();
-            String transport = e.getKey();
-
-            for (Channel c : channels) {
-                if (c.getDirection() == Direction.IN) {
-                    // todo
-                    TChannel tChannel = new TChannel(transport, TDirection.IN);
-                    tSensor.addToChannels(tChannel);
-                }
-            }
-        }
 
         client.updateSensor(siteId, tSensor);
     }
@@ -88,10 +83,7 @@ public class MasterClient {
     public void updateSensor(String siteId, SensorInstance sensor, SensorState state) throws TException {
         SensorContext context = sensor.getSensorContext();
 
-        String tSensorId = context.getName();
-        TSensor tSensor = new TSensor();
-        tSensor.setName(tSensorId);
-        tSensor.setSensorId(context.getSensorID());
+        TSensor tSensor = createTSensor(context);
 
         if (state == SensorState.ACTIVATE) {
             tSensor.setState(TSensorState.ACTIVE);
@@ -103,19 +95,6 @@ public class MasterClient {
             tSensor.setState(TSensorState.DEPLOY);
         } else if (state == SensorState.UPDATE) {
             tSensor.setState(TSensorState.UPDATE);
-        }
-
-        for (Map.Entry<String, List<Channel>> e: context.getChannels().entrySet()) {
-            List<Channel> channels = e.getValue();
-            String transport = e.getKey();
-
-            for (Channel c : channels) {
-                if (c.getDirection() == Direction.IN) {
-                    // todo
-                    TChannel tChannel = new TChannel(transport, TDirection.IN);
-                    tSensor.addToChannels(tChannel);
-                }
-            }
         }
 
         client.updateSensor(siteId, tSensor);
