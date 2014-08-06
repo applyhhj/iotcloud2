@@ -4,10 +4,7 @@ import cgl.iotcloud.core.msg.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -86,7 +83,7 @@ public class ChannelGroup {
             if (channel.getDirection() == Direction.OUT) {
                 BrokerHost host = brokerHosts.get(producerIndex);
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
-                BlockingQueue<MessageContext> messageContexts = producerQueues.get(host);
+                BlockingQueue<MessageContext> channelOutQueue = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {
                     manageable = transport.registerProducer(host, channel.getProperties(), producerQueues.get(host));
@@ -97,7 +94,7 @@ public class ChannelGroup {
 
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
-                channel.setOutQueue(messageContexts);
+                channel.setOutQueue(channelOutQueue);
                 channels.add(channel);
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
@@ -109,20 +106,22 @@ public class ChannelGroup {
                 BrokerHost host = brokerHosts.get(consumerIndex);
                 List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
-                    BlockingQueue<MessageContext> messageContexts = consumerQueues.get(host);
-                    manageable = transport.registerConsumer(host, channel.getProperties(), messageContexts);
+                    BlockingQueue<MessageContext> channelInQueue = consumerQueues.get(host);
+                    manageable = transport.registerConsumer(host, channel.getProperties(), channelInQueue);
                     consumers.put(host, manageable);
 
                     ConsumingWorker worker;
                     if (channel.isGrouped()) {
-                        worker = new ConsumingWorker(channels, messageContexts);
+                        worker = new ConsumingWorker(channels, channelInQueue);
                     } else {
-                        worker = new ConsumingWorker(channels, messageContexts, true);
+                        worker = new ConsumingWorker(channels, channelInQueue, true);
                     }
                     Thread thread = new Thread(worker);
                     thread.start();
 
                     manageable.start();
+
+                    consumingWorkers.put(host, worker);
                 }
 
                 // now register the channel with the brokers map
@@ -145,11 +144,57 @@ public class ChannelGroup {
         try {
             if (channel.getDirection() == Direction.OUT) {
                 channel.setOutQueue(null);
-                for (Map.Entry<BrokerHost, BlockingQueue<MessageContext>> e : producerQueues.entrySet()) {
 
+                BrokerHost registeredHost = null;
+                for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToProducerChannelMap.entrySet()) {
+                    List<Channel> channels = e.getValue();
+                    Iterator<Channel> channelIterator = channels.iterator();
+                    while (channelIterator.hasNext()) {
+                        Channel c = channelIterator.next();
+                        if (c.equals(channel)) {
+                            registeredHost = e.getKey();
+                            channelIterator.remove();
+
+                            // if there are no more channels remove the producer
+                            if (channels.size() == 0) {
+                                Manageable producer = producers.remove(registeredHost);
+                                producer.stop();
+                            }
+                            break;
+                        }
+                    }
+                    if (registeredHost != null) {
+                        break;
+                    }
                 }
             } else if (channel.getDirection() == Direction.IN) {
+                channel.setInQueue(null);
 
+                BrokerHost registeredHost = null;
+                for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToConsumerChannelMap.entrySet()) {
+                    List<Channel> channels = e.getValue();
+                    Iterator<Channel> channelIterator = channels.iterator();
+                    while (channelIterator.hasNext()) {
+                        Channel c = channelIterator.next();
+                        if (c.equals(channel)) {
+                            registeredHost = e.getKey();
+                            channelIterator.remove();
+
+                            // if there are no more channels remove the producer
+                            if (channels.size() == 0) {
+                                ConsumingWorker worker = consumingWorkers.remove(   registeredHost);
+                                worker.stop();
+
+                                Manageable consumer = consumers.remove(registeredHost);
+                                consumer.stop();
+                            }
+                            break;
+                        }
+                    }
+                    if (registeredHost != null) {
+                        break;
+                    }
+                }
             }
         } finally {
             lock.unlock();

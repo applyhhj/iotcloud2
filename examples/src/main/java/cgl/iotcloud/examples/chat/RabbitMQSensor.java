@@ -19,6 +19,8 @@ import java.util.Map;
 
 public class RabbitMQSensor extends AbstractSensor {
     private static Logger LOG = LoggerFactory.getLogger(RabbitMQSensor.class);
+
+    private boolean run = true;
     @Override
     public Configurator getConfigurator(Map conf) {
         return new RabbitConfigurator();
@@ -32,7 +34,7 @@ public class RabbitMQSensor extends AbstractSensor {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (run) {
                     sendChannel.publish("Hello".getBytes());
                     try {
                         Thread.sleep(100);
@@ -82,7 +84,7 @@ public class RabbitMQSensor extends AbstractSensor {
 
     @Override
     public void close() {
-
+        run = false;
     }
 
     @Override

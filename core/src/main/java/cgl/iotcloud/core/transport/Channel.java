@@ -25,8 +25,6 @@ public class Channel {
 
     private boolean grouped = false;
 
-    private String groupName;
-
     private enum State {
         OPEN,
         CLOSED
@@ -79,10 +77,6 @@ public class Channel {
         return properties;
     }
 
-    public String getGroupName() {
-        return groupName;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -102,6 +96,13 @@ public class Channel {
 
     public void publish(MessageContext message) {
         checkOpen();
+
+        if (state == State.CLOSED) {
+            String msg = "The channel is in closed state and cannot send";
+            LOG.warn(msg);
+            return;
+        }
+
         try {
             outQueue.put(message);
         } catch (InterruptedException e) {
@@ -113,17 +114,18 @@ public class Channel {
         if (outQueue == null) {
             throw new RuntimeException("The channel must be bound to a transport");
         }
-
-        if (state == State.CLOSED) {
-            String msg = "The channel is in closed state and cannot send";
-            LOG.error(msg);
-            throw new RuntimeException(msg);
-        }
     }
 
     public void publish(byte []message) {
         MessageContext messageContext = new MessageContext(sensorID, message);
         checkOpen();
+
+        if (state == State.CLOSED) {
+            String msg = "The channel is in closed state and cannot send";
+            LOG.warn(msg);
+            return;
+        }
+
         try {
             outQueue.put(messageContext);
         } catch (InterruptedException e) {
@@ -134,6 +136,13 @@ public class Channel {
     public void publish(byte []message, Map<String, Object> properties) {
         MessageContext messageContext = new MessageContext(sensorID, message, properties);
         checkOpen();
+
+        if (state == State.CLOSED) {
+            String msg = "The channel is in closed state and cannot send";
+            LOG.warn(msg);
+            return;
+        }
+
         try {
             outQueue.put(messageContext);
         } catch (InterruptedException e) {
@@ -149,12 +158,19 @@ public class Channel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Channel channel = (Channel) o;
-        return !(name != null ? !name.equals(channel.name) : channel.name != null);
+
+        if (name != null ? !name.equals(channel.name) : channel.name != null) return false;
+        if (sensorID != null ? !sensorID.equals(channel.sensorID) : channel.sensorID != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (sensorID != null ? sensorID.hashCode() : 0);
+        return result;
     }
 }
