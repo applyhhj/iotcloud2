@@ -95,6 +95,11 @@ public abstract class AbstractTransport implements Transport {
         group.removeChannel(channel);
     }
 
+    public ChannelGroup getChannelGroup(ChannelName name, Channel channel) {
+        String groupName = getGroupName(channel, name);
+        return groups.get(groupName);
+    }
+
     /**
      * If the channel is grouped we will create a name with Channel name and sensor group
      * If the channel is not grouped, we will create a name with channel name and sensor ID which is unique,

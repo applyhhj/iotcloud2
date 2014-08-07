@@ -220,6 +220,50 @@ public class ChannelGroup {
         }
     }
 
+    public BrokerHost getHostForChannel(Channel channel) {
+        BrokerHost registeredHost = null;
+        lock.lock();
+        try {
+            if (channel.getDirection() == Direction.OUT) {
+                channel.setOutQueue(null);
+                for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToProducerChannelMap.entrySet()) {
+                    List<Channel> channels = e.getValue();
+                    Iterator<Channel> channelIterator = channels.iterator();
+                    while (channelIterator.hasNext()) {
+                        Channel c = channelIterator.next();
+                        if (c.equals(channel)) {
+                            registeredHost = e.getKey();
+                            break;
+                        }
+                    }
+                    if (registeredHost != null) {
+                        break;
+                    }
+                }
+            } else if (channel.getDirection() == Direction.IN) {
+                channel.setInQueue(null);
+
+                for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToConsumerChannelMap.entrySet()) {
+                    List<Channel> channels = e.getValue();
+                    Iterator<Channel> channelIterator = channels.iterator();
+                    while (channelIterator.hasNext()) {
+                        Channel c = channelIterator.next();
+                        if (c.equals(channel)) {
+                            registeredHost = e.getKey();
+                            break;
+                        }
+                    }
+                    if (registeredHost != null) {
+                        break;
+                    }
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+        return registeredHost;
+    }
+
     public void start() {
         for (Manageable manageable : consumers.values()) {
             manageable.start();

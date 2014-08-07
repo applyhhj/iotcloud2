@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.zk;
 
+import cgl.iotcloud.core.api.thrift.TChannel;
 import cgl.iotcloud.core.api.thrift.TSensor;
 import cgl.iotcloud.core.api.thrift.TSite;
 import cgl.iotcloud.core.master.MasterContext;
@@ -58,6 +59,17 @@ public class SensorUpdater {
             client.create().withMode(CreateMode.EPHEMERAL).forPath(
                     context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId(),
                             SerializationUtils.serializeThriftObject(descriptor));
+
+            // now get the channels for this sensor and add them to the zookeeper
+            // for each channel we need
+            /**
+             * 1. transport
+             * 2. properties
+             * 3. broker url
+             */
+            for (TChannel channel : descriptor.getChannels()) {
+
+            }
         } catch (Exception e) {
             String msg = "Failed to register the sensor in ZK";
             LOG.error(msg, e);
@@ -77,6 +89,10 @@ public class SensorUpdater {
             String msg = "Failed to remove the sensor: " + path + " from ZK";
             LOG.error(msg, e);
         }
+    }
+
+    public static void addChannel(CuratorFramework client, MasterContext context, String site, TChannel channel) {
+
     }
 
     private static String getSitePath(String parent, TSite descriptor) {

@@ -3,8 +3,7 @@ package cgl.iotcloud.core.sensorsite;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.TMasterService;
-import cgl.iotcloud.core.transport.Channel;
-import cgl.iotcloud.core.transport.Direction;
+import cgl.iotcloud.core.transport.*;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -21,7 +20,12 @@ public class MasterClient {
 
     private TTransport transport;
 
-    public MasterClient(String host, int port) throws TTransportException {
+    private SiteContext siteContext;
+
+    public MasterClient(SiteContext context) throws TTransportException {
+        String host = context.getMasterHost();
+        int port = context.getMasterPort();
+        this.siteContext = context;
         TSocket socket = new TSocket(host, port);
         transport = new TFramedTransport(socket);
         TProtocol protocol = new TBinaryProtocol(transport);
@@ -59,13 +63,20 @@ public class MasterClient {
                 if (c.getDirection() == Direction.IN) {
                     // todo
                     tChannel = new TChannel(transport, TDirection.IN);
-
                 } else {
                     tChannel = new TChannel(transport, TDirection.OUT);
                 }
                 for (Object key : c.getProperties().keySet()) {
                     tChannel.putToProperties(key.toString(), c.getProperties().get(key).toString());
                 }
+                // figure out the broker for this channel
+                Transport t = siteContext.getTransport(e.getKey());
+                if (t instanceof AbstractTransport) {
+                    ChannelGroup group = ((AbstractTransport) t).getChannelGroup(new ChannelName(context.getName(), c.getName()), c);
+                    BrokerHost host = group.getHostForChannel(c);
+                    tChannel.setBrokerUrl(host.getUrl());
+                }
+
                 tSensor.addToChannels(tChannel);
             }
         }
