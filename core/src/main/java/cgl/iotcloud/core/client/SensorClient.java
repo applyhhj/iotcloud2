@@ -61,6 +61,10 @@ public class SensorClient {
         }
     }
 
+    public List<TSensor> getSensors() {
+        return null;
+    }
+
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {
         TSensorDeployDescriptor sensorDetails = new TSensorDeployDescriptor(deployDescriptor.getJarName(), deployDescriptor.getClassName());
 

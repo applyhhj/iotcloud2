@@ -24,7 +24,7 @@ public class MasterClientCache {
         if (siteClients.size() > 0 && count == 10) {
             return siteClients.poll();
         } else {
-            MasterClient client = new MasterClient(context.getMasterHost(), context.getMasterPort());
+            MasterClient client = new MasterClient(context);
             count++;
             return client;
         }

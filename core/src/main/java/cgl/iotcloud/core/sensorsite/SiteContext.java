@@ -36,7 +36,7 @@ public class SiteContext {
 
     public void addSensor(SensorContext context, ISensor sensor) {
         SensorInstance details = new SensorInstance(context, sensor);
-        sensors.put(context.getName(), details);
+        sensors.put(context.getSensorID(), details);
     }
 
     public SensorInstance removeSensor(String sensorId) {

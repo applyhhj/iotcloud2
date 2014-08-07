@@ -57,11 +57,9 @@ public class MasterConnection {
 
     private boolean registerSite() throws TException {
         // now register the site
-        String masterHost = Configuration.getMasterHost(conf);
-        int masterServerPort = Configuration.getMasterServerPort(conf);
         MasterClient client = null;
         try {
-            client = new MasterClient(masterHost, masterServerPort);
+            client = new MasterClient(siteContext);
 
             String siteHost = Configuration.getSensorSiteHost(conf);
             int siteServerPort = Configuration.getSensorSitePort(conf);

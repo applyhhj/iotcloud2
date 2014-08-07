@@ -109,6 +109,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     @Override
     public List<TSensor> getSensors(String siteId) throws TException {
+
         return null;
     }
 }
