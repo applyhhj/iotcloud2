@@ -40,20 +40,20 @@ public class SiteSensorDeployer {
                 SensorDeployDescriptor deployDescriptor = event.getDeployDescriptor();
                 deploySensor(deployDescriptor);
             } else if (event.getState() == SensorState.ACTIVATE) {
-                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorName());
+                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                 if (descriptor != null) {
                     ISensor sensor = descriptor.getSensor();
                     sensor.activate();
                 } else {
-                    LOG.error("Trying to activate non-existing sensor: " + event.getSensorName());
+                    LOG.error("Trying to activate non-existing sensor: " + event.getSensorId());
                 }
             } else if (event.getState() == SensorState.DEACTIVATE) {
-                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorName());
+                SensorInstance descriptor = siteContext.getSensorDescriptor(event.getSensorId());
                 if (descriptor != null) {
                     ISensor sensor = descriptor.getSensor();
                     sensor.deactivate();
                 } else {
-                    LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorName());
+                    LOG.error("Trying to de-activate non-existing sensor: " + event.getSensorId());
                 }
             } else if (event.getState() == SensorState.UN_DEPLOY) {
                 unDeploySensor(event);
@@ -64,9 +64,9 @@ public class SiteSensorDeployer {
     }
 
     public void unDeploySensor(SensorEvent event) {
-        SensorInstance descriptor = siteContext.getSensor(event.getSensorName());
+        SensorInstance descriptor = siteContext.getSensor(event.getSensorId());
         if (descriptor == null) {
-            LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorName());
+            LOG.error("Trying to un-deploy non existing sensor {}", event.getSensorId());
             return;
         }
 
@@ -87,7 +87,7 @@ public class SiteSensorDeployer {
             }
         }
 
-        SensorEvent sensorEvent = new SensorEvent(event.getSensorName(), SensorState.UN_DEPLOY);
+        SensorEvent sensorEvent = new SensorEvent(event.getSensorId(), SensorState.UN_DEPLOY);
         siteEventBus.post(sensorEvent);
     }
 
@@ -146,7 +146,7 @@ public class SiteSensorDeployer {
             siteContext.addSensor(sensorContext, sensor);
 
             // notify the master about the sensor
-            SensorEvent event = new SensorEvent(sensorContext.getName(), SensorState.DEPLOY);
+            SensorEvent event = new SensorEvent(sensorContext.getSensorID(), SensorState.DEPLOY);
             siteEventBus.post(event);
         } catch (MalformedURLException e) {
             String msg = "The jar name is not a correct url";

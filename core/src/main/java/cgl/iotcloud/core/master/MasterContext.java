@@ -1,19 +1,19 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.Configuration;
-import cgl.iotcloud.core.desc.SensorDescriptor;
-import cgl.iotcloud.core.desc.SiteDescriptor;
+import cgl.iotcloud.core.api.thrift.TSensor;
+import cgl.iotcloud.core.api.thrift.TSite;
 
 import java.util.*;
 
 public class MasterContext {
-    private Map<String, SiteDescriptor> sites = new HashMap<String, SiteDescriptor>();
+    private Map<String, TSite> sites = new HashMap<String, TSite>();
 
-    private Map<String, List<SensorDescriptor>> siteSensors = new HashMap<String, List<SensorDescriptor>>();
+    private Map<String, List<TSensor>> siteSensors = new HashMap<String, List<TSensor>>();
 
-    private Map<String, List<SensorDescriptor>> deactivatedSiteSensors = new HashMap<String, List<SensorDescriptor>>();
+    private Map<String, List<TSensor>> deactivatedSiteSensors = new HashMap<String, List<TSensor>>();
 
-    private Map<String, SiteDescriptor> deactivatedSites = new HashMap<String, SiteDescriptor>();
+    private Map<String, TSite> deactivatedSites = new HashMap<String, TSite>();
 
     private Map conf;
 
@@ -21,26 +21,26 @@ public class MasterContext {
         this.conf = conf;
     }
 
-    public void addSensorSite(SiteDescriptor site) {
-        sites.put(site.getId(), site);
+    public void addSensorSite(TSite site) {
+        sites.put(site.getSiteId(), site);
     }
 
-    public SiteDescriptor getSensorSite(String siteId) {
+    public TSite getSensorSite(String siteId) {
         return sites.get(siteId);
     }
 
-    public Map<String, SiteDescriptor> getSensorSites() {
+    public Map<String, TSite> getSensorSites() {
         return sites;
     }
 
-    public boolean addSensor(String site, SensorDescriptor details) {
+    public boolean addSensor(String site, TSensor details) {
         if (!sites.containsKey(site)) {
             return false;
         }
 
-        List<SensorDescriptor> detailsList = siteSensors.get(site);
+        List<TSensor> detailsList = siteSensors.get(site);
         if (detailsList == null) {
-            detailsList = new ArrayList<SensorDescriptor>();
+            detailsList = new ArrayList<TSensor>();
             siteSensors.put(site, detailsList);
         }
 
@@ -51,7 +51,7 @@ public class MasterContext {
 
     public void makeSiteOffline(String site) {
         if (!siteSensors.containsKey(site)) {
-            SiteDescriptor siteDescriptor = sites.get(site);
+            TSite siteDescriptor = sites.get(site);
             deactivatedSites.put(site, siteDescriptor);
             deactivatedSiteSensors.put(site, siteSensors.get(site));
 
@@ -64,8 +64,16 @@ public class MasterContext {
         if (!sites.containsKey(site)) {
             return false;
         }
-        List<SensorDescriptor> detailsList = siteSensors.get(site);
-        return detailsList != null && detailsList.remove(new SensorDescriptor(site, id));
+        List<TSensor> detailsList = siteSensors.get(site);
+        Iterator<TSensor> itr = detailsList.iterator();
+        while (itr.hasNext()) {
+            TSensor sensor = itr.next();
+            if (sensor.getSensorId().equals(id)) {
+                itr.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeSite(String site) {
@@ -73,10 +81,10 @@ public class MasterContext {
         sites.remove(site);
     }
 
-    public SensorDescriptor getSensor(String siteId, String name) {
-        List<SensorDescriptor> details = siteSensors.get(siteId);
+    public TSensor getSensor(String siteId, String name) {
+        List<TSensor> details = siteSensors.get(siteId);
         if (details != null) {
-            for (SensorDescriptor detail : details) {
+            for (TSensor detail : details) {
                 if (detail.getSensorId().equals(name)) {
                     return detail;
                 }

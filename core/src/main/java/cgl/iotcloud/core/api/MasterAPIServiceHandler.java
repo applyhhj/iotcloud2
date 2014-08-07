@@ -2,7 +2,6 @@ package cgl.iotcloud.core.api;
 
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.MasterContext;
-import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorClientEvent;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import com.google.common.eventbus.EventBus;
@@ -32,7 +31,7 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     @Override
     public TSiteDetailsResponse getSite(String siteId) throws TException {
-        SiteDescriptor descriptor = masterContext.getSensorSite(siteId);
+        TSite descriptor = masterContext.getSensorSite(siteId);
 
         if (descriptor != null) {
             TSite siteDetails = new TSite(siteId, descriptor.getPort(), descriptor.getHost());

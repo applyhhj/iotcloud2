@@ -7,13 +7,13 @@ public class SensorEvent {
 
     private SensorState state;
 
-    private String sensorName;
+    private String sensorId;
 
     private SensorDeployDescriptor deployDescriptor;
 
-    public SensorEvent(String sensorName, SensorState state) {
+    public SensorEvent(String sensorId, SensorState state) {
         this.state = state;
-        this.sensorName = sensorName;
+        this.sensorId = sensorId;
     }
 
     public SensorEvent(SensorDeployDescriptor deployDescriptor, SensorState state) {
@@ -25,8 +25,8 @@ public class SensorEvent {
         return state;
     }
 
-    public String getSensorName() {
-        return sensorName;
+    public String getSensorId() {
+        return sensorId;
     }
 
     public SensorDeployDescriptor getDeployDescriptor() {

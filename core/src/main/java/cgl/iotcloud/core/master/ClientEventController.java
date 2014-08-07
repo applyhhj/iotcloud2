@@ -6,7 +6,6 @@ import cgl.iotcloud.core.master.events.*;
 import cgl.iotcloud.core.sensorsite.SensorDeployDescriptor;
 import cgl.iotcloud.core.sensorsite.SensorState;
 import cgl.iotcloud.core.utils.SiteClientCache;
-import cgl.iotcloud.core.zk.SensorUpdater;
 import com.google.common.eventbus.Subscribe;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;

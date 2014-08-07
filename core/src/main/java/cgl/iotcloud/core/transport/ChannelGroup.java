@@ -85,7 +85,7 @@ public class ChannelGroup {
             Manageable manageable;
             if (channel.getDirection() == Direction.OUT) {
                 BrokerHost host = brokerHosts.get(producerIndex);
-                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
+                List<Channel> producerChannels = brokerHostToConsumerChannelMap.get(host);
                 BlockingQueue<MessageContext> channelOutQueue = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {
@@ -98,7 +98,8 @@ public class ChannelGroup {
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
                 channel.setOutQueue(channelOutQueue);
-                channels.add(channel);
+                producerChannels.add(channel);
+                producerChannels.add(new Channel("", Direction.OUT));
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementProducerIndex();
@@ -107,7 +108,7 @@ public class ChannelGroup {
 
             } else if (channel.getDirection() == Direction.IN) {
                 BrokerHost host = brokerHosts.get(consumerIndex);
-                List<Channel> channels = brokerHostToConsumerChannelMap.get(host);
+                List<Channel> consumerChannels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
                     BlockingQueue<MessageContext> channelInQueue = consumerQueues.get(host);
                     manageable = transport.registerConsumer(host, prefix, channel.getProperties(), channelInQueue);
@@ -115,9 +116,9 @@ public class ChannelGroup {
 
                     ConsumingWorker worker;
                     if (channel.isGrouped()) {
-                        worker = new ConsumingWorker(channels, channelInQueue);
+                        worker = new ConsumingWorker(consumerChannels, channelInQueue);
                     } else {
-                        worker = new ConsumingWorker(channels, channelInQueue, true);
+                        worker = new ConsumingWorker(consumerChannels, channelInQueue, true);
                     }
                     Thread thread = new Thread(worker);
                     thread.start();
@@ -129,7 +130,7 @@ public class ChannelGroup {
 
                 // now register the channel with the brokers map
                 // check weather you have a sender consumer for this host
-                channels.add(channel);
+                consumerChannels.add(channel);
 
                 LOG.info("Registering channel {} with group {} and host {}", channel.getName(), name, host.toString());
                 incrementConsumerIndex();
@@ -146,8 +147,6 @@ public class ChannelGroup {
         lock.lock();
         try {
             if (channel.getDirection() == Direction.OUT) {
-                channel.setOutQueue(null);
-
                 BrokerHost registeredHost = null;
                 for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToProducerChannelMap.entrySet()) {
                     List<Channel> channels = e.getValue();
@@ -171,8 +170,6 @@ public class ChannelGroup {
                     }
                 }
             } else if (channel.getDirection() == Direction.IN) {
-                channel.setInQueue(null);
-
                 BrokerHost registeredHost = null;
                 for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToConsumerChannelMap.entrySet()) {
                     List<Channel> channels = e.getValue();
@@ -225,7 +222,6 @@ public class ChannelGroup {
         lock.lock();
         try {
             if (channel.getDirection() == Direction.OUT) {
-                channel.setOutQueue(null);
                 for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToProducerChannelMap.entrySet()) {
                     List<Channel> channels = e.getValue();
                     Iterator<Channel> channelIterator = channels.iterator();
@@ -241,8 +237,6 @@ public class ChannelGroup {
                     }
                 }
             } else if (channel.getDirection() == Direction.IN) {
-                channel.setInQueue(null);
-
                 for (Map.Entry<BrokerHost, List<Channel>> e : brokerHostToConsumerChannelMap.entrySet()) {
                     List<Channel> channels = e.getValue();
                     Iterator<Channel> channelIterator = channels.iterator();

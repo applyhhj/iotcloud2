@@ -1,9 +1,9 @@
 package cgl.iotcloud.core.master;
 
 import cgl.iotcloud.core.Configuration;
+import cgl.iotcloud.core.api.thrift.TSensor;
+import cgl.iotcloud.core.api.thrift.TSensorState;
 import cgl.iotcloud.core.api.thrift.TSite;
-import cgl.iotcloud.core.desc.SensorDescriptor;
-import cgl.iotcloud.core.desc.SiteDescriptor;
 import cgl.iotcloud.core.master.events.MSensorSiteEvent;
 import cgl.iotcloud.core.master.events.MSiteEvent;
 import cgl.iotcloud.core.sensorsite.SensorState;
@@ -56,21 +56,21 @@ public class SiteEventController {
         } else if (updateEvent.getState() == SensorState.UN_DEPLOY) {
             sensorRemoved(updateEvent);
         } else if (updateEvent.getState() == SensorState.ACTIVATE) {
-            SensorDescriptor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDescriptor.setState(SensorState.ACTIVATE);
+            TSensor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDescriptor.setState(TSensorState.ACTIVE);
         } else if (updateEvent.getState() == SensorState.DEACTIVATE) {
-            SensorDescriptor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
-            sensorDescriptor.setState(SensorState.DEACTIVATE);
+            TSensor sensorDescriptor = context.getSensor(updateEvent.getSite(), updateEvent.getId());
+            sensorDescriptor.setState(TSensorState.DE_ACTIVATE);
         } else if (updateEvent.getState() == SensorState.UPDATE) {
             context.removeSensor(updateEvent.getSite(), updateEvent.getId());
-            context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
+            context.addSensor(updateEvent.getSite(), updateEvent.getSensor());
         } else {
             LOG.warn("Unrecognized event type {}", updateEvent.getState());
         }
     }
 
     private void sensorAdded(MSensorSiteEvent updateEvent) {
-        context.addSensor(updateEvent.getSite(), updateEvent.getSensorDescriptor());
+        context.addSensor(updateEvent.getSite(), updateEvent.getSensor());
 
         SensorUpdater.addSensor(curatorFramework, context, updateEvent.getSite(), updateEvent.getSensor());
     }
@@ -88,7 +88,7 @@ public class SiteEventController {
         String host = site.getHost();
         int port = site.getPort();
 
-        SiteDescriptor descriptor = new SiteDescriptor(id, port, host);
+        TSite descriptor = new TSite(id, port, host);
         descriptor.setMetadata(site.getMetadata());
         context.addSensorSite(descriptor);
 
@@ -105,7 +105,7 @@ public class SiteEventController {
     }
 
     private void activateSite(MSiteEvent event) {
-        SiteDescriptor descriptor = context.getSensorSite(event.getSiteId());
+        TSite descriptor = context.getSensorSite(event.getSiteId());
         heartBeats.scheduleForSite(event.getSiteId(), descriptor.getHost(), descriptor.getPort());
 
         LOG.info("Activating the site {}", event.getSiteId());
