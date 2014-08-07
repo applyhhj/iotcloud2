@@ -24,9 +24,9 @@ public class ChannelGroup {
     /**
      * Keep track of the channels for a broker host
      */
-    protected Map<BrokerHost, List<Channel>> brokerHostToProducerChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
+    protected Map<BrokerHost, List<Channel>> brokerHostToProducerChannelMap = new HashMap<BrokerHost, List<Channel>>();
 
-    protected Map<BrokerHost, List<Channel>> brokerHostToConsumerChannelMap = new ConcurrentHashMap<BrokerHost, List<Channel>>();
+    protected Map<BrokerHost, List<Channel>> brokerHostToConsumerChannelMap = new HashMap<BrokerHost, List<Channel>>();
 
     /**
      * The available brokers
@@ -85,7 +85,7 @@ public class ChannelGroup {
             Manageable manageable;
             if (channel.getDirection() == Direction.OUT) {
                 BrokerHost host = brokerHosts.get(producerIndex);
-                List<Channel> producerChannels = brokerHostToConsumerChannelMap.get(host);
+                List<Channel> producerChannels = brokerHostToProducerChannelMap.get(host);
                 BlockingQueue<MessageContext> channelOutQueue = producerQueues.get(host);
 
                 if (!producers.containsKey(host)) {

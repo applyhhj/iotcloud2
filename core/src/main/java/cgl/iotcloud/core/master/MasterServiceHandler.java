@@ -70,12 +70,14 @@ public class MasterServiceHandler implements TMasterService.Iface {
 
         LOG.info("Request received for updating a sensor from site {} with sensor id {}", siteId, id);
         MSensorSiteEvent updateEvent;
-        if (sensor.getState() == TSensorState.UPDATE) {
-            updateEvent = new MSensorSiteEvent(id, SensorState.UPDATE, siteId);
+        if (sensor.getState() == TSensorState.DEPLOY) {
+            updateEvent = new MSensorSiteEvent(id, SensorState.DEPLOY, siteId);
         } else if (sensor.getState() == TSensorState.ACTIVE) {
             updateEvent = new MSensorSiteEvent(id, SensorState.ACTIVATE, siteId);
         } else if (sensor.getState() == TSensorState.DE_ACTIVATE) {
             updateEvent = new MSensorSiteEvent(id, SensorState.DEACTIVATE, siteId);
+        } else if (sensor.getState() == TSensorState.UN_DEPLOY) {
+            updateEvent = new MSensorSiteEvent(id, SensorState.UN_DEPLOY, siteId);
         } else {
             updateEvent = new MSensorSiteEvent(id, SensorState.UPDATE, siteId);
         }
