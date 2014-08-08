@@ -17,4 +17,5 @@ service TMasterAPIService {
     api.TResponse stopAllSensors(1:string id)
 
     list<api.TSensor> getSensors(1:string siteId)
+    list<api.TSensor> getAllSensors()
 }

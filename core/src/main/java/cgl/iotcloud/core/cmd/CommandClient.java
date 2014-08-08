@@ -29,13 +29,22 @@ public class CommandClient {
 
     public void ls() {
         List<TSensor> sensors = client.getSensors();
-        for (TSensor sensor : sensors) {
-            System.out.format("name: %s id: %s\n", sensor.getName(), sensor.getSensorId());
-        }
+        formatSensors(sensors);
     }
 
     public void ls(String site) {
+        List<TSensor> sensors = client.getSensors(site);
+        formatSensors(sensors);
+    }
 
+    private void formatSensors(List<TSensor> sensors) {
+        System.out.format("----------------------------------------------------------------------------------%n");
+        System.out.format("| Sensor Name                            | Sensor ID                             |%n");
+        System.out.format("----------------------------------------------------------------------------------%n");
+        for (TSensor sensor : sensors) {
+            System.out.format(" %-40s| %-40s%n", sensor.getName(), sensor.getSensorId());
+        }
+        System.out.print("\n");
     }
 
     public void startSensor(String name) {

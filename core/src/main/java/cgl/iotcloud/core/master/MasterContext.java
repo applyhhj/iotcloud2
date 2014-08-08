@@ -103,6 +103,23 @@ public class MasterContext {
         return null;
     }
 
+    public List<TSensor> getAllSensors() {
+        List<TSensor> sensors = new ArrayList<TSensor>();
+        for (Map.Entry<String, List<TSensor>> e : siteSensors.entrySet()) {
+            sensors.addAll(e.getValue());
+        }
+        return sensors;
+    }
+
+    public List<TSensor> getSensors(String site) {
+        List<TSensor> sensors = siteSensors.get(site);
+        if (sensors == null) {
+            LOG.warn("Trying to access sensors for non existent site {}", site);
+            return new ArrayList<TSensor>();
+        }
+        return new ArrayList<TSensor>(sensors);
+    }
+
     public Map getConf() {
         return conf;
     }

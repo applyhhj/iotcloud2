@@ -74,7 +74,9 @@ public class MasterClient {
                 if (t instanceof AbstractTransport) {
                     ChannelGroup group = ((AbstractTransport) t).getChannelGroup(new ChannelName(context.getName(), c.getName()), c);
                     BrokerHost host = group.getHostForChannel(c);
-                    tChannel.setBrokerUrl(host.getUrl());
+                    if (host != null) {
+                        tChannel.setBrokerUrl(host.getUrl());
+                    }
                 }
 
                 tSensor.addToChannels(tChannel);

@@ -108,7 +108,13 @@ public class MasterAPIServiceHandler implements TMasterAPIService.Iface {
 
     @Override
     public List<TSensor> getSensors(String siteId) throws TException {
+        LOG.info("Request received get sensors for site {}", siteId);
+        return masterContext.getSensors(siteId);
+    }
 
-        return null;
+    @Override
+    public List<TSensor> getAllSensors() throws TException {
+        LOG.info("Request received get all sensors");
+        return masterContext.getAllSensors();
     }
 }

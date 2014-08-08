@@ -60,7 +60,19 @@ public class SensorClient {
     }
 
     public List<TSensor> getSensors() {
-        return null;
+        try {
+            return this.client.getAllSensors();
+        } catch (TException e) {
+            throw new RuntimeException("Error occurred while getting the registered sensors", e);
+        }
+    }
+
+    public List<TSensor> getSensors(String site) {
+        try {
+            return this.client.getSensors(site);
+        } catch (TException e) {
+            throw new RuntimeException("Error occurred while getting the registered sensors", e);
+        }
     }
 
     public boolean deploySensor(SensorDeployDescriptor deployDescriptor) {

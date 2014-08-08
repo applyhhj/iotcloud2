@@ -79,10 +79,10 @@ public class SensorUpdater {
     public static void removeSensor(CuratorFramework client, MasterContext context, String site, TSensor descriptor) {
         String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId();
         try {
-            if (client.checkExists().forPath(path) != null) {
-                String msg = "The sensor: " + descriptor.getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+            if (client.checkExists().forPath(path) == null) {
+                String msg = "The sensor: " + descriptor.getName() + " is not deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
-                throw new RuntimeException("Failed to deploy sensor");
+                throw new RuntimeException(msg);
             }
             client.delete().forPath(path);
         } catch (Exception e) {
