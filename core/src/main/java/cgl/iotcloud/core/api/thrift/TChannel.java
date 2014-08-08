@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField DIRECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("direction", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)3);
   private static final org.apache.thrift.protocol.TField BROKER_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("brokerUrl", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -70,6 +71,7 @@ import org.slf4j.LoggerFactory;
   public TDirection direction; // required
   public Map<String,String> properties; // optional
   public String brokerUrl; // optional
+  public String name; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -80,7 +82,8 @@ import org.slf4j.LoggerFactory;
      */
     DIRECTION((short)2, "direction"),
     PROPERTIES((short)3, "properties"),
-    BROKER_URL((short)4, "brokerUrl");
+    BROKER_URL((short)4, "brokerUrl"),
+    NAME((short)5, "name");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,6 +106,8 @@ import org.slf4j.LoggerFactory;
           return PROPERTIES;
         case 4: // BROKER_URL
           return BROKER_URL;
+        case 5: // NAME
+          return NAME;
         default:
           return null;
       }
@@ -143,7 +148,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL};
+  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL,_Fields.NAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -156,6 +161,8 @@ import org.slf4j.LoggerFactory;
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.BROKER_URL, new org.apache.thrift.meta_data.FieldMetaData("brokerUrl", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TChannel.class, metaDataMap);
@@ -190,6 +197,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetBrokerUrl()) {
       this.brokerUrl = other.brokerUrl;
     }
+    if (other.isSetName()) {
+      this.name = other.name;
+    }
   }
 
   public TChannel deepCopy() {
@@ -202,6 +212,7 @@ import org.slf4j.LoggerFactory;
     this.direction = null;
     this.properties = null;
     this.brokerUrl = null;
+    this.name = null;
   }
 
   public String getTransport() {
@@ -319,6 +330,30 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getName() {
+    return this.name;
+  }
+
+  public TChannel setName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  public void unsetName() {
+    this.name = null;
+  }
+
+  /** Returns true if field name is set (has been assigned a value) and false otherwise */
+  public boolean isSetName() {
+    return this.name != null;
+  }
+
+  public void setNameIsSet(boolean value) {
+    if (!value) {
+      this.name = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TRANSPORT:
@@ -353,6 +388,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case NAME:
+      if (value == null) {
+        unsetName();
+      } else {
+        setName((String)value);
+      }
+      break;
+
     }
   }
 
@@ -369,6 +412,9 @@ import org.slf4j.LoggerFactory;
 
     case BROKER_URL:
       return getBrokerUrl();
+
+    case NAME:
+      return getName();
 
     }
     throw new IllegalStateException();
@@ -389,6 +435,8 @@ import org.slf4j.LoggerFactory;
       return isSetProperties();
     case BROKER_URL:
       return isSetBrokerUrl();
+    case NAME:
+      return isSetName();
     }
     throw new IllegalStateException();
   }
@@ -439,6 +487,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_brokerUrl && that_present_brokerUrl))
         return false;
       if (!this.brokerUrl.equals(that.brokerUrl))
+        return false;
+    }
+
+    boolean this_present_name = true && this.isSetName();
+    boolean that_present_name = true && that.isSetName();
+    if (this_present_name || that_present_name) {
+      if (!(this_present_name && that_present_name))
+        return false;
+      if (!this.name.equals(that.name))
         return false;
     }
 
@@ -498,6 +555,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -550,6 +617,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.brokerUrl);
+      }
+      first = false;
+    }
+    if (isSetName()) {
+      if (!first) sb.append(", ");
+      sb.append("name:");
+      if (this.name == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.name);
       }
       first = false;
     }
@@ -640,6 +717,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.name = iprot.readString();
+              struct.setNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -687,6 +772,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.name != null) {
+        if (struct.isSetName()) {
+          oprot.writeFieldBegin(NAME_FIELD_DESC);
+          oprot.writeString(struct.name);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -717,7 +809,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetBrokerUrl()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetName()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetTransport()) {
         oprot.writeString(struct.transport);
       }
@@ -737,12 +832,15 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetBrokerUrl()) {
         oprot.writeString(struct.brokerUrl);
       }
+      if (struct.isSetName()) {
+        oprot.writeString(struct.name);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.transport = iprot.readString();
         struct.setTransportIsSet(true);
@@ -769,6 +867,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(3)) {
         struct.brokerUrl = iprot.readString();
         struct.setBrokerUrlIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.name = iprot.readString();
+        struct.setNameIsSet(true);
       }
     }
   }

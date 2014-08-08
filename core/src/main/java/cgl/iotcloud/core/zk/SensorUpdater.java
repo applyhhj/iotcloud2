@@ -10,6 +10,8 @@ import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class SensorUpdater {
     private static Logger LOG = LoggerFactory.getLogger(SensorUpdater.class);
 
@@ -51,12 +53,12 @@ public class SensorUpdater {
             }
 
             if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId()) != null) {
-                    String msg = "The sensor: " + descriptor.getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+                String msg = "The sensor: " + descriptor.getName() + " is already deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
                 throw new RuntimeException(msg);
             }
 
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(
+            client.create().withMode(CreateMode.PERSISTENT).forPath(
                     context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId(),
                             SerializationUtils.serializeThriftObject(descriptor));
 
@@ -68,7 +70,14 @@ public class SensorUpdater {
              * 3. broker url
              */
             for (TChannel channel : descriptor.getChannels()) {
-
+                if (client.checkExists().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId() + "/" + channel.getName())  != null) {
+                    String msg = "The channel: " + channel.getName() + " for sensor: " + descriptor.getName() + " is already registered in the site:" + site + " with id: " + descriptor.getSensorId() + "/" + channel.getName();
+                    LOG.error(msg);
+                    throw new RuntimeException(msg);
+                }
+                client.create().withMode(CreateMode.PERSISTENT).forPath(
+                        context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId() + "/" + channel.getName(),
+                        SerializationUtils.serializeThriftObject(channel));
             }
         } catch (Exception e) {
             String msg = "Failed to register the sensor in ZK";
@@ -79,11 +88,18 @@ public class SensorUpdater {
     public static void removeSensor(CuratorFramework client, MasterContext context, String site, TSensor descriptor) {
         String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId();
         try {
+            // delete all the channels for this
+            List<String> clients = client.getChildren().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId());
+            for (String cl : clients) {
+                client.delete().forPath(context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId() + "/" + cl);
+            }
+
             if (client.checkExists().forPath(path) == null) {
                 String msg = "The sensor: " + descriptor.getName() + " is not deployed in the site:" + site + " with id: " + descriptor.getSensorId();
                 LOG.error(msg);
                 throw new RuntimeException(msg);
             }
+
             client.delete().forPath(path);
         } catch (Exception e) {
             String msg = "Failed to remove the sensor: " + path + " from ZK";

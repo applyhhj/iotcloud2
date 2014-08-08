@@ -69,6 +69,7 @@ public class MasterClient {
                 for (Object key : c.getProperties().keySet()) {
                     tChannel.putToProperties(key.toString(), c.getProperties().get(key).toString());
                 }
+                tChannel.setName(c.getName());
                 // figure out the broker for this channel
                 Transport t = siteContext.getTransport(e.getKey());
                 if (t instanceof AbstractTransport) {
