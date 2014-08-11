@@ -26,8 +26,8 @@ public class WordGeneratingSensor extends AbstractSensor {
 
     @Override
     public void open(SensorContext context) {
-        final Channel sendChannel = context.getChannel("rabbitmq", "words");
-        final Channel receiveChannel = context.getChannel("rabbitmq", "counts");
+        final Channel sendChannel = context.getChannel("rabbitmq", "sentence");
+        final Channel receiveChannel = context.getChannel("rabbitmq", "count");
         final Random rand = new Random();
         Thread t = new Thread(new Runnable() {
             @Override
@@ -36,7 +36,7 @@ public class WordGeneratingSensor extends AbstractSensor {
                     String sentence = sentences[rand.nextInt(sentences.length)];
                     sendChannel.publish(sentence.getBytes());
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -62,7 +62,7 @@ public class WordGeneratingSensor extends AbstractSensor {
     private class RabbitConfigurator extends AbstractConfigurator {
         @Override
         public SensorContext configure(SiteContext siteContext, Map conf) {
-            SensorContext context = new SensorContext("rabbitMQSensor");
+            SensorContext context = new SensorContext("wordcount");
 
             Map sendProps = new HashMap();
             sendProps.put("exchange", "iot_examples");
@@ -73,6 +73,8 @@ public class WordGeneratingSensor extends AbstractSensor {
 
             Map receiveProps = new HashMap();
             receiveProps.put("queueName", "count");
+            receiveProps.put("exchange", "iot_examples");
+            receiveProps.put("routingKey", "count");
             Channel receiveChannel = createChannel("count", receiveProps, Direction.IN, 1024);
             receiveChannel.setGrouped(true);
 
