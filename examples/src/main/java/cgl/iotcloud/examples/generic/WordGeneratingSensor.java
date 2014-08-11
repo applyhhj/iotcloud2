@@ -1,4 +1,4 @@
-package cgl.iotcloud.examples.chat;
+package cgl.iotcloud.examples.generic;
 
 import cgl.iotcloud.core.*;
 import cgl.iotcloud.core.client.SensorClient;
@@ -11,16 +11,17 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-
-public class RabbitMQSensor extends AbstractSensor {
-    private static Logger LOG = LoggerFactory.getLogger(RabbitMQSensor.class);
+public class WordGeneratingSensor extends AbstractSensor {
+    private static Logger LOG = LoggerFactory.getLogger(WordGeneratingSensor.class);
 
     private boolean run = true;
+
+
+    final String[] sentences = new String[]{ "the cow jumped over the moon", "an apple a day keeps the doctor away",
+            "four score and seven years ago", "snow white and the seven dwarfs", "i am at two with nature" };
+
     @Override
     public Configurator getConfigurator(Map conf) {
         return new RabbitConfigurator();
@@ -28,14 +29,15 @@ public class RabbitMQSensor extends AbstractSensor {
 
     @Override
     public void open(SensorContext context) {
-        final Channel sendChannel = context.getChannel("rabbitmq", "sender");
-        final Channel receiveChannel = context.getChannel("rabbitmq", "receiver");
-
+        final Channel sendChannel = context.getChannel("rabbitmq", "words");
+        final Channel receiveChannel = context.getChannel("rabbitmq", "counts");
+        final Random rand = new Random();
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (run) {
-                    sendChannel.publish("Hello".getBytes());
+                    String sentence = sentences[rand.nextInt(sentences.length)];
+                    sendChannel.publish(sentence.getBytes());
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -66,15 +68,15 @@ public class RabbitMQSensor extends AbstractSensor {
             SensorContext context = new SensorContext("rabbitMQSensor");
 
             Map sendProps = new HashMap();
-            sendProps.put("exchange", "test");
-            sendProps.put("routingKey", "test");
-            sendProps.put("queueName", "test");
-            Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024);
+            sendProps.put("exchange", "iot_examples");
+            sendProps.put("routingKey", "words");
+            sendProps.put("queueName", "words");
+            Channel sendChannel = createChannel("words", sendProps, Direction.OUT, 1024);
             sendChannel.setGrouped(true);
 
             Map receiveProps = new HashMap();
-            receiveProps.put("queueName", "test");
-            Channel receiveChannel = createChannel("receiver", receiveProps, Direction.IN, 1024);
+            receiveProps.put("queueName", "counts");
+            Channel receiveChannel = createChannel("counts", receiveProps, Direction.IN, 1024);
             receiveChannel.setGrouped(true);
 
             context.addChannel("rabbitmq", sendChannel);
@@ -98,7 +100,7 @@ public class RabbitMQSensor extends AbstractSensor {
         List<String> sites = new ArrayList<String>();
         sites.add("local");
 
-        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.chat.RabbitMQSensor");
+        SensorDeployDescriptor deployDescriptor = new SensorDeployDescriptor("iotcloud-examples-1.0-SNAPSHOT.jar", "cgl.iotcloud.examples.generic.WordGeneratingSensor");
         deployDescriptor.addDeploySites(sites);
 
         client.deploySensor(deployDescriptor);
