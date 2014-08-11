@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)3);
   private static final org.apache.thrift.protocol.TField BROKER_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("brokerUrl", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField SITE_FIELD_DESC = new org.apache.thrift.protocol.TField("site", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField SENSOR_FIELD_DESC = new org.apache.thrift.protocol.TField("sensor", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +74,8 @@ import org.slf4j.LoggerFactory;
   public Map<String,String> properties; // optional
   public String brokerUrl; // optional
   public String name; // optional
+  public String site; // optional
+  public String sensor; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -83,7 +87,9 @@ import org.slf4j.LoggerFactory;
     DIRECTION((short)2, "direction"),
     PROPERTIES((short)3, "properties"),
     BROKER_URL((short)4, "brokerUrl"),
-    NAME((short)5, "name");
+    NAME((short)5, "name"),
+    SITE((short)6, "site"),
+    SENSOR((short)7, "sensor");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -108,6 +114,10 @@ import org.slf4j.LoggerFactory;
           return BROKER_URL;
         case 5: // NAME
           return NAME;
+        case 6: // SITE
+          return SITE;
+        case 7: // SENSOR
+          return SENSOR;
         default:
           return null;
       }
@@ -148,7 +158,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL,_Fields.NAME};
+  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL,_Fields.NAME,_Fields.SITE,_Fields.SENSOR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -163,6 +173,10 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.BROKER_URL, new org.apache.thrift.meta_data.FieldMetaData("brokerUrl", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SITE, new org.apache.thrift.meta_data.FieldMetaData("site", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SENSOR, new org.apache.thrift.meta_data.FieldMetaData("sensor", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TChannel.class, metaDataMap);
@@ -200,6 +214,12 @@ import org.slf4j.LoggerFactory;
     if (other.isSetName()) {
       this.name = other.name;
     }
+    if (other.isSetSite()) {
+      this.site = other.site;
+    }
+    if (other.isSetSensor()) {
+      this.sensor = other.sensor;
+    }
   }
 
   public TChannel deepCopy() {
@@ -213,6 +233,8 @@ import org.slf4j.LoggerFactory;
     this.properties = null;
     this.brokerUrl = null;
     this.name = null;
+    this.site = null;
+    this.sensor = null;
   }
 
   public String getTransport() {
@@ -354,6 +376,54 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getSite() {
+    return this.site;
+  }
+
+  public TChannel setSite(String site) {
+    this.site = site;
+    return this;
+  }
+
+  public void unsetSite() {
+    this.site = null;
+  }
+
+  /** Returns true if field site is set (has been assigned a value) and false otherwise */
+  public boolean isSetSite() {
+    return this.site != null;
+  }
+
+  public void setSiteIsSet(boolean value) {
+    if (!value) {
+      this.site = null;
+    }
+  }
+
+  public String getSensor() {
+    return this.sensor;
+  }
+
+  public TChannel setSensor(String sensor) {
+    this.sensor = sensor;
+    return this;
+  }
+
+  public void unsetSensor() {
+    this.sensor = null;
+  }
+
+  /** Returns true if field sensor is set (has been assigned a value) and false otherwise */
+  public boolean isSetSensor() {
+    return this.sensor != null;
+  }
+
+  public void setSensorIsSet(boolean value) {
+    if (!value) {
+      this.sensor = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TRANSPORT:
@@ -396,6 +466,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case SITE:
+      if (value == null) {
+        unsetSite();
+      } else {
+        setSite((String)value);
+      }
+      break;
+
+    case SENSOR:
+      if (value == null) {
+        unsetSensor();
+      } else {
+        setSensor((String)value);
+      }
+      break;
+
     }
   }
 
@@ -415,6 +501,12 @@ import org.slf4j.LoggerFactory;
 
     case NAME:
       return getName();
+
+    case SITE:
+      return getSite();
+
+    case SENSOR:
+      return getSensor();
 
     }
     throw new IllegalStateException();
@@ -437,6 +529,10 @@ import org.slf4j.LoggerFactory;
       return isSetBrokerUrl();
     case NAME:
       return isSetName();
+    case SITE:
+      return isSetSite();
+    case SENSOR:
+      return isSetSensor();
     }
     throw new IllegalStateException();
   }
@@ -496,6 +592,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_name && that_present_name))
         return false;
       if (!this.name.equals(that.name))
+        return false;
+    }
+
+    boolean this_present_site = true && this.isSetSite();
+    boolean that_present_site = true && that.isSetSite();
+    if (this_present_site || that_present_site) {
+      if (!(this_present_site && that_present_site))
+        return false;
+      if (!this.site.equals(that.site))
+        return false;
+    }
+
+    boolean this_present_sensor = true && this.isSetSensor();
+    boolean that_present_sensor = true && that.isSetSensor();
+    if (this_present_sensor || that_present_sensor) {
+      if (!(this_present_sensor && that_present_sensor))
+        return false;
+      if (!this.sensor.equals(that.sensor))
         return false;
     }
 
@@ -565,6 +679,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSite()).compareTo(other.isSetSite());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSite()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.site, other.site);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSensor()).compareTo(other.isSetSensor());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSensor()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sensor, other.sensor);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -627,6 +761,26 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.name);
+      }
+      first = false;
+    }
+    if (isSetSite()) {
+      if (!first) sb.append(", ");
+      sb.append("site:");
+      if (this.site == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.site);
+      }
+      first = false;
+    }
+    if (isSetSensor()) {
+      if (!first) sb.append(", ");
+      sb.append("sensor:");
+      if (this.sensor == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sensor);
       }
       first = false;
     }
@@ -725,6 +879,22 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // SITE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.site = iprot.readString();
+              struct.setSiteIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // SENSOR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.sensor = iprot.readString();
+              struct.setSensorIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -779,6 +949,20 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.site != null) {
+        if (struct.isSetSite()) {
+          oprot.writeFieldBegin(SITE_FIELD_DESC);
+          oprot.writeString(struct.site);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.sensor != null) {
+        if (struct.isSetSensor()) {
+          oprot.writeFieldBegin(SENSOR_FIELD_DESC);
+          oprot.writeString(struct.sensor);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -812,7 +996,13 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetName()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetSite()) {
+        optionals.set(5);
+      }
+      if (struct.isSetSensor()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetTransport()) {
         oprot.writeString(struct.transport);
       }
@@ -835,12 +1025,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetName()) {
         oprot.writeString(struct.name);
       }
+      if (struct.isSetSite()) {
+        oprot.writeString(struct.site);
+      }
+      if (struct.isSetSensor()) {
+        oprot.writeString(struct.sensor);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.transport = iprot.readString();
         struct.setTransportIsSet(true);
@@ -871,6 +1067,14 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(4)) {
         struct.name = iprot.readString();
         struct.setNameIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.site = iprot.readString();
+        struct.setSiteIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.sensor = iprot.readString();
+        struct.setSensorIsSet(true);
       }
     }
   }

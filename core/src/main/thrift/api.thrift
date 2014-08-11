@@ -20,6 +20,8 @@ struct TChannel {
     3:optional map<string,string> properties
     4:optional string brokerUrl
     5:optional string name
+    6:optional string site
+    7:optional string sensor
 }
 
 struct TBroker {
