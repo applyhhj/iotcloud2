@@ -15,10 +15,7 @@ import java.util.*;
 
 public class WordGeneratingSensor extends AbstractSensor {
     private static Logger LOG = LoggerFactory.getLogger(WordGeneratingSensor.class);
-
     private boolean run = true;
-
-
     final String[] sentences = new String[]{ "the cow jumped over the moon", "an apple a day keeps the doctor away",
             "four score and seven years ago", "snow white and the seven dwarfs", "i am at two with nature" };
 
@@ -69,19 +66,18 @@ public class WordGeneratingSensor extends AbstractSensor {
 
             Map sendProps = new HashMap();
             sendProps.put("exchange", "iot_examples");
-            sendProps.put("routingKey", "words");
-            sendProps.put("queueName", "words");
-            Channel sendChannel = createChannel("words", sendProps, Direction.OUT, 1024);
+            sendProps.put("routingKey", "sentence");
+            sendProps.put("queueName", "sentence");
+            Channel sendChannel = createChannel("sentence", sendProps, Direction.OUT, 1024);
             sendChannel.setGrouped(true);
 
             Map receiveProps = new HashMap();
-            receiveProps.put("queueName", "counts");
-            Channel receiveChannel = createChannel("counts", receiveProps, Direction.IN, 1024);
+            receiveProps.put("queueName", "count");
+            Channel receiveChannel = createChannel("count", receiveProps, Direction.IN, 1024);
             receiveChannel.setGrouped(true);
 
             context.addChannel("rabbitmq", sendChannel);
             context.addChannel("rabbitmq", receiveChannel);
-
             return context;
         }
     }
