@@ -79,7 +79,8 @@ public class MasterClient {
                         tChannel.setBrokerUrl(host.getUrl());
                     }
                 }
-
+                tChannel.setSensor(context.getName());
+                tChannel.setSite(siteContext.getSiteId());
                 tSensor.addToChannels(tChannel);
             }
         }
