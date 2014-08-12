@@ -28,7 +28,7 @@ public class RabbitMQTransport extends AbstractTransport {
         String routingKey = (String) channelConf.get(ROUTING_KEY_PROPERTY);
         String queueName = (String) channelConf.get(QUEUE_NAME_PROPERTY);
 
-        RabbitMQSender sender = new RabbitMQSender(queue, exchangeName, prefix + "." + routingKey, prefix + "." + queueName, host.getUrl());
+        RabbitMQSender sender = new RabbitMQSender(queue, exchangeName, routingKey, prefix + "." + queueName, host.getUrl());
         if (executorService != null) {
             sender.setExecutorService(executorService);
         }
