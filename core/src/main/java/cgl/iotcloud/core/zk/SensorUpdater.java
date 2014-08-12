@@ -2,6 +2,7 @@ package cgl.iotcloud.core.zk;
 
 import cgl.iotcloud.core.api.thrift.TChannel;
 import cgl.iotcloud.core.api.thrift.TSensor;
+import cgl.iotcloud.core.api.thrift.TSensorState;
 import cgl.iotcloud.core.api.thrift.TSite;
 import cgl.iotcloud.core.master.MasterContext;
 import cgl.iotcloud.core.utils.SerializationUtils;
@@ -107,8 +108,20 @@ public class SensorUpdater {
         }
     }
 
-    public static void addChannel(CuratorFramework client, MasterContext context, String site, TChannel channel) {
-
+    public static void markSensorForDeletion(CuratorFramework client, MasterContext context, String site, TSensor descriptor) {
+        String path = context.getParentPath() + "/" + site + "/" + SENSORS_NODE + "/" + descriptor.getName() + "/" + descriptor.getSensorId();
+        try {
+            if (client.checkExists().forPath(path) == null) {
+                String msg = "The sensor: " + descriptor.getName() + " is not deployed in the site:" + site + " with id: " + descriptor.getSensorId();
+                LOG.error(msg);
+                throw new RuntimeException(msg);
+            }
+            descriptor.setState(TSensorState.UN_DEPLOY);
+            client.setData().forPath(path, SerializationUtils.serializeThriftObject(descriptor));
+        } catch (Exception e) {
+            String msg = "Failed to remove the sensor: " + path + " from ZK";
+            LOG.error(msg, e);
+        }
     }
 
     private static String getSitePath(String parent, TSite descriptor) {

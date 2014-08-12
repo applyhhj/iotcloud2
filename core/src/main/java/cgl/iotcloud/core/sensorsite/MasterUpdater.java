@@ -31,6 +31,20 @@ public class MasterUpdater {
         }
     }
 
+    public void unRegisterSite() {
+        MasterClient client = null;
+        try {
+            client = clientCache.getMasterClient();
+            client.unRegisterSite();
+        } catch (Exception e) {
+            LOG.error("Failed to un-register the site: " + siteContext.getSiteId(), e);
+        } finally {
+            if (client != null) {
+                clientCache.done(client);
+            }
+        }
+    }
+
     private void registerSensor(SensorEvent event) {
         MasterClient client = null;
         try {

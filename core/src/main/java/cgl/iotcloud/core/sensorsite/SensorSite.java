@@ -122,6 +122,10 @@ public class SensorSite {
 
     public void stop() {
         LOG.info("Stopping the sensor site {}", siteContext.getSiteId());
+
+        // we first un register from the master
+        masterUpdater.unRegisterSite();
+
         // stop the transports
         for (Map.Entry<String, Transport> e : siteContext.getTransports().entrySet()) {
             LOG.info("Stopping transport {}", e.getKey());

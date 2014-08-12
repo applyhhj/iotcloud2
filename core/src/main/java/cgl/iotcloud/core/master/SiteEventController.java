@@ -78,7 +78,7 @@ public class SiteEventController {
     private void sensorRemoved(MSensorSiteEvent updateEvent) {
         context.removeSensor(updateEvent.getSite(), updateEvent.getId());
 
-        SensorUpdater.removeSensor(curatorFramework, context, updateEvent.getSite(), updateEvent.getSensor());
+        SensorUpdater.markSensorForDeletion(curatorFramework, context, updateEvent.getSite(), updateEvent.getSensor());
     }
 
     private void addSite(MSiteEvent event) {
@@ -98,6 +98,11 @@ public class SiteEventController {
     }
 
     private void deactivateSite(MSiteEvent event) {
+        // first get the sensors for this site
+        for (TSensor sensor : context.getSensors(event.getSiteId())) {
+            SensorUpdater.markSensorForDeletion(curatorFramework, context, event.getSiteId(), sensor);
+        }
+
         context.makeSiteOffline(event.getSiteId());
         // stop the timers
         heartBeats.stopForSite(event.getSiteId());

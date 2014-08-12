@@ -1,5 +1,6 @@
 package cgl.iotcloud.core.sensorsite;
 
+import cgl.iotcloud.core.Configuration;
 import cgl.iotcloud.core.SensorContext;
 import cgl.iotcloud.core.api.thrift.*;
 import cgl.iotcloud.core.master.thrift.TMasterService;
@@ -36,6 +37,13 @@ public class MasterClient {
 
     public boolean registerSite(String siteId, String siteHost, int sitePort) throws TException {
         TResponse response = client.registerSite(new TSite(siteId, sitePort, siteHost));
+        return response.getState() == TResponseState.SUCCESS;
+    }
+
+    public boolean unRegisterSite() throws TException {
+        String siteHost = Configuration.getSensorSiteHost(siteContext.getConf());
+        int siteServerPort = Configuration.getSensorSitePort(siteContext.getConf());
+        TResponse response = client.unRegisterSite(new TSite(siteContext.getSiteId(), siteServerPort, siteHost));
         return response.getState() == TResponseState.SUCCESS;
     }
 

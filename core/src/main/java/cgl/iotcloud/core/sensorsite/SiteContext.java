@@ -74,4 +74,8 @@ public class SiteContext {
     public int getMasterPort() {
         return Configuration.getMasterServerPort(conf);
     }
+
+    public Map getConf() {
+        return conf;
+    }
 }
