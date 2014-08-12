@@ -46,6 +46,8 @@ public class SiteEventController {
             activateSite(event);
         } else if (event.getState() == SiteState.ADDED) {
             addSite(event);
+        } else if (event.getState() == SiteState.REMOVED) {
+            deactivateSite(event);
         }
     }
 
