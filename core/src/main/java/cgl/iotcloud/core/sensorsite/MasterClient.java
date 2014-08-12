@@ -79,6 +79,7 @@ public class MasterClient {
                         tChannel.setBrokerUrl(host.getUrl());
                     }
                 }
+                tChannel.setGrouped(c.isGrouped());
                 tChannel.setSensor(context.getName());
                 tChannel.setSite(siteContext.getSiteId());
                 tSensor.addToChannels(tChannel);
