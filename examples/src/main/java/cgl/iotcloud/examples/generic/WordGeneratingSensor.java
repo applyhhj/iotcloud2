@@ -69,14 +69,14 @@ public class WordGeneratingSensor extends AbstractSensor {
             sendProps.put("routingKey", "sentence");
             sendProps.put("queueName", "sentence");
             Channel sendChannel = createChannel("sentence", sendProps, Direction.OUT, 1024);
-            sendChannel.setGrouped(true);
+            //sendChannel.setGrouped(true);
 
             Map receiveProps = new HashMap();
             receiveProps.put("queueName", "count");
             receiveProps.put("exchange", "iot_examples");
             receiveProps.put("routingKey", "count");
             Channel receiveChannel = createChannel("count", receiveProps, Direction.IN, 1024);
-            receiveChannel.setGrouped(true);
+            //receiveChannel.setGrouped(true);
 
             context.addChannel("rabbitmq", sendChannel);
             context.addChannel("rabbitmq", receiveChannel);
