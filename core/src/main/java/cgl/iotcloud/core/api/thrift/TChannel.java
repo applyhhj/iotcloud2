@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField SITE_FIELD_DESC = new org.apache.thrift.protocol.TField("site", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField SENSOR_FIELD_DESC = new org.apache.thrift.protocol.TField("sensor", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField GROUPED_FIELD_DESC = new org.apache.thrift.protocol.TField("grouped", org.apache.thrift.protocol.TType.BOOL, (short)8);
+  private static final org.apache.thrift.protocol.TField SENSOR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("sensorId", org.apache.thrift.protocol.TType.STRING, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,6 +79,7 @@ import org.slf4j.LoggerFactory;
   public String site; // optional
   public String sensor; // optional
   public boolean grouped; // optional
+  public String sensorId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -92,7 +94,8 @@ import org.slf4j.LoggerFactory;
     NAME((short)5, "name"),
     SITE((short)6, "site"),
     SENSOR((short)7, "sensor"),
-    GROUPED((short)8, "grouped");
+    GROUPED((short)8, "grouped"),
+    SENSOR_ID((short)9, "sensorId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -123,6 +126,8 @@ import org.slf4j.LoggerFactory;
           return SENSOR;
         case 8: // GROUPED
           return GROUPED;
+        case 9: // SENSOR_ID
+          return SENSOR_ID;
         default:
           return null;
       }
@@ -165,7 +170,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __GROUPED_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL,_Fields.NAME,_Fields.SITE,_Fields.SENSOR,_Fields.GROUPED};
+  private _Fields optionals[] = {_Fields.PROPERTIES,_Fields.BROKER_URL,_Fields.NAME,_Fields.SITE,_Fields.SENSOR,_Fields.GROUPED,_Fields.SENSOR_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -187,6 +192,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GROUPED, new org.apache.thrift.meta_data.FieldMetaData("grouped", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.SENSOR_ID, new org.apache.thrift.meta_data.FieldMetaData("sensorId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TChannel.class, metaDataMap);
   }
@@ -231,6 +238,9 @@ import org.slf4j.LoggerFactory;
       this.sensor = other.sensor;
     }
     this.grouped = other.grouped;
+    if (other.isSetSensorId()) {
+      this.sensorId = other.sensorId;
+    }
   }
 
   public TChannel deepCopy() {
@@ -248,6 +258,7 @@ import org.slf4j.LoggerFactory;
     this.sensor = null;
     setGroupedIsSet(false);
     this.grouped = false;
+    this.sensorId = null;
   }
 
   public String getTransport() {
@@ -460,6 +471,30 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GROUPED_ISSET_ID, value);
   }
 
+  public String getSensorId() {
+    return this.sensorId;
+  }
+
+  public TChannel setSensorId(String sensorId) {
+    this.sensorId = sensorId;
+    return this;
+  }
+
+  public void unsetSensorId() {
+    this.sensorId = null;
+  }
+
+  /** Returns true if field sensorId is set (has been assigned a value) and false otherwise */
+  public boolean isSetSensorId() {
+    return this.sensorId != null;
+  }
+
+  public void setSensorIdIsSet(boolean value) {
+    if (!value) {
+      this.sensorId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TRANSPORT:
@@ -526,6 +561,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case SENSOR_ID:
+      if (value == null) {
+        unsetSensorId();
+      } else {
+        setSensorId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -555,6 +598,9 @@ import org.slf4j.LoggerFactory;
     case GROUPED:
       return Boolean.valueOf(isGrouped());
 
+    case SENSOR_ID:
+      return getSensorId();
+
     }
     throw new IllegalStateException();
   }
@@ -582,6 +628,8 @@ import org.slf4j.LoggerFactory;
       return isSetSensor();
     case GROUPED:
       return isSetGrouped();
+    case SENSOR_ID:
+      return isSetSensorId();
     }
     throw new IllegalStateException();
   }
@@ -668,6 +716,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_grouped && that_present_grouped))
         return false;
       if (this.grouped != that.grouped)
+        return false;
+    }
+
+    boolean this_present_sensorId = true && this.isSetSensorId();
+    boolean that_present_sensorId = true && that.isSetSensorId();
+    if (this_present_sensorId || that_present_sensorId) {
+      if (!(this_present_sensorId && that_present_sensorId))
+        return false;
+      if (!this.sensorId.equals(that.sensorId))
         return false;
     }
 
@@ -767,6 +824,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSensorId()).compareTo(other.isSetSensorId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSensorId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sensorId, other.sensorId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -856,6 +923,16 @@ import org.slf4j.LoggerFactory;
       if (!first) sb.append(", ");
       sb.append("grouped:");
       sb.append(this.grouped);
+      first = false;
+    }
+    if (isSetSensorId()) {
+      if (!first) sb.append(", ");
+      sb.append("sensorId:");
+      if (this.sensorId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sensorId);
+      }
       first = false;
     }
     sb.append(")");
@@ -979,6 +1056,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 9: // SENSOR_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.sensorId = iprot.readString();
+              struct.setSensorIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1052,6 +1137,13 @@ import org.slf4j.LoggerFactory;
         oprot.writeBool(struct.grouped);
         oprot.writeFieldEnd();
       }
+      if (struct.sensorId != null) {
+        if (struct.isSetSensorId()) {
+          oprot.writeFieldBegin(SENSOR_ID_FIELD_DESC);
+          oprot.writeString(struct.sensorId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1094,7 +1186,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetGrouped()) {
         optionals.set(7);
       }
-      oprot.writeBitSet(optionals, 8);
+      if (struct.isSetSensorId()) {
+        optionals.set(8);
+      }
+      oprot.writeBitSet(optionals, 9);
       if (struct.isSetTransport()) {
         oprot.writeString(struct.transport);
       }
@@ -1126,12 +1221,15 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetGrouped()) {
         oprot.writeBool(struct.grouped);
       }
+      if (struct.isSetSensorId()) {
+        oprot.writeString(struct.sensorId);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TChannel struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(8);
+      BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.transport = iprot.readString();
         struct.setTransportIsSet(true);
@@ -1174,6 +1272,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(7)) {
         struct.grouped = iprot.readBool();
         struct.setGroupedIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.sensorId = iprot.readString();
+        struct.setSensorIdIsSet(true);
       }
     }
   }

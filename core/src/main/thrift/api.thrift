@@ -23,6 +23,7 @@ struct TChannel {
     6:optional string site
     7:optional string sensor
     8:optional bool grouped
+    9:optional string sensorId
 }
 
 struct TBroker {
