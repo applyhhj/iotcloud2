@@ -63,7 +63,7 @@ public class RabbitMQSender implements Manageable {
 
             channel = conn.createChannel();
             channel.exchangeDeclare(exchangeName, "direct", false);
-            channel.queueDeclare(this.queueName, true, false, false, null);
+            channel.queueDeclare(this.queueName, false, false, true, null);
             channel.queueBind(queueName, exchangeName, routingKey);
 
             Thread t = new Thread(new Worker());
@@ -81,6 +81,7 @@ public class RabbitMQSender implements Manageable {
 
     public void stop() {
         try {
+            channel.queueDelete(queueName, true, false);
             channel.close();
             conn.close();
         } catch (IOException e) {
