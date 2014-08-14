@@ -33,11 +33,9 @@ public class MasterPersistant {
     public void load() {
         // this will create the given ZNode with the given data
         try {
-            if (curatorFramework.checkExists().forPath(context.getParentPath()) != null) {
-                curatorFramework.delete().guaranteed().deletingChildrenIfNeeded().forPath(context.getParentPath());
+            if (curatorFramework.checkExists().forPath(context.getParentPath()) == null) {
+                curatorFramework.create().forPath(context.getParentPath());
             }
-
-            curatorFramework.create().forPath(context.getParentPath());
         } catch (Exception e) {
             String msg = "Failed to load iot: " + context.getParentPath() + " in ZK";
             LOG.error(msg, e);
