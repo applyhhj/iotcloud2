@@ -137,11 +137,11 @@ public class SiteSensorDeployer {
                 }
             }
 
-            LOG.info("Deployed sensor with name {} with id {}", sensorContext.getName(), sensorContext.getSensorID());
+            LOG.info("Deployed sensor with name: {} with: id {}", sensorContext.getName(), sensorContext.getSensorID());
 
             // open the sensor
             sensor.open(sensorContext);
-
+            LOG.info("Open sensor with name: {} with: id {}", sensorContext.getName(), sensorContext.getSensorID());
             // add the sensor to the site
             siteContext.addSensor(sensorContext, sensor);
 
