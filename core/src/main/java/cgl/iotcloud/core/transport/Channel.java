@@ -96,7 +96,7 @@ public class Channel {
 
     public void publish(MessageContext message) {
         checkOpen();
-
+        message.setSensorId(sensorID);
         if (state == State.CLOSED) {
             String msg = "The channel is in closed state and cannot send";
             LOG.warn(msg);

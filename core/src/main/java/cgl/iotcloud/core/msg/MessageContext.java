@@ -43,4 +43,8 @@ public class MessageContext implements Serializable {
     public byte[] getBody() {
         return body;
     }
+
+    public void setSensorId(String sensorId) {
+        this.sensorId = sensorId;
+    }
 }
