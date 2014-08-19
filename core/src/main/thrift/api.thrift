@@ -73,3 +73,10 @@ struct TSensorDeployResponse {
     1:optional list<string> deployedSites
     2:required TResponse response
 }
+
+struct TSensorMessage {
+    1:string sensorId
+    2:string site
+    3:binary body
+    4:optional map<string, string> properties
+}

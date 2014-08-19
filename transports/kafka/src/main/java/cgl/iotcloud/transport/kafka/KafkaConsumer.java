@@ -192,8 +192,9 @@ public class KafkaConsumer implements Manageable {
             } catch (InterruptedException ignored) {
             }
         }
-        System.out.println("Unable to find new leader after Broker failure. Exiting");
-        throw new RuntimeException("Unable to find new leader after Broker failure. Exiting");
+        String msg = "Unable to find new leader after Broker failure. Exiting";
+        LOG.error(msg);
+        throw new RuntimeException(msg);
     }
 
     private PartitionMetadata findLeader(Map<String, Integer> a_seedBrokers, String a_topic, int a_partition) {

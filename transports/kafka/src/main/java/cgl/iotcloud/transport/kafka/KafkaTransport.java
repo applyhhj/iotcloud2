@@ -50,7 +50,7 @@ public class KafkaTransport extends AbstractTransport {
         String partitionClass = (String) channelConf.get(PROP_PARTITION_CLASS);
         String requestRequiredAcks = (String) channelConf.get(PROP_REQUEST_REQUIRED_ACKS);
 
-        StringBuilder brokerList = new StringBuilder("");
+        StringBuilder brokerList = new StringBuilder();
         int count = 0;
         for (Map.Entry<String, Integer> e : urls.entrySet()) {
             if (count == urls.entrySet().size() - 1) {
@@ -61,7 +61,7 @@ public class KafkaTransport extends AbstractTransport {
         }
 
         return new KafkaProducer(queue, siteId + "." +  topic, brokerList.toString(),
-                serializerClass, partitionClass, requestRequiredAcks);
+                serializerClass, partitionClass, requestRequiredAcks, siteId);
     }
 
     @Override
