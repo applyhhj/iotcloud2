@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class KConsumer {
     private static Logger LOG = LoggerFactory.getLogger(KConsumer.class);
+    private boolean run = true;
 
     public static class MessageAndRealOffset {
         public Message msg;
@@ -42,8 +43,9 @@ public class KConsumer {
 
     String _sensor;
 
-    public KConsumer(String _sensor) {
+    public KConsumer(String _sensor, BlockingQueue<MessageContext> messageContexts) {
         this._sensor = _sensor;
+        this.messageContexts = messageContexts;
     }
 
     public void open(Map conf) {
@@ -54,10 +56,11 @@ public class KConsumer {
         _connections = new DynamicPartitionConnections(_spoutConfig, KafkaUtils.makeBrokerReader(conf, _spoutConfig));
 
         // using TransactionalState like this is a hack
-        _coordinator = new ZkCoordinator(_connections, conf, _spoutConfig, _state, 0, 10, _uuid, _sensor);
+        _coordinator = new ZkCoordinator(_connections, conf, _spoutConfig, _state, 0, 1, _uuid, _sensor);
     }
 
     public void close() {
+        run = false;
         _state.close();
     }
 
@@ -94,6 +97,15 @@ public class KConsumer {
         _lastUpdateMs = System.currentTimeMillis();
         for (PartitionManager manager : _coordinator.getMyManagedPartitions()) {
             manager.commit();
+        }
+    }
+
+    public class Worker implements Runnable {
+        @Override
+        public void run() {
+            while (run) {
+                nextTuple();
+            }
         }
     }
 }
