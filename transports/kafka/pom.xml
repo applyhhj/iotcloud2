@@ -16,7 +16,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kafka.verion>0.8.1</kafka.verion>
+        <kafka.verion>0.8.1.1</kafka.verion>
     </properties>
 
     <dependencies>
@@ -37,11 +37,24 @@
                     <groupId>com.sun.jdmk</groupId>
                     <artifactId>jmxtools</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>com.esotericsoftware.kryo</groupId>
             <artifactId>kryo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 </project>
