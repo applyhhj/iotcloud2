@@ -75,7 +75,7 @@ public class KafkaTransport extends AbstractTransport {
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 //      return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
         ZkHosts zkHosts = new ZkHosts("localhost:2181", "/brokers");
-        ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "broker", siteId + "." + prefix + "topic");
+        ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "/broker", siteId + "." + prefix + "topic");
         consumerConfig.zkServers = Lists.newArrayList("localhost:2181");
         return new KConsumer(siteId, queue, consumerConfig);
     }

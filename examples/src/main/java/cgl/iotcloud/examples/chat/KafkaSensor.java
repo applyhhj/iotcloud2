@@ -47,7 +47,7 @@ public class KafkaSensor extends AbstractSensor {
             @Override
             public void onMessage(Object message) {
                 if (message instanceof MessageContext) {
-
+                    System.out.println(new String(((MessageContext) message).getBody()));
                 }
             }
         });
