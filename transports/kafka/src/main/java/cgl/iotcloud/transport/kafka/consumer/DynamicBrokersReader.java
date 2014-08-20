@@ -19,7 +19,7 @@ public class DynamicBrokersReader {
     private String _zkPath;
     private String _topic;
 
-    public DynamicBrokersReader(Map conf, String zkStr, String zkPath, String topic) {
+    public DynamicBrokersReader(String zkStr, String zkPath, String topic) {
         _zkPath = zkPath;
         _topic = topic;
         try {

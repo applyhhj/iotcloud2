@@ -16,7 +16,7 @@ public class ZkState {
     public static final Logger LOG = LoggerFactory.getLogger(ZkState.class);
     CuratorFramework _curator;
 
-    private CuratorFramework newCurator(Map stateConf, String zkServers) throws Exception {
+    private CuratorFramework newCurator(String zkServers) throws Exception {
         return CuratorFrameworkFactory.newClient(zkServers,
                 30000,
                 15000,
@@ -28,10 +28,9 @@ public class ZkState {
         return _curator;
     }
 
-    public ZkState(Map stateConf, String zkServers, String zkPath) {
-        stateConf = new HashMap(stateConf);
+    public ZkState(String zkServers, String zkPath) {
         try {
-            _curator = newCurator(stateConf, zkServers);
+            _curator = newCurator(zkServers);
             _curator.start();
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -1,10 +1,7 @@
 package cgl.iotcloud.transport.kafka.consumer;
 
-import com.google.common.base.*;
-
 import java.io.Serializable;
 import java.util.*;
-import java.util.Objects;
 
 public class GlobalPartitionInformation implements Iterable<Partition>, Serializable {
 

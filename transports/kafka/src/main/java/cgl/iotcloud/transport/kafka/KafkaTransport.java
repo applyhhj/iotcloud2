@@ -2,6 +2,9 @@ package cgl.iotcloud.transport.kafka;
 
 import cgl.iotcloud.core.msg.MessageContext;
 import cgl.iotcloud.core.transport.*;
+import cgl.iotcloud.transport.kafka.consumer.ConsumerConfig;
+import cgl.iotcloud.transport.kafka.consumer.KConsumer;
+import cgl.iotcloud.transport.kafka.consumer.ZkHosts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +72,9 @@ public class KafkaTransport extends AbstractTransport {
         LOG.info("Registering consumer to host {}", host);
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
-
-        return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
+//      return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
+        ZkHosts zkHosts = new ZkHosts("localhost:2181", "/broker");
+        ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "broker", siteId + "." + prefix + "topic");
+        return new KConsumer(siteId, queue, consumerConfig);
     }
 }

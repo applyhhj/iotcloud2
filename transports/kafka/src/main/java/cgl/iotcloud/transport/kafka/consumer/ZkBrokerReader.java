@@ -12,13 +12,11 @@ public class ZkBrokerReader implements IBrokerReader {
     GlobalPartitionInformation cachedBrokers;
     DynamicBrokersReader reader;
     long lastRefreshTimeMs;
-
-
     long refreshMillis;
 
-    public ZkBrokerReader(Map conf, String topic, ZkHosts hosts) {
+    public ZkBrokerReader(String topic, ZkHosts hosts) {
         try {
-            reader = new DynamicBrokersReader(conf, hosts.brokerZkStr, hosts.brokerZkPath, topic);
+            reader = new DynamicBrokersReader(hosts.brokerZkStr, hosts.brokerZkPath, topic);
             cachedBrokers = reader.getBrokerInfo();
             lastRefreshTimeMs = System.currentTimeMillis();
             refreshMillis = hosts.refreshFreqSecs * 1000L;

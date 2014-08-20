@@ -21,24 +21,23 @@ public class PartitionManager {
     Long _committedTo;
     LinkedList<MessageAndRealOffset> _waitingToEmit = new LinkedList<MessageAndRealOffset>();
     Partition _partition;
-    ConsumerConfig _spoutConfig;
+    ConsumerConfig _consumerConfig;
     String _topologyInstanceId;
     SimpleConsumer _consumer;
     DynamicPartitionConnections _connections;
     ZkState _state;
-    Map _stormConf;
     long numberFailed, numberAcked;
 
     String _sensor;
 
-    public PartitionManager(DynamicPartitionConnections connections, String topologyInstanceId, ZkState state, Map stormConf, ConsumerConfig spoutConfig, Partition id, String sensor) {
+    public PartitionManager(DynamicPartitionConnections connections, String topologyInstanceId,
+                            ZkState state, ConsumerConfig consumerConfig, Partition id, String sensor) {
         _partition = id;
         _connections = connections;
-        _spoutConfig = spoutConfig;
+        _consumerConfig = consumerConfig;
         _topologyInstanceId = topologyInstanceId;
         _consumer = connections.register(id.host, id.partition);
         _state = state;
-        _stormConf = stormConf;
         numberAcked = numberFailed = 0;
 
         String jsonTopologyId = null;
@@ -55,24 +54,24 @@ public class PartitionManager {
             LOG.warn("Error reading and/or parsing at ZkNode: " + path, e);
         }
 
-        Long currentOffset = KafkaUtils.getOffset(_consumer, spoutConfig.topic, id.partition, spoutConfig);
+        Long currentOffset = KafkaUtils.getOffset(_consumer, consumerConfig.topic, id.partition, consumerConfig);
 
         if (jsonTopologyId == null || jsonOffset == null) { // failed to parse JSON?
             _committedTo = currentOffset;
             LOG.info("No partition information found, using configuration to determine offset");
-        } else if (!topologyInstanceId.equals(jsonTopologyId) && spoutConfig.forceFromStart) {
-            _committedTo = KafkaUtils.getOffset(_consumer, spoutConfig.topic, id.partition, spoutConfig.startOffsetTime);
+        } else if (!topologyInstanceId.equals(jsonTopologyId) && consumerConfig.forceFromStart) {
+            _committedTo = KafkaUtils.getOffset(_consumer, consumerConfig.topic, id.partition, consumerConfig.startOffsetTime);
             LOG.info("Topology change detected and reset from start forced, using configuration to determine offset");
         } else {
             _committedTo = jsonOffset;
             LOG.info("Read last commit offset from zookeeper: " + _committedTo + "; old topology_id: " + jsonTopologyId + " - new topology_id: " + topologyInstanceId );
         }
 
-        if (currentOffset - _committedTo > spoutConfig.maxOffsetBehind || _committedTo <= 0) {
+        if (currentOffset - _committedTo > consumerConfig.maxOffsetBehind || _committedTo <= 0) {
             LOG.info("Last commit offset from zookeeper: " + _committedTo);
             _committedTo = currentOffset;
             LOG.info("Commit offset " + _committedTo + " is more than " +
-                    spoutConfig.maxOffsetBehind + " behind, resetting to startOffsetTime=" + spoutConfig.startOffsetTime);
+                    consumerConfig.maxOffsetBehind + " behind, resetting to startOffsetTime=" + consumerConfig.startOffsetTime);
         }
 
         LOG.info("Starting Kafka " + _consumer.host() + ":" + id.partition + " from offset " + _committedTo);
@@ -114,7 +113,7 @@ public class PartitionManager {
             offset = _emittedToOffset;
         }
 
-        ByteBufferMessageSet msgs = KafkaUtils.fetchMessages(_spoutConfig, _consumer, _partition, offset);
+        ByteBufferMessageSet msgs = KafkaUtils.fetchMessages(_consumerConfig, _consumer, _partition, offset);
         if (msgs != null) {
             for (MessageAndOffset msg : msgs) {
                 final Long cur_offset = msg.offset();
@@ -136,7 +135,7 @@ public class PartitionManager {
     }
 
     public void ack(Long offset) {
-        if (!_pending.isEmpty() && _pending.first() < offset - _spoutConfig.maxOffsetBehind) {
+        if (!_pending.isEmpty() && _pending.first() < offset - _consumerConfig.maxOffsetBehind) {
             // Too many things pending!
             _pending.headSet(offset).clear();
         } else {
@@ -146,17 +145,17 @@ public class PartitionManager {
     }
 
     public void fail(Long offset) {
-        if (offset < _emittedToOffset - _spoutConfig.maxOffsetBehind) {
+        if (offset < _emittedToOffset - _consumerConfig.maxOffsetBehind) {
             LOG.info(
                     "Skipping failed tuple at offset=" + offset +
-                            " because it's more than maxOffsetBehind=" + _spoutConfig.maxOffsetBehind +
+                            " because it's more than maxOffsetBehind=" + _consumerConfig.maxOffsetBehind +
                             " behind _emittedToOffset=" + _emittedToOffset
             );
         } else {
             LOG.debug("failing at offset=" + offset + " with _pending.size()=" + _pending.size() + " pending and _emittedToOffset=" + _emittedToOffset);
             failed.add(offset);
             numberFailed++;
-            if (numberAcked == 0 && numberFailed > _spoutConfig.maxOffsetBehind) {
+            if (numberAcked == 0 && numberFailed > _consumerConfig.maxOffsetBehind) {
                 throw new RuntimeException("Too many tuple failures");
             }
         }
@@ -173,7 +172,7 @@ public class PartitionManager {
                     .put("partition", _partition.partition)
                     .put("broker", ImmutableMap.of("host", _partition.host.host,
                             "port", _partition.host.port))
-                    .put("topic", _spoutConfig.topic).build();
+                    .put("topic", _consumerConfig.topic).build();
             _state.writeJSON(committedPath(), data);
 
             _committedTo = lastCompletedOffset;
@@ -184,7 +183,7 @@ public class PartitionManager {
     }
 
     private String committedPath() {
-        return _spoutConfig.zkRoot + "/" + _spoutConfig.id + "/" + _partition.getId();
+        return _consumerConfig.zkRoot + "/" + _consumerConfig.id + "/" + _partition.getId();
     }
 
     public long lastCompletedOffset() {

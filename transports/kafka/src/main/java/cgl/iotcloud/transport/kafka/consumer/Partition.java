@@ -2,7 +2,7 @@ package cgl.iotcloud.transport.kafka.consumer;
 
 import com.google.common.base.Objects;
 
-public class Partition implements ISpoutPartition {
+public class Partition  {
     public Broker host;
     public int partition;
 
@@ -41,7 +41,6 @@ public class Partition implements ISpoutPartition {
                 '}';
     }
 
-    @Override
     public String getId() {
         return "partition_" + partition;
     }

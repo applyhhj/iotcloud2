@@ -22,15 +22,13 @@ public class ZkCoordinator implements PartitionCoordinator {
     DynamicPartitionConnections _connections;
     DynamicBrokersReader _reader;
     ZkState _state;
-    Map _stormConf;
 
-    public ZkCoordinator(DynamicPartitionConnections connections, Map stormConf,
-                         ConsumerConfig spoutConfig, ZkState state,
+    public ZkCoordinator(DynamicPartitionConnections connections, ConsumerConfig spoutConfig, ZkState state,
                          int taskIndex, int totalTasks, String topologyInstanceId, String sensor) {
-        this(connections, stormConf, spoutConfig, state, taskIndex, totalTasks, topologyInstanceId, buildReader(stormConf, spoutConfig), sensor);
+        this(connections, spoutConfig, state, taskIndex, totalTasks, topologyInstanceId, buildReader(spoutConfig), sensor);
     }
 
-    public ZkCoordinator(DynamicPartitionConnections connections, Map stormConf,
+    public ZkCoordinator(DynamicPartitionConnections connections,
                          ConsumerConfig spoutConfig, ZkState state,
                          int taskIndex, int totalTasks, String topologyInstanceId,
                          DynamicBrokersReader reader, String sensor) {
@@ -39,7 +37,6 @@ public class ZkCoordinator implements PartitionCoordinator {
         _taskIndex = taskIndex;
         _totalTasks = totalTasks;
         _topologyInstanceId = topologyInstanceId;
-        _stormConf = stormConf;
         _state = state;
         ZkHosts brokerConf = (ZkHosts) spoutConfig.hosts;
         _refreshFreqMs = brokerConf.refreshFreqSecs * 1000;
@@ -47,9 +44,9 @@ public class ZkCoordinator implements PartitionCoordinator {
         _sensor = sensor;
     }
 
-    private static DynamicBrokersReader buildReader(Map stormConf, ConsumerConfig spoutConfig) {
+    private static DynamicBrokersReader buildReader(ConsumerConfig spoutConfig) {
         ZkHosts hosts = (ZkHosts) spoutConfig.hosts;
-        return new DynamicBrokersReader(stormConf, hosts.brokerZkStr, hosts.brokerZkPath, spoutConfig.topic);
+        return new DynamicBrokersReader(hosts.brokerZkStr, hosts.brokerZkPath, spoutConfig.topic);
     }
 
     @Override
@@ -84,7 +81,7 @@ public class ZkCoordinator implements PartitionCoordinator {
             LOG.info(taskId(_taskIndex, _totalTasks) + "New partition managers: " + newPartitions.toString());
 
             for (Partition id : newPartitions) {
-                PartitionManager man = new PartitionManager(_connections, _topologyInstanceId, _state, _stormConf, _spoutConfig, id, _sensor);
+                PartitionManager man = new PartitionManager(_connections, _topologyInstanceId, _state, _spoutConfig, id, _sensor);
                 _managers.put(id, man);
             }
 

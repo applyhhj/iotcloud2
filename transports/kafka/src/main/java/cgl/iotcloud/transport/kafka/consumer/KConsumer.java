@@ -1,6 +1,7 @@
 package cgl.iotcloud.transport.kafka.consumer;
 
 import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.transport.Manageable;
 import com.google.common.base.Joiner;
 import kafka.message.Message;
 import org.slf4j.Logger;
@@ -9,9 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
-public class KConsumer {
+public class KConsumer implements Manageable {
     private static Logger LOG = LoggerFactory.getLogger(KConsumer.class);
-    private boolean run = true;
 
     public static class MessageAndRealOffset {
         public Message msg;
@@ -30,10 +30,10 @@ public class KConsumer {
     }
 
     private BlockingQueue<MessageContext> messageContexts;
-
+    private boolean run = true;
     private String _uuid = UUID.randomUUID().toString();
 
-    ConsumerConfig _spoutConfig;
+    ConsumerConfig _consumerConfig;
     PartitionCoordinator _coordinator;
     DynamicPartitionConnections _connections;
     ZkState _state;
@@ -41,30 +41,20 @@ public class KConsumer {
     long _lastUpdateMs = 0;
     int _currPartitionIndex = 0;
 
-    String _sensor;
+    String _site;
 
-    public KConsumer(String _sensor, BlockingQueue<MessageContext> messageContexts) {
-        this._sensor = _sensor;
+    public KConsumer(String _site, BlockingQueue<MessageContext> messageContexts, ConsumerConfig consumerConfig) {
+        this._site = _site;
+        this._consumerConfig = consumerConfig;
         this.messageContexts = messageContexts;
     }
 
-    public void open(Map conf) {
-        Map stateConf = new HashMap(conf);
-        List<String> zkServers = _spoutConfig.zkServers;
-        String servers = Joiner.on(",").join(zkServers);
-        _state = new ZkState(stateConf, servers, _spoutConfig.zkRoot);
-        _connections = new DynamicPartitionConnections(_spoutConfig, KafkaUtils.makeBrokerReader(conf, _spoutConfig));
-
-        // using TransactionalState like this is a hack
-        _coordinator = new ZkCoordinator(_connections, conf, _spoutConfig, _state, 0, 1, _uuid, _sensor);
-    }
-
-    public void close() {
+    private void close() {
         run = false;
         _state.close();
     }
 
-    public void nextTuple() {
+    private void nextTuple() {
         List<PartitionManager> managers = _coordinator.getMyManagedPartitions();
         for (int i = 0; i < managers.size(); i++) {
             try {
@@ -84,12 +74,12 @@ public class KConsumer {
         }
 
         long now = System.currentTimeMillis();
-        if ((now - _lastUpdateMs) > _spoutConfig.stateUpdateIntervalMs) {
+        if ((now - _lastUpdateMs) > _consumerConfig.stateUpdateIntervalMs) {
             commit();
         }
     }
 
-    public void deactivate() {
+    private void deactivate() {
         commit();
     }
 
@@ -107,5 +97,26 @@ public class KConsumer {
                 nextTuple();
             }
         }
+    }
+
+    @Override
+    public void start() {
+        List<String> zkServers = _consumerConfig.zkServers;
+        String servers = Joiner.on(",").join(zkServers);
+        _state = new ZkState(servers, _consumerConfig.zkRoot);
+        _connections = new DynamicPartitionConnections(_consumerConfig, KafkaUtils.makeBrokerReader(_consumerConfig));
+
+        // using TransactionalState like this is a hack
+        _coordinator = new ZkCoordinator(_connections, _consumerConfig, _state, 0, 1, _uuid, _site);
+
+        Thread t = new Thread(new Worker());
+        t.start();
+    }
+
+    @Override
+    public void stop() {
+        deactivate();
+        run = false;
+        close();
     }
 }

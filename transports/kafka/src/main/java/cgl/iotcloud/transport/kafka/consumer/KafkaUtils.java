@@ -12,9 +12,6 @@ import kafka.javaapi.message.ByteBufferMessageSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.*;
 
@@ -22,8 +19,8 @@ public class KafkaUtils {
     public static final Logger LOG = LoggerFactory.getLogger(KafkaUtils.class);
     private static final int NO_OFFSET = -5;
 
-    public static IBrokerReader makeBrokerReader(Map stormConf, KafkaConfig conf) {
-        return new ZkBrokerReader(stormConf, conf.topic, (ZkHosts) conf.hosts);
+    public static IBrokerReader makeBrokerReader(KafkaConfig conf) {
+        return new ZkBrokerReader(conf.topic, (ZkHosts) conf.hosts);
     }
 
 
