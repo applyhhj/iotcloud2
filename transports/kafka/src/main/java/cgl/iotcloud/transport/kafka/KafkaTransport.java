@@ -64,7 +64,7 @@ public class KafkaTransport extends AbstractTransport {
             }
         }
 
-        return new KafkaProducer(queue, siteId + "." +  topic, brokerList.toString(),
+        return new KafkaProducer(queue, prefix + "." +  topic, brokerList.toString(),
                 serializerClass, partitionClass, requestRequiredAcks, siteId);
     }
 

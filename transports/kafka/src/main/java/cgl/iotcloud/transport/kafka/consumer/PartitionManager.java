@@ -94,9 +94,11 @@ public class PartitionManager {
 
         try {
             TSensorMessage message = new TSensorMessage();
-            SerializationUtils.createThriftFromBytes(toEmit.msg.buffer().array(), message);
+            byte []b = new byte[toEmit.msg.payload().remaining()];
+            toEmit.msg.payload().get(b);
+            SerializationUtils.createThriftFromBytes(b, message);
 
-            MessageContext messageContext = new MessageContext(message.getSensorId(), toEmit.msg.buffer().array());
+            MessageContext messageContext = new MessageContext(message.getSensorId(), message.getBody());
             if (message.getProperties() != null) {
                 messageContext.getProperties().putAll(message.getProperties());
             }
