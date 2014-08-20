@@ -5,6 +5,7 @@ import cgl.iotcloud.core.transport.*;
 import cgl.iotcloud.transport.kafka.consumer.ConsumerConfig;
 import cgl.iotcloud.transport.kafka.consumer.KConsumer;
 import cgl.iotcloud.transport.kafka.consumer.ZkHosts;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +74,9 @@ public class KafkaTransport extends AbstractTransport {
         String topic = (String) channelConf.get(PROP_TOPIC);
         int partition = (Integer) channelConf.get(PROP_PARTITION);
 //      return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
-        ZkHosts zkHosts = new ZkHosts("localhost:2181", "/broker");
+        ZkHosts zkHosts = new ZkHosts("localhost:2181", "/brokers");
         ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "broker", siteId + "." + prefix + "topic");
+        consumerConfig.zkServers = Lists.newArrayList("localhost:2181");
         return new KConsumer(siteId, queue, consumerConfig);
     }
 }

@@ -65,12 +65,13 @@ public class KafkaSensor extends AbstractSensor {
             // sendProps.put("routingKey", "test1");
             // sendProps.put("queueName", "test");
             Channel sendChannel = createChannel("sender", sendProps, Direction.OUT, 1024);
+            sendChannel.setGrouped(true);
 
             Map receiveProps = new HashMap();
             receiveProps.put("topic", "test");
             receiveProps.put("partition", 0);
             Channel receiveChannel = createChannel("receiver", receiveProps, Direction.IN, 1024);
-
+            receiveChannel.setGrouped(true);
             context.addChannel("kafka", sendChannel);
             context.addChannel("kafka", receiveChannel);
 

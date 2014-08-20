@@ -1,10 +1,13 @@
 package cgl.iotcloud.transport.kafka.consumer;
 
+import cgl.iotcloud.core.api.thrift.TSensorMessage;
 import cgl.iotcloud.core.msg.MessageContext;
+import cgl.iotcloud.core.utils.SerializationUtils;
 import com.google.common.collect.ImmutableMap;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
 import kafka.message.MessageAndOffset;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import cgl.iotcloud.transport.kafka.consumer.KConsumer.MessageAndRealOffset;
@@ -89,11 +92,20 @@ public class PartitionManager {
             return EmitState.NO_EMITTED;
         }
 
-        MessageContext messageContext = new MessageContext(null, toEmit.msg.buffer().array());
         try {
+            TSensorMessage message = new TSensorMessage();
+            SerializationUtils.createThriftFromBytes(toEmit.msg.buffer().array(), message);
+
+            MessageContext messageContext = new MessageContext(message.getSensorId(), toEmit.msg.buffer().array());
+            if (message.getProperties() != null) {
+                messageContext.getProperties().putAll(message.getProperties());
+            }
             collector.put(messageContext);
+        } catch (TException e) {
+            LOG.error("Failed to convert the bytes to Thrift object", e);
         } catch (InterruptedException ignored) {
         }
+
         ack(toEmit.offset);
         if (!_waitingToEmit.isEmpty()) {
             return EmitState.EMITTED_MORE_LEFT;
