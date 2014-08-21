@@ -108,3 +108,6 @@ bolts:
           ackMode: "auto"
 
 This configuration specifies the sensors, channels and the broker we are using to create the spouts and bolts. The created spouts and bolts will listen to ZooKeeper nodes related to their configurations and will dynamically discover the sensor channels. 
+
+
+
