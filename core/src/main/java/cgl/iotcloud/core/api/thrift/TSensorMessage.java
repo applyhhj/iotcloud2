@@ -48,28 +48,31 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class TSensorDeployDescriptor implements org.apache.thrift.TBase<TSensorDeployDescriptor, TSensorDeployDescriptor._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorDeployDescriptor> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorDeployDescriptor");
+@SuppressWarnings("all") public class TSensorMessage implements org.apache.thrift.TBase<TSensorMessage, TSensorMessage._Fields>, java.io.Serializable, Cloneable, Comparable<TSensorMessage> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TSensorMessage");
 
-  private static final org.apache.thrift.protocol.TField FILENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("filename", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField CLASS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("className", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)3);
+  private static final org.apache.thrift.protocol.TField SENSOR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("sensorId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField SITE_FIELD_DESC = new org.apache.thrift.protocol.TField("site", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField BODY_FIELD_DESC = new org.apache.thrift.protocol.TField("body", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField PROPERTIES_FIELD_DESC = new org.apache.thrift.protocol.TField("properties", org.apache.thrift.protocol.TType.MAP, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TSensorDeployDescriptorStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TSensorDeployDescriptorTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TSensorMessageStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TSensorMessageTupleSchemeFactory());
   }
 
-  public String filename; // required
-  public String className; // required
+  public String sensorId; // required
+  public String site; // required
+  public ByteBuffer body; // required
   public Map<String,String> properties; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    FILENAME((short)1, "filename"),
-    CLASS_NAME((short)2, "className"),
-    PROPERTIES((short)3, "properties");
+    SENSOR_ID((short)1, "sensorId"),
+    SITE((short)2, "site"),
+    BODY((short)3, "body"),
+    PROPERTIES((short)4, "properties");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -84,11 +87,13 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // FILENAME
-          return FILENAME;
-        case 2: // CLASS_NAME
-          return CLASS_NAME;
-        case 3: // PROPERTIES
+        case 1: // SENSOR_ID
+          return SENSOR_ID;
+        case 2: // SITE
+          return SITE;
+        case 3: // BODY
+          return BODY;
+        case 4: // PROPERTIES
           return PROPERTIES;
         default:
           return null;
@@ -134,39 +139,47 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.FILENAME, new org.apache.thrift.meta_data.FieldMetaData("filename", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.SENSOR_ID, new org.apache.thrift.meta_data.FieldMetaData("sensorId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CLASS_NAME, new org.apache.thrift.meta_data.FieldMetaData("className", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.SITE, new org.apache.thrift.meta_data.FieldMetaData("site", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.BODY, new org.apache.thrift.meta_data.FieldMetaData("body", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.PROPERTIES, new org.apache.thrift.meta_data.FieldMetaData("properties", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorDeployDescriptor.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TSensorMessage.class, metaDataMap);
   }
 
-  public TSensorDeployDescriptor() {
+  public TSensorMessage() {
   }
 
-  public TSensorDeployDescriptor(
-    String filename,
-    String className)
+  public TSensorMessage(
+    String sensorId,
+    String site,
+    ByteBuffer body)
   {
     this();
-    this.filename = filename;
-    this.className = className;
+    this.sensorId = sensorId;
+    this.site = site;
+    this.body = body;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TSensorDeployDescriptor(TSensorDeployDescriptor other) {
-    if (other.isSetFilename()) {
-      this.filename = other.filename;
+  public TSensorMessage(TSensorMessage other) {
+    if (other.isSetSensorId()) {
+      this.sensorId = other.sensorId;
     }
-    if (other.isSetClassName()) {
-      this.className = other.className;
+    if (other.isSetSite()) {
+      this.site = other.site;
+    }
+    if (other.isSetBody()) {
+      this.body = org.apache.thrift.TBaseHelper.copyBinary(other.body);
+;
     }
     if (other.isSetProperties()) {
       Map<String,String> __this__properties = new HashMap<String,String>(other.properties);
@@ -174,62 +187,97 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public TSensorDeployDescriptor deepCopy() {
-    return new TSensorDeployDescriptor(this);
+  public TSensorMessage deepCopy() {
+    return new TSensorMessage(this);
   }
 
   @Override
   public void clear() {
-    this.filename = null;
-    this.className = null;
+    this.sensorId = null;
+    this.site = null;
+    this.body = null;
     this.properties = null;
   }
 
-  public String getFilename() {
-    return this.filename;
+  public String getSensorId() {
+    return this.sensorId;
   }
 
-  public TSensorDeployDescriptor setFilename(String filename) {
-    this.filename = filename;
+  public TSensorMessage setSensorId(String sensorId) {
+    this.sensorId = sensorId;
     return this;
   }
 
-  public void unsetFilename() {
-    this.filename = null;
+  public void unsetSensorId() {
+    this.sensorId = null;
   }
 
-  /** Returns true if field filename is set (has been assigned a value) and false otherwise */
-  public boolean isSetFilename() {
-    return this.filename != null;
+  /** Returns true if field sensorId is set (has been assigned a value) and false otherwise */
+  public boolean isSetSensorId() {
+    return this.sensorId != null;
   }
 
-  public void setFilenameIsSet(boolean value) {
+  public void setSensorIdIsSet(boolean value) {
     if (!value) {
-      this.filename = null;
+      this.sensorId = null;
     }
   }
 
-  public String getClassName() {
-    return this.className;
+  public String getSite() {
+    return this.site;
   }
 
-  public TSensorDeployDescriptor setClassName(String className) {
-    this.className = className;
+  public TSensorMessage setSite(String site) {
+    this.site = site;
     return this;
   }
 
-  public void unsetClassName() {
-    this.className = null;
+  public void unsetSite() {
+    this.site = null;
   }
 
-  /** Returns true if field className is set (has been assigned a value) and false otherwise */
-  public boolean isSetClassName() {
-    return this.className != null;
+  /** Returns true if field site is set (has been assigned a value) and false otherwise */
+  public boolean isSetSite() {
+    return this.site != null;
   }
 
-  public void setClassNameIsSet(boolean value) {
+  public void setSiteIsSet(boolean value) {
     if (!value) {
-      this.className = null;
+      this.site = null;
+    }
+  }
+
+  public byte[] getBody() {
+    setBody(org.apache.thrift.TBaseHelper.rightSize(body));
+    return body == null ? null : body.array();
+  }
+
+  public ByteBuffer bufferForBody() {
+    return body;
+  }
+
+  public TSensorMessage setBody(byte[] body) {
+    setBody(body == null ? (ByteBuffer)null : ByteBuffer.wrap(body));
+    return this;
+  }
+
+  public TSensorMessage setBody(ByteBuffer body) {
+    this.body = body;
+    return this;
+  }
+
+  public void unsetBody() {
+    this.body = null;
+  }
+
+  /** Returns true if field body is set (has been assigned a value) and false otherwise */
+  public boolean isSetBody() {
+    return this.body != null;
+  }
+
+  public void setBodyIsSet(boolean value) {
+    if (!value) {
+      this.body = null;
     }
   }
 
@@ -248,7 +296,7 @@ import org.slf4j.LoggerFactory;
     return this.properties;
   }
 
-  public TSensorDeployDescriptor setProperties(Map<String,String> properties) {
+  public TSensorMessage setProperties(Map<String,String> properties) {
     this.properties = properties;
     return this;
   }
@@ -270,19 +318,27 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case FILENAME:
+    case SENSOR_ID:
       if (value == null) {
-        unsetFilename();
+        unsetSensorId();
       } else {
-        setFilename((String)value);
+        setSensorId((String)value);
       }
       break;
 
-    case CLASS_NAME:
+    case SITE:
       if (value == null) {
-        unsetClassName();
+        unsetSite();
       } else {
-        setClassName((String)value);
+        setSite((String)value);
+      }
+      break;
+
+    case BODY:
+      if (value == null) {
+        unsetBody();
+      } else {
+        setBody((ByteBuffer)value);
       }
       break;
 
@@ -299,11 +355,14 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case FILENAME:
-      return getFilename();
+    case SENSOR_ID:
+      return getSensorId();
 
-    case CLASS_NAME:
-      return getClassName();
+    case SITE:
+      return getSite();
+
+    case BODY:
+      return getBody();
 
     case PROPERTIES:
       return getProperties();
@@ -319,10 +378,12 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case FILENAME:
-      return isSetFilename();
-    case CLASS_NAME:
-      return isSetClassName();
+    case SENSOR_ID:
+      return isSetSensorId();
+    case SITE:
+      return isSetSite();
+    case BODY:
+      return isSetBody();
     case PROPERTIES:
       return isSetProperties();
     }
@@ -333,30 +394,39 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TSensorDeployDescriptor)
-      return this.equals((TSensorDeployDescriptor)that);
+    if (that instanceof TSensorMessage)
+      return this.equals((TSensorMessage)that);
     return false;
   }
 
-  public boolean equals(TSensorDeployDescriptor that) {
+  public boolean equals(TSensorMessage that) {
     if (that == null)
       return false;
 
-    boolean this_present_filename = true && this.isSetFilename();
-    boolean that_present_filename = true && that.isSetFilename();
-    if (this_present_filename || that_present_filename) {
-      if (!(this_present_filename && that_present_filename))
+    boolean this_present_sensorId = true && this.isSetSensorId();
+    boolean that_present_sensorId = true && that.isSetSensorId();
+    if (this_present_sensorId || that_present_sensorId) {
+      if (!(this_present_sensorId && that_present_sensorId))
         return false;
-      if (!this.filename.equals(that.filename))
+      if (!this.sensorId.equals(that.sensorId))
         return false;
     }
 
-    boolean this_present_className = true && this.isSetClassName();
-    boolean that_present_className = true && that.isSetClassName();
-    if (this_present_className || that_present_className) {
-      if (!(this_present_className && that_present_className))
+    boolean this_present_site = true && this.isSetSite();
+    boolean that_present_site = true && that.isSetSite();
+    if (this_present_site || that_present_site) {
+      if (!(this_present_site && that_present_site))
         return false;
-      if (!this.className.equals(that.className))
+      if (!this.site.equals(that.site))
+        return false;
+    }
+
+    boolean this_present_body = true && this.isSetBody();
+    boolean that_present_body = true && that.isSetBody();
+    if (this_present_body || that_present_body) {
+      if (!(this_present_body && that_present_body))
+        return false;
+      if (!this.body.equals(that.body))
         return false;
     }
 
@@ -378,29 +448,39 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(TSensorDeployDescriptor other) {
+  public int compareTo(TSensorMessage other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetFilename()).compareTo(other.isSetFilename());
+    lastComparison = Boolean.valueOf(isSetSensorId()).compareTo(other.isSetSensorId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetFilename()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.filename, other.filename);
+    if (isSetSensorId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sensorId, other.sensorId);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetClassName()).compareTo(other.isSetClassName());
+    lastComparison = Boolean.valueOf(isSetSite()).compareTo(other.isSetSite());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetClassName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.className, other.className);
+    if (isSetSite()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.site, other.site);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetBody()).compareTo(other.isSetBody());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetBody()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.body, other.body);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -432,22 +512,30 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TSensorDeployDescriptor(");
+    StringBuilder sb = new StringBuilder("TSensorMessage(");
     boolean first = true;
 
-    sb.append("filename:");
-    if (this.filename == null) {
+    sb.append("sensorId:");
+    if (this.sensorId == null) {
       sb.append("null");
     } else {
-      sb.append(this.filename);
+      sb.append(this.sensorId);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("className:");
-    if (this.className == null) {
+    sb.append("site:");
+    if (this.site == null) {
       sb.append("null");
     } else {
-      sb.append(this.className);
+      sb.append(this.site);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("body:");
+    if (this.body == null) {
+      sb.append("null");
+    } else {
+      org.apache.thrift.TBaseHelper.toString(this.body, sb);
     }
     first = false;
     if (isSetProperties()) {
@@ -466,12 +554,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (filename == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'filename' was not present! Struct: " + toString());
-    }
-    if (className == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'className' was not present! Struct: " + toString());
-    }
     // check for sub-struct validity
   }
 
@@ -491,15 +573,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class TSensorDeployDescriptorStandardSchemeFactory implements SchemeFactory {
-    public TSensorDeployDescriptorStandardScheme getScheme() {
-      return new TSensorDeployDescriptorStandardScheme();
+  private static class TSensorMessageStandardSchemeFactory implements SchemeFactory {
+    public TSensorMessageStandardScheme getScheme() {
+      return new TSensorMessageStandardScheme();
     }
   }
 
-  private static class TSensorDeployDescriptorStandardScheme extends StandardScheme<TSensorDeployDescriptor> {
+  private static class TSensorMessageStandardScheme extends StandardScheme<TSensorMessage> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TSensorMessage struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -509,34 +591,42 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // FILENAME
+          case 1: // SENSOR_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.filename = iprot.readString();
-              struct.setFilenameIsSet(true);
+              struct.sensorId = iprot.readString();
+              struct.setSensorIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // CLASS_NAME
+          case 2: // SITE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.className = iprot.readString();
-              struct.setClassNameIsSet(true);
+              struct.site = iprot.readString();
+              struct.setSiteIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // PROPERTIES
+          case 3: // BODY
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.body = iprot.readBinary();
+              struct.setBodyIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // PROPERTIES
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map36 = iprot.readMapBegin();
-                struct.properties = new HashMap<String,String>(2*_map36.size);
-                for (int _i37 = 0; _i37 < _map36.size; ++_i37)
+                org.apache.thrift.protocol.TMap _map54 = iprot.readMapBegin();
+                struct.properties = new HashMap<String,String>(2*_map54.size);
+                for (int _i55 = 0; _i55 < _map54.size; ++_i55)
                 {
-                  String _key38;
-                  String _val39;
-                  _key38 = iprot.readString();
-                  _val39 = iprot.readString();
-                  struct.properties.put(_key38, _val39);
+                  String _key56;
+                  String _val57;
+                  _key56 = iprot.readString();
+                  _val57 = iprot.readString();
+                  struct.properties.put(_key56, _val57);
                 }
                 iprot.readMapEnd();
               }
@@ -556,18 +646,23 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TSensorMessage struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.filename != null) {
-        oprot.writeFieldBegin(FILENAME_FIELD_DESC);
-        oprot.writeString(struct.filename);
+      if (struct.sensorId != null) {
+        oprot.writeFieldBegin(SENSOR_ID_FIELD_DESC);
+        oprot.writeString(struct.sensorId);
         oprot.writeFieldEnd();
       }
-      if (struct.className != null) {
-        oprot.writeFieldBegin(CLASS_NAME_FIELD_DESC);
-        oprot.writeString(struct.className);
+      if (struct.site != null) {
+        oprot.writeFieldBegin(SITE_FIELD_DESC);
+        oprot.writeString(struct.site);
+        oprot.writeFieldEnd();
+      }
+      if (struct.body != null) {
+        oprot.writeFieldBegin(BODY_FIELD_DESC);
+        oprot.writeBinary(struct.body);
         oprot.writeFieldEnd();
       }
       if (struct.properties != null) {
@@ -575,10 +670,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(PROPERTIES_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.properties.size()));
-            for (Map.Entry<String, String> _iter40 : struct.properties.entrySet())
+            for (Map.Entry<String, String> _iter58 : struct.properties.entrySet())
             {
-              oprot.writeString(_iter40.getKey());
-              oprot.writeString(_iter40.getValue());
+              oprot.writeString(_iter58.getKey());
+              oprot.writeString(_iter58.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -591,55 +686,79 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class TSensorDeployDescriptorTupleSchemeFactory implements SchemeFactory {
-    public TSensorDeployDescriptorTupleScheme getScheme() {
-      return new TSensorDeployDescriptorTupleScheme();
+  private static class TSensorMessageTupleSchemeFactory implements SchemeFactory {
+    public TSensorMessageTupleScheme getScheme() {
+      return new TSensorMessageTupleScheme();
     }
   }
 
-  private static class TSensorDeployDescriptorTupleScheme extends TupleScheme<TSensorDeployDescriptor> {
+  private static class TSensorMessageTupleScheme extends TupleScheme<TSensorMessage> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TSensorMessage struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.filename);
-      oprot.writeString(struct.className);
       BitSet optionals = new BitSet();
-      if (struct.isSetProperties()) {
+      if (struct.isSetSensorId()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetSite()) {
+        optionals.set(1);
+      }
+      if (struct.isSetBody()) {
+        optionals.set(2);
+      }
+      if (struct.isSetProperties()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetSensorId()) {
+        oprot.writeString(struct.sensorId);
+      }
+      if (struct.isSetSite()) {
+        oprot.writeString(struct.site);
+      }
+      if (struct.isSetBody()) {
+        oprot.writeBinary(struct.body);
+      }
       if (struct.isSetProperties()) {
         {
           oprot.writeI32(struct.properties.size());
-          for (Map.Entry<String, String> _iter41 : struct.properties.entrySet())
+          for (Map.Entry<String, String> _iter59 : struct.properties.entrySet())
           {
-            oprot.writeString(_iter41.getKey());
-            oprot.writeString(_iter41.getValue());
+            oprot.writeString(_iter59.getKey());
+            oprot.writeString(_iter59.getValue());
           }
         }
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorDeployDescriptor struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TSensorMessage struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.filename = iprot.readString();
-      struct.setFilenameIsSet(true);
-      struct.className = iprot.readString();
-      struct.setClassNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
+        struct.sensorId = iprot.readString();
+        struct.setSensorIdIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.site = iprot.readString();
+        struct.setSiteIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.body = iprot.readBinary();
+        struct.setBodyIsSet(true);
+      }
+      if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TMap _map42 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.properties = new HashMap<String,String>(2*_map42.size);
-          for (int _i43 = 0; _i43 < _map42.size; ++_i43)
+          org.apache.thrift.protocol.TMap _map60 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.properties = new HashMap<String,String>(2*_map60.size);
+          for (int _i61 = 0; _i61 < _map60.size; ++_i61)
           {
-            String _key44;
-            String _val45;
-            _key44 = iprot.readString();
-            _val45 = iprot.readString();
-            struct.properties.put(_key44, _val45);
+            String _key62;
+            String _val63;
+            _key62 = iprot.readString();
+            _val63 = iprot.readString();
+            struct.properties.put(_key62, _val63);
           }
         }
         struct.setPropertiesIsSet(true);
