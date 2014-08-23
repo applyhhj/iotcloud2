@@ -72,8 +72,6 @@ public class KafkaTransport extends AbstractTransport {
     public Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering consumer to host {}", host);
         String topic = (String) channelConf.get(PROP_TOPIC);
-        int partition = (Integer) channelConf.get(PROP_PARTITION);
-//      return new KafkaConsumer(queue, siteId + "." + topic, partition, urls);
         ZkHosts zkHosts = new ZkHosts("localhost:2181", "/brokers");
         ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "/broker", siteId + "." + prefix + "topic");
         consumerConfig.zkServers = Lists.newArrayList("localhost:2181");
