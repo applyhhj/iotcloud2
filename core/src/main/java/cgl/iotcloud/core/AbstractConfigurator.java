@@ -23,4 +23,30 @@ public abstract class AbstractConfigurator implements Configurator {
 
         return channel;
     }
+
+    protected Channel createOutChannel(String name, Map properties) {
+        BlockingQueue<MessageContext> inMassages = new ArrayBlockingQueue<MessageContext>(64);
+        BlockingQueue<MessageContext> outMassages = new ArrayBlockingQueue<MessageContext>(64);
+
+        Channel channel = new Channel(name, Direction.OUT);
+        channel.setInQueue(inMassages);
+        channel.setOutQueue(outMassages);
+
+        channel.addProperties(properties);
+
+        return channel;
+    }
+
+    protected Channel createInChannel(String name, Map properties) {
+        BlockingQueue<MessageContext> inMassages = new ArrayBlockingQueue<MessageContext>(64);
+        BlockingQueue<MessageContext> outMassages = new ArrayBlockingQueue<MessageContext>(64);
+
+        Channel channel = new Channel(name, Direction.IN);
+        channel.setInQueue(inMassages);
+        channel.setOutQueue(outMassages);
+
+        channel.addProperties(properties);
+
+        return channel;
+    }
 }
