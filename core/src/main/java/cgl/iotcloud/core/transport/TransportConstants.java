@@ -9,4 +9,7 @@ public interface TransportConstants {
 
     // this property is used by some transports like rabbitmq to send the sensorID
     public static final String SENSOR_ID = "sensorID";
+
+    public static final String TRANSPORT_RABBITMQ = "rabbitmq";
+    public static final String TRANSPORT_KAFKA = "kafka";
 }
