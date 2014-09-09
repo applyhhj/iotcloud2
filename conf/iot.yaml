@@ -37,6 +37,9 @@ iot.sensorsite.transports:
       class: "cgl.iotcloud.transport.kafka.KafkaTransport"
       properties:
             urls: ["localhost:9092"]
+            broker.zk.servers: "localhost:2181"
+            broker.zk.path: "/brokers"
+            trp.zk.servers: "localhost:2181"
     mqtt:
           class: "cgl.iotcloud.transport.mqtt.MQTTTransport"
           properties:

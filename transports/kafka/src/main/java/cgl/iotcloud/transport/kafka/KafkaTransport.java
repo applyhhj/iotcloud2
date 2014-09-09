@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -30,6 +31,10 @@ public class KafkaTransport extends AbstractTransport {
     public static final String PROP_SERIALIZER_CLASS = "serializerClass";
     public static final String PROP_PARTITION_CLASS = "partitionClass";
     public static final String PROP_REQUEST_REQUIRED_ACKS = "rrAcks";
+
+    public static final String TRANSPORT_BROKER_ZK = "broker.zk.servers";
+    public static final String TRANSPORT_BROKER_PATH = "broker.zk.path";
+    public static final String TRANSPORT_ZK_SERVERS = "trp.zk.servers";
 
     private Map<String, Integer> urls = new HashMap<String, Integer>();
 
@@ -72,9 +77,13 @@ public class KafkaTransport extends AbstractTransport {
     public Manageable registerConsumer(BrokerHost host, String prefix, Map channelConf, BlockingQueue<MessageContext> queue) {
         LOG.info("Registering consumer to host {}", host);
         String topic = (String) channelConf.get(PROP_TOPIC);
-        ZkHosts zkHosts = new ZkHosts("localhost:2181", "/brokers");
-        ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, "/broker", siteId + "." + prefix + "topic");
-        consumerConfig.zkServers = Lists.newArrayList("localhost:2181");
+        ZkHosts zkHosts = new ZkHosts((String) transportConfiguration.get(TRANSPORT_BROKER_ZK), (String) transportConfiguration.get(TRANSPORT_BROKER_PATH));
+        ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, (String) transportConfiguration.get(TRANSPORT_BROKER_PATH), siteId + "." + prefix + "topic");
+        Object o = transportConfiguration.get(TRANSPORT_ZK_SERVERS);
+        if (o instanceof List) {
+            for
+            consumerConfig.zkServers = Lists.<String>newArrayList(o);
+        }
         return new KConsumer(siteId, queue, consumerConfig);
     }
 }
