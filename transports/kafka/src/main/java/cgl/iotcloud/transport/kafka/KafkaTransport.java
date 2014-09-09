@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +82,11 @@ public class KafkaTransport extends AbstractTransport {
         ConsumerConfig consumerConfig = new ConsumerConfig(zkHosts, prefix + "." + topic, (String) transportConfiguration.get(TRANSPORT_BROKER_PATH), siteId + "." + prefix + "topic");
         Object o = transportConfiguration.get(TRANSPORT_ZK_SERVERS);
         if (o instanceof List) {
-            for
-            consumerConfig.zkServers = Lists.<String>newArrayList(o);
+            List<String> servers = new ArrayList<String>();
+            for (Object s : (List)o) {
+                servers.add(s.toString());
+            }
+            consumerConfig.zkServers = servers;
         }
         return new KConsumer(siteId, queue, consumerConfig);
     }
