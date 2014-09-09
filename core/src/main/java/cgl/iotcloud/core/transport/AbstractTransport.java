@@ -36,6 +36,13 @@ public abstract class AbstractTransport implements Transport {
 
     protected ExecutorService executorService;
 
+    /**
+     * The index is used to pick the next broker available
+     */
+    private int consumerIndex = 0;
+
+    private int producerIndex = 0;
+
     @Override
     public void configure(String siteId, Map properties) {
         this.siteId = siteId;
@@ -76,7 +83,14 @@ public abstract class AbstractTransport implements Transport {
         String groupName = getGroupName(channel, name);
         ChannelGroup group = groups.get(groupName);
         if (group == null) {
-            group = new ChannelGroup(groupName, getPrefix(channel, name), brokerHosts, this);
+            if (channel.getDirection() == Direction.OUT) {
+                group = new ChannelGroup(groupName, getPrefix(channel, name), brokerHosts, this, producerIndex);
+                incrementProducerIndex();
+            } else {
+                group = new ChannelGroup(groupName, getPrefix(channel, name), brokerHosts, this, consumerIndex);
+                incrementConsumerIndex();
+            }
+
             groups.put(groupName, group);
         }
         group.addChannel(channel);
@@ -147,6 +161,22 @@ public abstract class AbstractTransport implements Transport {
     public void stop() {
         for (ChannelGroup group : groups.values()) {
             group.stop();
+        }
+    }
+
+    private void incrementConsumerIndex() {
+        if (consumerIndex == brokerHosts.size() - 1) {
+            consumerIndex = 0;
+        } else {
+            consumerIndex++;
+        }
+    }
+
+    private void incrementProducerIndex() {
+        if (producerIndex == brokerHosts.size() - 1) {
+            producerIndex = 0;
+        } else {
+            producerIndex++;
         }
     }
 }

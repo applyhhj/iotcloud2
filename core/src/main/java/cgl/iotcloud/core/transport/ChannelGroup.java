@@ -62,11 +62,15 @@ public class ChannelGroup {
 
     protected String prefix;
 
-    public ChannelGroup(String name, String prefix, List<BrokerHost> brokerHosts, AbstractTransport transport) {
+    protected int brokerIndex;
+
+    public ChannelGroup(String name, String prefix, List<BrokerHost> brokerHosts, AbstractTransport transport, int initialBrokerIndex) {
         this.name = name;
         this.brokerHosts = brokerHosts;
         this.transport = transport;
         this.prefix = prefix;
+        this.brokerIndex = initialBrokerIndex;
+
 
         for (BrokerHost brokerHost : brokerHosts) {
             brokerHostToConsumerChannelMap.put(brokerHost, new ArrayList<Channel>());
@@ -84,7 +88,7 @@ public class ChannelGroup {
             // add the channel and return the broker host
             Manageable manageable;
             if (channel.getDirection() == Direction.OUT) {
-                BrokerHost host = brokerHosts.get(producerIndex);
+                BrokerHost host = brokerHosts.get(brokerIndex);
                 List<Channel> producerChannels = brokerHostToProducerChannelMap.get(host);
                 BlockingQueue<MessageContext> channelOutQueue = producerQueues.get(host);
 
@@ -107,7 +111,7 @@ public class ChannelGroup {
                 return host;
 
             } else if (channel.getDirection() == Direction.IN) {
-                BrokerHost host = brokerHosts.get(consumerIndex);
+                BrokerHost host = brokerHosts.get(brokerIndex);
                 List<Channel> consumerChannels = brokerHostToConsumerChannelMap.get(host);
                 if (!consumers.containsKey(host)) {
                     BlockingQueue<MessageContext> channelInQueue = consumerQueues.get(host);
