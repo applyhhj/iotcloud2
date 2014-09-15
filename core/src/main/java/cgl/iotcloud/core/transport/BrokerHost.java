@@ -27,4 +27,9 @@ public class BrokerHost {
     public int hashCode() {
         return url != null ? url.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return url;
+    }
 }
