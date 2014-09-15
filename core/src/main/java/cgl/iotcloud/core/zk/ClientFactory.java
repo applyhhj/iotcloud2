@@ -40,7 +40,7 @@ public class ClientFactory {
     }
 
     public synchronized CuratorFramework getClient() {
-        LOG.error("current client {}, max client {}, size {}", currentClient, maxClients, curatorFrameworkList.size());
+        LOG.info("current client {}, max client {}, size {}", currentClient, maxClients, curatorFrameworkList.size());
         if (curatorFrameworkList.size() < maxClients) {
             CuratorFramework client = CuratorFrameworkFactory.newClient(address, new ExponentialBackoffRetry(1000, 3));
             client.start();
